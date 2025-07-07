@@ -39,6 +39,7 @@ import { HeightItem } from "@/types/height";
 import { JobTypeItem } from "@/types/jobType";
 import { IpkItem } from "@/types/ipk";
 import { CompanyItem } from "@/types/company";
+import { UserItem } from "@/types/user";
 import { StatusItem } from "@/types/status";
 import { CityItem } from "@/types/city";
 import { CountryItem } from "@/types/country";
@@ -53,24 +54,25 @@ import { ProvinceItem } from "@/types/province";
 import { ReligionItem } from "@/types/religion";
 
 // Services
-import { getAllAges } from "@/services/age";
-import { getAllWeights } from "@/services/weight";
-import { getAllHeights } from "@/services/height";
-import { getAllJobTypes } from "@/services/jobType";
-import { getAllIpks } from "@/services/ipk";
-import { getAllCompanies } from "@/services/company";
-import { getAllStatuses } from "@/services/status";
-import { getAllCities } from "@/services/city";
-import { getAllCountries } from "@/services/country";
-import { getAllEducations } from "@/services/education";
-import { getAllExperiences } from "@/services/experience";
-import { getAllGenders } from "@/services/gender";
-import { getAllMaritalStatuses } from "@/services/maritalStatus";
-import { getAllModes } from "@/services/mode";
-import { getAllPositions } from "@/services/position";
-import { getAllProgramStudies } from "@/services/programStudy";
-import { getAllProvinces } from "@/services/province";
-import { getAllReligions } from "@/services/religion";
+import { getAgeAll } from "@/services/age";
+import { getWeightAll } from "@/services/weight";
+import { getHeightAll } from "@/services/height";
+import { getJobTypeAll } from "@/services/jobType";
+import { getIpkAll } from "@/services/ipk";
+import { getCompanyAll } from "@/services/company";
+import { getUserAllAdmin } from "@/services/user";
+import { getStatusAll } from "@/services/status";
+import { getCityAll } from "@/services/city";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getExperienceAll } from "@/services/experience";
+import { getGenderAll } from "@/services/gender";
+import { getMaritalStatusAll } from "@/services/maritalStatus";
+import { getModeAll } from "@/services/mode";
+import { getPositionAll } from "@/services/position";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+import { getReligionAll } from "@/services/religion";
 import { searchJobs, deleteJobById } from "@/services/job";
 
 // Utils
@@ -112,6 +114,11 @@ export default function PageLowonganPekerjaan() {
   const [company_id, setCompanyId] = useState<Selection>(new Set([]));
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
   const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
+  // users
+  const [users, setUsers] = useState<UserItem[]>([]);
+  const [user_id, setUserId] = useState<Selection>(new Set([]));
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [apiErrorUsers, setApiErrorUsers] = useState<string | null>(null);
   // statuses
   const [statuses, setStatuses] = useState<StatusItem[]>([]);
   const [status_id, setStatusId] = useState<Selection>(new Set(["1"]));
@@ -176,24 +183,25 @@ export default function PageLowonganPekerjaan() {
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createServiceFetcher(getAllAges, setAges, setApiErrorAges, setIsLoadingAges),
-        createServiceFetcher(getAllHeights, setHeights, setApiErrorHeights, setIsLoadingHeights),
-        createServiceFetcher(getAllWeights, setWeights, setApiErrorWeights, setIsLoadingWeights),
-        createServiceFetcher(getAllJobTypes, setJobTypes, setApiErrorJobTypes, setIsLoadingJobTypes),
-        createServiceFetcher(getAllIpks, setIpks, setApiErrorIpks, setIsLoadingIpks),
-        createServiceFetcher(getAllCompanies, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createServiceFetcher(getAllStatuses, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
-        createServiceFetcher(getAllCities, setCities, setApiErrorCities, setIsLoadingCities),
-        createServiceFetcher(getAllCountries, setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createServiceFetcher(getAllEducations, setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createServiceFetcher(getAllExperiences, setExperiences, setApiErrorExperiences, setIsLoadingExperiences),
-        createServiceFetcher(getAllGenders, setGenders, setApiErrorGenders, setIsLoadingGenders),
-        createServiceFetcher(getAllMaritalStatuses, setMaritalStatuses, setApiErrorMaritalStatuses, setIsLoadingMaritalStatuses),
-        createServiceFetcher(getAllModes, setModes, setApiErrorModes, setIsLoadingModes),
-        createServiceFetcher(getAllPositions, setPositions, setApiErrorPositions, setIsLoadingPositions),
-        createServiceFetcher(getAllProgramStudies, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createServiceFetcher(getAllProvinces, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
-        createServiceFetcher(getAllReligions, setReligions, setApiErrorReligions, setIsLoadingReligions),
+        createServiceFetcher(getAgeAll, setAges, setApiErrorAges, setIsLoadingAges),
+        createServiceFetcher(getHeightAll, setHeights, setApiErrorHeights, setIsLoadingHeights),
+        createServiceFetcher(getWeightAll, setWeights, setApiErrorWeights, setIsLoadingWeights),
+        createServiceFetcher(getJobTypeAll, setJobTypes, setApiErrorJobTypes, setIsLoadingJobTypes),
+        createServiceFetcher(getIpkAll, setIpks, setApiErrorIpks, setIsLoadingIpks),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getUserAllAdmin, setUsers, setApiErrorUsers, setIsLoadingUsers),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getExperienceAll, setExperiences, setApiErrorExperiences, setIsLoadingExperiences),
+        createServiceFetcher(getGenderAll, setGenders, setApiErrorGenders, setIsLoadingGenders),
+        createServiceFetcher(getMaritalStatusAll, setMaritalStatuses, setApiErrorMaritalStatuses, setIsLoadingMaritalStatuses),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getPositionAll, setPositions, setApiErrorPositions, setIsLoadingPositions),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getReligionAll, setReligions, setApiErrorReligions, setIsLoadingReligions),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));
@@ -252,13 +260,14 @@ export default function PageLowonganPekerjaan() {
   const selecItem = [
     { key: "age_min_id", label: "Umur Min" },
     { key: "age_max_id", label: "Umur Max" },
-    { key: "height_min_id", label: "Tinggi Min" },
-    { key: "height_max_id", label: "Tinggi Max" },
-    { key: "weight_min_id", label: "Berat Min" },
-    { key: "weight_max_id", label: "Berat Max" },
+    { key: "height_min_id", label: "Tinggi Badan Min" },
+    { key: "height_max_id", label: "Tinggi badan Max" },
+    { key: "weight_min_id", label: "Berat Badan Min" },
+    { key: "weight_max_id", label: "Berat Badan Max" },
     { key: "job_type_id", label: "Tipe" },
     { key: "company_id", label: "Perusahaan" },
     { key: "ipk_id", label: "Ipk" },
+    { key: "user_id", label: "Penulis" },
     { key: "status_id", label: "Status Publikasi" },
     { key: "city_id", label: "Kota" },
     { key: "country_id", label: "Negara" },
@@ -296,7 +305,6 @@ export default function PageLowonganPekerjaan() {
     { key: "job_created_at:desc", label: "Terbaru" },
     { key: "job_created_at:asc", label: "Terlama" },
   ];
-  console.log("📤 Filter yang dikirim:", filters);
 
   const [viewMode, setViewMode] = useState<"card" | "table">("card");
 
@@ -716,6 +724,45 @@ export default function PageLowonganPekerjaan() {
           </Select>
         )}
 
+        {/* ipk_id */}
+        {selectedFilters.has("ipk_id") && (
+          <Select
+            label="Pilih ipk minimal"
+            labelPlacement="outside"
+            variant="bordered"
+            name="ipk_id"
+            selectedKeys={new Set([filters.ipk_id || ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, ipk_id: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs text-text-secondary",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary text-xs",
+            }}
+          >
+            {ipks.length === 0 ? (
+              <SelectItem key="nodata" isDisabled>
+                Data belum tersedia
+              </SelectItem>
+            ) : (
+              ipks.map((item) => (
+                <SelectItem
+                  key={item.ipk_id}
+                  classNames={{
+                    title: "text-xs hover:!text-primary-primary",
+                    selectedIcon: "text-primary-primary",
+                  }}
+                >
+                  {item.ipk_no}
+                </SelectItem>
+              ))
+            )}
+          </Select>
+        )}
+
         {/* company_id */}
         {selectedFilters.has("company_id") && (
           <Select
@@ -763,41 +810,55 @@ export default function PageLowonganPekerjaan() {
           </Select>
         )}
 
-        {/* ipk_id */}
-        {selectedFilters.has("ipk_id") && (
+        {/* user_id */}
+        {selectedFilters.has("user_id") && (
           <Select
-            label="Pilih ipk minimal"
+            isMultiline={true}
+            items={users}
+            label="Pilih nama peserta"
             labelPlacement="outside"
             variant="bordered"
-            name="ipk_id"
-            selectedKeys={new Set([filters.ipk_id || ""])}
+            name="user_id"
+            renderValue={(items) => (
+              <div className="flex flex-wrap gap-2">
+                {items.map((item) => (
+                  <div key={item.data?.user_id} className="flex items-center gap-2">
+                    <Avatar alt={item.data?.user_fullname} className="w-6 h-6" src={item.data?.user_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                    <div className="flex flex-col">
+                      <span className="text-xs">{item.data?.user_fullname}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            selectedKeys={new Set([filters.user_id || ""])}
             onSelectionChange={(key) => {
               const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, ipk_id: value }));
+              setFilters((prev) => ({ ...prev, user_id: value }));
             }}
             classNames={{
-              label: "after:text-danger-primary text-xs text-text-secondary",
+              label: "after:text-danger-primary text-xs",
               trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
               value: "text-xs",
-              errorMessage: "text-danger-primary text-xs",
+              errorMessage: "text-danger-primary",
             }}
           >
-            {ipks.length === 0 ? (
-              <SelectItem key="nodata" isDisabled>
-                Data belum tersedia
+            {(user) => (
+              <SelectItem
+                key={user.user_id}
+                textValue={user.user_name}
+                classNames={{
+                  title: "text-xs hover:!text-primary-primary",
+                  selectedIcon: "text-primary-primary",
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <Avatar alt={user.user_fullname} className="w-6 h-6" src={user.user_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                  <div className="flex flex-col">
+                    <span className="text-xs">{user.user_fullname}</span>
+                  </div>
+                </div>
               </SelectItem>
-            ) : (
-              ipks.map((item) => (
-                <SelectItem
-                  key={item.ipk_id}
-                  classNames={{
-                    title: "text-xs hover:!text-primary-primary",
-                    selectedIcon: "text-primary-primary",
-                  }}
-                >
-                  {item.ipk_no}
-                </SelectItem>
-              ))
             )}
           </Select>
         )}

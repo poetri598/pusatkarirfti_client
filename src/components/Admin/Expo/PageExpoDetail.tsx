@@ -1,17 +1,26 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Location, Tag, Calendar, Eye, Building } from "iconsax-react";
+
+// Iconsax
+import { Calendar, Eye, Building } from "iconsax-react";
+
+// Components
 import { Avatar, Breadcrumbs, BreadcrumbItem, Image, Tooltip, ScrollShadow, Snippet, Spinner, Chip } from "@heroui/react";
-import { getRelativeTimeRaw, getFullTimeRaw } from "@/utils/time";
-import { ExpoItem } from "@/types/expo";
-import { formatViews } from "@/utils/view";
-import { getExpoBySlug, incrementExpoView } from "@/services/expo";
 import RichTextDisplay from "@/components/Custom/RichTextDisplay";
+
+// Types
+import { ExpoItem } from "@/types/expo";
+
+// Services
+import { getExpoBySlug, incrementExpoView } from "@/services/expo";
+
+// Utils
+import { formatViews } from "@/utils/view";
+import { getRelativeTimeRaw, getFullTimeRaw } from "@/utils/time";
 
 export default function PageExpoDetail({ expo_slug }: { expo_slug: string }) {
   const [expo, setexpo] = useState<ExpoItem | null>(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,11 +45,10 @@ export default function PageExpoDetail({ expo_slug }: { expo_slug: string }) {
 
   if (loading)
     return (
-      <div className="w-full flex justify-center items-center py-8">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
         <Spinner
-          label="Sedang memuat data..."
-          labelColor="primary"
-          variant="dots"
+          label="Loading..."
+          variant="wave"
           classNames={{
             label: "text-primary-primary mt-4",
             dots: "border-5 border-primary-primary",
@@ -48,7 +56,13 @@ export default function PageExpoDetail({ expo_slug }: { expo_slug: string }) {
         />
       </div>
     );
-  if (!expo) return <p>Data tidak ditemukan.</p>;
+
+  if (!expo)
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+        <p>Data tidak ditemukan.</p>
+      </div>
+    );
 
   const relativeDate = getRelativeTimeRaw(expo.expo_created_at);
   const fullDate = getFullTimeRaw(expo.expo_created_at);

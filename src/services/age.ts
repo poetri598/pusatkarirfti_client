@@ -21,7 +21,7 @@ export async function createAge(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllAges() {
+export async function getAgeAll() {
   try {
     const res = await api.get<ApiResponse<AgeItem[]>>("/ages");
     if (res.data.status === "success") {

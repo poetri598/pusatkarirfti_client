@@ -21,7 +21,7 @@ export async function createExpo(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllExpos() {
+export async function getExpoAll() {
   try {
     const res = await api.get<ApiResponse<ExpoItem[]>>("/expos");
     if (res.data.status === "success") {

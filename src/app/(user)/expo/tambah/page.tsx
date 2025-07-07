@@ -2,82 +2,115 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+// Iconsax
 import { Camera, Building, Link21 } from "iconsax-react";
 
+// Components
 import { Breadcrumbs, BreadcrumbItem, Form, Input, Button, Select, SelectItem, Selection, NumberInput, DatePicker, Avatar, Spinner } from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
-import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 import RichTextEditor from "@/components/Custom/RichTextEditor";
 
-import { createFetcher } from "@/utils/createFetcher";
-import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
+// Context
+import { useAuth } from "@/context/AuthContext";
+
+// Types
+import { StatusItem } from "@/types/status";
 import { CityItem } from "@/types/city";
 import { CompanyItem } from "@/types/company";
 import { CountryItem } from "@/types/country";
-import { ExpoTypeItem } from "@/types/expoType";
 import { EducationItem } from "@/types/education";
+import { ExpoTypeItem } from "@/types/expoType";
 import { ModeItem } from "@/types/mode";
 import { PositionItem } from "@/types/position";
 import { ProgramStudyItem } from "@/types/programStudy";
 import { ProvinceItem } from "@/types/province";
-import { ExpoItem } from "@/types/expo";
 
+// Services
 import { createExpo } from "@/services/expo";
-import { useAuth } from "@/context/AuthContext";
+import { getStatusAll } from "@/services/status";
+import { getCityAll } from "@/services/city";
+import { getCompanyAll } from "@/services/company";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getExpoTypeAll } from "@/services/expoType";
+import { getModeAll } from "@/services/mode";
+import { getPositionAll } from "@/services/position";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+
+// Utils
+import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
+import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
 
 export default function page() {
   const router = useRouter();
   const { user } = useAuth();
+  // statuses
+  const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [status_id, setStatusId] = useState<Selection>(new Set(["1"]));
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
+  const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
   // cities
   const [cities, setCities] = useState<CityItem[]>([]);
+  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
   // companies
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
+  const [company_ids, setCompanyIds] = useState<Selection>(new Set([]));
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
   const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
   // countries
   const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
   const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
   // expoTypes
   const [expoTypes, setExpoTypes] = useState<ExpoTypeItem[]>([]);
+  const [expo_type_ids, setExpoTypeIds] = useState<Selection>(new Set([]));
   const [isLoadingExpoTypes, setIsLoadingExpoTypes] = useState(true);
   const [apiErrorExpoTypes, setApiErrorExpoTypes] = useState<string | null>(null);
   // educations
   const [educations, setEducations] = useState<EducationItem[]>([]);
+  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
   const [isLoadingEducations, setIsLoadingEducations] = useState(true);
   const [apiErrorEducations, setApiErrorEducations] = useState<string | null>(null);
   // modes
   const [modes, setModes] = useState<ModeItem[]>([]);
+  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
   const [isLoadingModes, setIsLoadingModes] = useState(true);
   const [apiErrorModes, setApiErrorModes] = useState<string | null>(null);
   // position
   const [positions, setPositions] = useState<PositionItem[]>([]);
+  const [position_ids, setPositionIds] = useState<Selection>(new Set([]));
   const [isLoadingPositions, setIsLoadingPositions] = useState(true);
   const [apiErrorPositions, setApiErrorPositions] = useState<string | null>(null);
   // programStudies
   const [programStudies, setProgramStudies] = useState<ProgramStudyItem[]>([]);
+  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
   const [isLoadingProgramStudies, setIsLoadingProgramStudies] = useState(true);
   const [apiErrorProgramStudies, setApiErrorProgramStudies] = useState<string | null>(null);
   // provinces
   const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
   const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
   const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createFetcher<CityItem[]>("/cities", setCities, setApiErrorCities, setIsLoadingCities),
-        createFetcher<CompanyItem[]>("/companies", setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createFetcher<CountryItem[]>("/countries", setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createFetcher<ExpoTypeItem[]>("/expo-types", setExpoTypes, setApiErrorExpoTypes, setIsLoadingExpoTypes),
-        createFetcher<EducationItem[]>("/educations", setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createFetcher<ModeItem[]>("/modes", setModes, setApiErrorModes, setIsLoadingModes),
-        createFetcher<PositionItem[]>("/positions", setPositions, setApiErrorPositions, setIsLoadingPositions),
-        createFetcher<ProgramStudyItem[]>("/program-studies", setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createFetcher<ProvinceItem[]>("/provinces", setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getExpoTypeAll, setExpoTypes, setApiErrorExpoTypes, setIsLoadingExpoTypes),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getPositionAll, setPositions, setApiErrorPositions, setIsLoadingPositions),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));
@@ -98,15 +131,8 @@ export default function page() {
   const [expo_date, setExpoDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
   const [expo_open_date, setExpoOpenDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
   const [expo_close_date, setExpoCloseDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
-  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
-  const [company_ids, setCompanyIds] = useState<Selection>(new Set([]));
-  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
-  const [expo_type_ids, setExpoTypeIds] = useState<Selection>(new Set([]));
-  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
-  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
-  const [position_ids, setPositionIds] = useState<Selection>(new Set([]));
-  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
-  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
+
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -117,101 +143,69 @@ export default function page() {
       showErrorDialog("Ukuran gambar tidak boleh lebih dari 5MB.");
       return;
     }
-    // Simpan file untuk dikirim
     setExpoImgFile(file);
-    // Simpan preview (string base64)
     const reader = new FileReader();
     reader.onloadend = () => {
       setExpoImg(reader.result as string);
     };
     reader.readAsDataURL(file);
   };
+
   const handleIconClick = () => {
     fileInputRef.current?.click();
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
-
+    setLoading(true);
     const formData = new FormData();
-
-    // Form values
-    formData.append("user_id", String(user?.user_id));
     formData.append("expo_name", expo_name);
+    if (expo_img_file) formData.append("expo_img", expo_img_file);
     formData.append("expo_desc", expo_desc);
+    formData.append("expo_price", String(expo_price));
     formData.append("expo_location", expo_location);
     formData.append("expo_link", expo_link);
-    formData.append("expo_price", String(expo_price));
-
-    // Dates
-    if (expo_date) {
-      formData.append("expo_date", expo_date.toAbsoluteString());
-    }
-    if (expo_open_date) {
-      formData.append("expo_open_date", expo_open_date.toAbsoluteString());
-    }
-    if (expo_close_date) {
-      formData.append("expo_close_date", expo_close_date.toAbsoluteString());
-    }
-
-    if (city_ids instanceof Set) {
-      Array.from(city_ids).forEach((id) => formData.append("city_ids[]", String(id)));
-    }
-
-    if (company_ids instanceof Set) {
-      Array.from(company_ids).forEach((id) => formData.append("company_ids[]", String(id)));
-    }
-
-    if (country_ids instanceof Set) {
-      Array.from(country_ids).forEach((id) => formData.append("country_ids[]", String(id)));
-    }
-
-    if (expo_type_ids instanceof Set) {
-      Array.from(expo_type_ids).forEach((id) => formData.append("expo_type_ids[]", String(id)));
-    }
-
-    if (education_ids instanceof Set) {
-      Array.from(education_ids).forEach((id) => formData.append("education_ids[]", String(id)));
-    }
-
-    if (mode_ids instanceof Set) {
-      Array.from(mode_ids).forEach((id) => formData.append("mode_ids[]", String(id)));
-    }
-
-    if (position_ids instanceof Set) {
-      Array.from(position_ids).forEach((id) => formData.append("position_ids[]", String(id)));
-    }
-
-    if (program_study_ids instanceof Set) {
-      Array.from(program_study_ids).forEach((id) => formData.append("program_study_ids[]", String(id)));
-    }
-
-    if (province_ids instanceof Set) {
-      Array.from(province_ids).forEach((id) => formData.append("province_ids[]", String(id)));
-    }
-
-    // File
-    if (expo_img_file) {
-      formData.append("expo_img", expo_img_file);
-    }
-
-    // Kirim ke server
+    if (expo_date) formData.append("expo_date", expo_date.toAbsoluteString());
+    if (expo_open_date) formData.append("expo_open_date", expo_open_date.toAbsoluteString());
+    if (expo_close_date) formData.append("expo_close_date", expo_close_date.toAbsoluteString());
+    formData.append("user_id", String(user?.user_id));
+    appendSingle(formData, "status_id", status_id);
+    appendMultiple(formData, "city_ids", city_ids);
+    appendMultiple(formData, "company_ids", company_ids);
+    appendMultiple(formData, "country_ids", country_ids);
+    appendMultiple(formData, "education_ids", education_ids);
+    appendMultiple(formData, "expo_type_ids", expo_type_ids);
+    appendMultiple(formData, "mode_ids", mode_ids);
+    appendMultiple(formData, "position_ids", position_ids);
+    appendMultiple(formData, "program_study_ids", program_study_ids);
+    appendMultiple(formData, "province_ids", province_ids); // Kirim ke server
     const { success, error } = await createExpo(formData);
-
     if (success) {
       await showSuccessDialog();
       router.push("/expo");
     } else {
       await showErrorDialog(error);
     }
+    setLoading(false);
   };
   return (
     <>
       <>
         <main className="xs:p-0 md:p-8  flex flex-col xs:gap-2 md:gap-8 overflow-hidden">
+          {loading && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+              <Spinner
+                label="Loading..."
+                variant="wave"
+                classNames={{
+                  label: "text-primary-primary mt-4",
+                  dots: "border-5 border-primary-primary",
+                }}
+              />
+            </div>
+          )}
           {/*  Breadcrumb */}
           <Breadcrumbs
             className="text-xs text-text-secondary"
@@ -889,6 +883,58 @@ export default function page() {
                         }}
                       >
                         {item.mode_name}
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
+              {/* Status */}
+              {isLoadingStatuses ? (
+                <div className="w-full flex justify-center items-center py-8">
+                  <Spinner
+                    label="Sedang memuat data..."
+                    labelColor="primary"
+                    variant="dots"
+                    classNames={{
+                      label: "text-primary-primary mt-4",
+                      dots: "border-5 border-primary-primary",
+                    }}
+                  />
+                </div>
+              ) : apiErrorStatuses ? (
+                <p className="text-start text-xs text-danger-primary">{apiErrorStatuses}</p>
+              ) : (
+                <Select
+                  isRequired
+                  label="Pilih status publikasi"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="status_id"
+                  selectedKeys={status_id}
+                  onSelectionChange={setStatusId}
+                  classNames={{
+                    base: "hidden",
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {statuses.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    statuses.map((item) => (
+                      <SelectItem
+                        key={item.status_id}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.status_name}
                       </SelectItem>
                     ))
                   )}

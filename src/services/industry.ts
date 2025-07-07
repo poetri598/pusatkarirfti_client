@@ -19,7 +19,7 @@ export async function createIndustry(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllIndustries() {
+export async function getIndustryAll() {
   try {
     const res = await api.get<ApiResponse<IndustryItem[]>>("/industries");
     if (res.data.status === "success") {

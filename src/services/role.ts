@@ -19,7 +19,7 @@ export async function createRole(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllRoles() {
+export async function getRoleAll() {
   try {
     const res = await api.get<ApiResponse<RoleItem[]>>("/roles");
     if (res.data.status === "success") {

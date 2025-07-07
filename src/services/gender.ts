@@ -22,7 +22,7 @@ export async function createGender(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllGenders() {
+export async function getGenderAll() {
   try {
     const res = await api.get<ApiResponse<GenderItem[]>>("/genders");
     if (res.data.status === "success") {

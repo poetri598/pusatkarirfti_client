@@ -19,7 +19,7 @@ export async function createIpk(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllIpks() {
+export async function getIpkAll() {
   try {
     const res = await api.get<ApiResponse<IpkItem[]>>("/ipks");
     if (res.data.status === "success") {

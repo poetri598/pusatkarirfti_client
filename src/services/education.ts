@@ -22,7 +22,7 @@ export async function createEducation(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllEducations() {
+export async function getEducationAll() {
   try {
     const res = await api.get<ApiResponse<EducationItem[]>>("/educations");
     if (res.data.status === "success") {

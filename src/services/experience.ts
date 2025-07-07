@@ -22,7 +22,7 @@ export async function createExperience(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllExperiences() {
+export async function getExperienceAll() {
   try {
     const res = await api.get<ApiResponse<ExperienceItem[]>>("/experiences");
     if (res.data.status === "success") {

@@ -34,24 +34,24 @@ import { ProvinceItem } from "@/types/province";
 import { ReligionItem } from "@/types/religion";
 
 // Services
-import { getAllAges } from "@/services/age";
-import { getAllWeights } from "@/services/weight";
-import { getAllHeights } from "@/services/height";
-import { getAllJobTypes } from "@/services/jobType";
-import { getAllIpks } from "@/services/ipk";
-import { getAllCompanies } from "@/services/company";
-import { getAllStatuses } from "@/services/status";
-import { getAllCities } from "@/services/city";
-import { getAllCountries } from "@/services/country";
-import { getAllEducations } from "@/services/education";
-import { getAllExperiences } from "@/services/experience";
-import { getAllGenders } from "@/services/gender";
-import { getAllMaritalStatuses } from "@/services/maritalStatus";
-import { getAllModes } from "@/services/mode";
-import { getAllPositions } from "@/services/position";
-import { getAllProgramStudies } from "@/services/programStudy";
-import { getAllProvinces } from "@/services/province";
-import { getAllReligions } from "@/services/religion";
+import { getAgeAll } from "@/services/age";
+import { getWeightAll } from "@/services/weight";
+import { getHeightAll } from "@/services/height";
+import { getJobTypeAll } from "@/services/jobType";
+import { getIpkAll } from "@/services/ipk";
+import { getCompanyAll } from "@/services/company";
+import { getStatusAll } from "@/services/status";
+import { getCityAll } from "@/services/city";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getExperienceAll } from "@/services/experience";
+import { getGenderAll } from "@/services/gender";
+import { getMaritalStatusAll } from "@/services/maritalStatus";
+import { getModeAll } from "@/services/mode";
+import { getPositionAll } from "@/services/position";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+import { getReligionAll } from "@/services/religion";
 import { updateJobById, getJobBySlug } from "@/services/job";
 
 // Utils
@@ -97,7 +97,7 @@ export default function Edit({ job_slug }: { job_slug: string }) {
   const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
   // statuses
   const [statuses, setStatuses] = useState<StatusItem[]>([]);
-  const [status_id, setStatusId] = useState<Selection>(new Set(["1"]));
+  const [status_id, setStatusId] = useState<Selection>(new Set([]));
   const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
   const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
   // cities
@@ -175,24 +175,24 @@ export default function Edit({ job_slug }: { job_slug: string }) {
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createServiceFetcher(getAllAges, setAges, setApiErrorAges, setIsLoadingAges),
-        createServiceFetcher(getAllHeights, setHeights, setApiErrorHeights, setIsLoadingHeights),
-        createServiceFetcher(getAllWeights, setWeights, setApiErrorWeights, setIsLoadingWeights),
-        createServiceFetcher(getAllJobTypes, setJobTypes, setApiErrorJobTypes, setIsLoadingJobTypes),
-        createServiceFetcher(getAllIpks, setIpks, setApiErrorIpks, setIsLoadingIpks),
-        createServiceFetcher(getAllCompanies, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createServiceFetcher(getAllStatuses, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
-        createServiceFetcher(getAllCities, setCities, setApiErrorCities, setIsLoadingCities),
-        createServiceFetcher(getAllCountries, setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createServiceFetcher(getAllEducations, setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createServiceFetcher(getAllExperiences, setExperiences, setApiErrorExperiences, setIsLoadingExperiences),
-        createServiceFetcher(getAllGenders, setGenders, setApiErrorGenders, setIsLoadingGenders),
-        createServiceFetcher(getAllMaritalStatuses, setMaritalStatuses, setApiErrorMaritalStatuses, setIsLoadingMaritalStatuses),
-        createServiceFetcher(getAllModes, setModes, setApiErrorModes, setIsLoadingModes),
-        createServiceFetcher(getAllPositions, setPositions, setApiErrorPositions, setIsLoadingPositions),
-        createServiceFetcher(getAllProgramStudies, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createServiceFetcher(getAllProvinces, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
-        createServiceFetcher(getAllReligions, setReligions, setApiErrorReligions, setIsLoadingReligions),
+        createServiceFetcher(getAgeAll, setAges, setApiErrorAges, setIsLoadingAges),
+        createServiceFetcher(getHeightAll, setHeights, setApiErrorHeights, setIsLoadingHeights),
+        createServiceFetcher(getWeightAll, setWeights, setApiErrorWeights, setIsLoadingWeights),
+        createServiceFetcher(getJobTypeAll, setJobTypes, setApiErrorJobTypes, setIsLoadingJobTypes),
+        createServiceFetcher(getIpkAll, setIpks, setApiErrorIpks, setIsLoadingIpks),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getExperienceAll, setExperiences, setApiErrorExperiences, setIsLoadingExperiences),
+        createServiceFetcher(getGenderAll, setGenders, setApiErrorGenders, setIsLoadingGenders),
+        createServiceFetcher(getMaritalStatusAll, setMaritalStatuses, setApiErrorMaritalStatuses, setIsLoadingMaritalStatuses),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getPositionAll, setPositions, setApiErrorPositions, setIsLoadingPositions),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getReligionAll, setReligions, setApiErrorReligions, setIsLoadingReligions),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));

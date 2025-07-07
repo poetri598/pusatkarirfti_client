@@ -21,7 +21,7 @@ export async function createJob(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllJobs() {
+export async function getJobAll() {
   try {
     const res = await api.get<ApiResponse<JobItem[]>>("/jobs");
     if (res.data.status === "success") {

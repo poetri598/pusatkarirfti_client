@@ -19,7 +19,7 @@ export async function createMaritalStatus(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllMaritalStatuses() {
+export async function getMaritalStatusAll() {
   try {
     const res = await api.get<ApiResponse<MaritalStatusItem[]>>("/marital-statuses");
     if (res.data.status === "success") {

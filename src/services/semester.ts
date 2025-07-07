@@ -19,7 +19,7 @@ export async function createSemester(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllSemesters() {
+export async function getSemesterAll() {
   try {
     const res = await api.get<ApiResponse<SemesterItem[]>>("/semesters");
     if (res.data.status === "success") {

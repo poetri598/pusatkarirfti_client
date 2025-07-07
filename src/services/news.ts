@@ -21,7 +21,7 @@ export async function createNews(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllNews() {
+export async function getNewsAll() {
   try {
     const res = await api.get<ApiResponse<NewsItem[]>>("/news");
     if (res.data.status === "success") {

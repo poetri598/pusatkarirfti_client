@@ -19,7 +19,7 @@ export async function createPosition(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllPositions() {
+export async function getPositionAll() {
   try {
     const res = await api.get<ApiResponse<PositionItem[]>>("/positions");
     if (res.data.status === "success") {

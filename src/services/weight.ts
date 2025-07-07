@@ -19,7 +19,7 @@ export async function createWeight(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllWeights() {
+export async function getWeightAll() {
   try {
     const res = await api.get<ApiResponse<WeightItem[]>>("/weights");
     if (res.data.status === "success") {

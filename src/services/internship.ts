@@ -21,7 +21,7 @@ export async function createInternship(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllInternships() {
+export async function getInternshipAll() {
   try {
     const res = await api.get<ApiResponse<InternshipItem[]>>("/internships");
     if (res.data.status === "success") {

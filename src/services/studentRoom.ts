@@ -19,7 +19,7 @@ export async function createStudentRoom(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllStudentRooms() {
+export async function getStudentRoomAll() {
   try {
     const res = await api.get<ApiResponse<StudentRoomItem[]>>("/student-rooms");
     if (res.data.status === "success") {

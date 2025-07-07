@@ -21,7 +21,7 @@ export async function createCounseling(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllCounselings() {
+export async function getCounselingAll() {
   try {
     const res = await api.get<ApiResponse<CounselingItem[]>>("/counselings");
     if (res.data.status === "success") {

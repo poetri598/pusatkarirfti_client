@@ -19,7 +19,7 @@ export async function createReligion(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllReligions() {
+export async function getReligionAll() {
   try {
     const res = await api.get<ApiResponse<ReligionItem[]>>("/religions");
     if (res.data.status === "success") {

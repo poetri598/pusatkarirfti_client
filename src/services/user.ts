@@ -54,6 +54,28 @@ export async function getUserById(user_id: number | string) {
   }
 }
 
+// ✅ UPDATE BY ID
+export async function updateUserById(user_id: number, payload: FormData) {
+  try {
+    const res = await api.put<ApiResponse<null>>(`/users/${user_id}`, payload, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (res.data.status === "success") {
+      const userRes = await api.get<ApiResponse<UserItem>>(`/users/${user_id}`);
+      if (userRes.data.status === "success") {
+        updateStoredUser(userRes.data.data);
+      }
+      return { success: true };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal memperbarui user"),
+    };
+  }
+}
+
 // ✅ DELETE USER BY ID
 export async function deleteUserById(user_id: number | string) {
   try {
@@ -82,6 +104,22 @@ export async function getUserByUsername(user_name: string) {
     return {
       success: false,
       error: extractErrorMessage(err, "Gagal mengambil data user berdasarkan username"),
+    };
+  }
+}
+
+// ✅ GET ALL USERS ADMIN
+export async function getUserAllAdmin() {
+  try {
+    const res = await api.get<ApiResponse<UserItem[]>>("/users/admin");
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mengambil semua data user"),
     };
   }
 }

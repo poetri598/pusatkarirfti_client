@@ -36,11 +36,10 @@ export default function PageBeritaDetail({ news_slug }: { news_slug: string }) {
 
   if (loading)
     return (
-      <div className="xs:p-0 md:p-8  flex flex-col xs:gap-2 md:gap-8 overflow-hidden">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
         <Spinner
-          label="Sedang memuat data..."
-          labelColor="primary"
-          variant="dots"
+          label="Loading..."
+          variant="wave"
           classNames={{
             label: "text-primary-primary mt-4",
             dots: "border-5 border-primary-primary",
@@ -48,8 +47,12 @@ export default function PageBeritaDetail({ news_slug }: { news_slug: string }) {
         />
       </div>
     );
-  if (!news) return <p>Data tidak ditemukan.</p>;
-
+  if (!news)
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+        <p>Data tidak ditemukan.</p>
+      </div>
+    );
   return (
     <main className="xs:p-0 md:p-8  flex flex-col xs:gap-2 md:gap-8 overflow-hidden">
       <section className="flex flex-col xs:gap-2 md:gap-8">

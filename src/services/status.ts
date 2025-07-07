@@ -19,7 +19,7 @@ export async function createStatus(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllStatuses() {
+export async function getStatusAll() {
   try {
     const res = await api.get<ApiResponse<StatusItem[]>>("/statuses");
     if (res.data.status === "success") {

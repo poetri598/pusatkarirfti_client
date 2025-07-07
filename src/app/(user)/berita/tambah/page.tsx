@@ -2,45 +2,60 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+// Iconsax
 import { Camera } from "iconsax-react";
 
+// Components
 import { Breadcrumbs, BreadcrumbItem, Form, Input, Button, Select, SelectItem, Selection, Spinner } from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 import RichTextEditor from "@/components/Custom/RichTextEditor";
 
-import { createFetcher } from "@/utils/createFetcher";
+// Context
+import { useAuth } from "@/context/AuthContext";
+
+// Types
 import { NewsTypeItem } from "@/types/newsType";
 
+// Services
+import { StatusItem } from "@/types/status";
+import { getNewsTypeAll } from "@/services/newsType";
+import { getStatusAll } from "@/services/status";
 import { createNews } from "@/services/news";
-import { useAuth } from "@/context/AuthContext";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
+import { appendSingle } from "@/utils/formDataHelpers";
 
 export default function page() {
   const router = useRouter();
   const { user } = useAuth();
   // newsTypes
   const [newsTypes, setNewsTypes] = useState<NewsTypeItem[]>([]);
+  const [news_type_id, setNewsTypeId] = useState<Selection>(new Set([]));
   const [isLoadingNewsTypes, setIsLoadingNewsTypes] = useState(true);
   const [apiErrorNewsTypes, setApiErrorNewsTypes] = useState<string | null>(null);
+  // statuses
+  const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [status_id, setStatusId] = useState<Selection>(new Set(["1"]));
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
+  const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAll = async () => {
-      const fetchers = [createFetcher<NewsTypeItem[]>("/news-types", setNewsTypes, setApiErrorNewsTypes, setIsLoadingNewsTypes)];
-
+      const fetchers = [createServiceFetcher(getNewsTypeAll, setNewsTypes, setApiErrorNewsTypes, setIsLoadingNewsTypes), createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses)];
       await Promise.all(fetchers.map((fetch) => fetch()));
     };
-
     fetchAll();
   }, []);
 
-  // Image
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [news_img, setnewsImg] = useState<string>("/tambah-bg.png"); // preview
   const [news_img_file, setnewsImgFile] = useState<File | null>(null); // file asli
   const [news_name, setNewsName] = useState<string>("");
   const [news_desc, setNewsDesc] = useState<string>("");
   const [news_tags, setNewsTags] = useState<string>("");
-  const [news_type_id, setNewsTypeId] = useState<Selection>(new Set([]));
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,56 +66,56 @@ export default function page() {
       showErrorDialog("Ukuran gambar tidak boleh lebih dari 5MB.");
       return;
     }
-    // Simpan file untuk dikirim
     setnewsImgFile(file);
-    // Simpan preview (string base64)
     const reader = new FileReader();
     reader.onloadend = () => {
       setnewsImg(reader.result as string);
     };
     reader.readAsDataURL(file);
   };
+
   const handleIconClick = () => {
     fileInputRef.current?.click();
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
-
+    setLoading(true);
     const formData = new FormData();
-
-    // Form values
-    formData.append("user_id", String(user?.user_id));
     formData.append("news_name", news_name);
+    if (news_img_file) formData.append("news_img", news_img_file);
     formData.append("news_desc", news_desc);
     formData.append("news_tags", news_tags);
-
-    if (news_type_id instanceof Set && news_type_id.size > 0) {
-      formData.append("news_type_id", String(Array.from(news_type_id)[0]));
-    }
-
-    // File
-    if (news_img_file) {
-      formData.append("news_img", news_img_file);
-    }
-
-    // Kirim ke server
+    appendSingle(formData, "news_type_id", news_type_id);
+    appendSingle(formData, "status_id", status_id);
+    formData.append("user_id", String(user?.user_id));
     const { success, error } = await createNews(formData);
-
     if (success) {
       await showSuccessDialog();
       router.push("/berita");
     } else {
       await showErrorDialog(error);
     }
+    setLoading(false);
   };
   return (
     <>
       <>
         <main className="xs:p-0 md:p-8  flex flex-col xs:gap-2 md:gap-8 overflow-hidden">
+          {loading && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+              <Spinner
+                label="Loading..."
+                variant="wave"
+                classNames={{
+                  label: "text-primary-primary mt-4",
+                  dots: "border-5 border-primary-primary",
+                }}
+              />
+            </div>
+          )}
           {/*  Breadcrumb */}
           <Breadcrumbs
             className="text-xs text-text-secondary"
@@ -166,7 +181,7 @@ export default function page() {
             />
 
             {/* news_desc  */}
-            <RichTextEditor key={news_desc} value={news_desc} onChange={setNewsDesc} placeholder="Masukkan deskripsi magang" />
+            <RichTextEditor key={news_desc} value={news_desc} onChange={setNewsDesc} placeholder="Masukkan deskripsi berita" />
 
             {/* news_tags  */}
             <Input
@@ -230,6 +245,58 @@ export default function page() {
                       }}
                     >
                       {item.news_type_name}
+                    </SelectItem>
+                  ))
+                )}
+              </Select>
+            )}
+
+            {/* Status */}
+            {isLoadingStatuses ? (
+              <div className="w-full flex justify-center items-center py-8">
+                <Spinner
+                  label="Sedang memuat data..."
+                  labelColor="primary"
+                  variant="dots"
+                  classNames={{
+                    label: "text-primary-primary mt-4",
+                    dots: "border-5 border-primary-primary",
+                  }}
+                />
+              </div>
+            ) : apiErrorStatuses ? (
+              <p className="text-start text-xs text-danger-primary">{apiErrorStatuses}</p>
+            ) : (
+              <Select
+                isRequired
+                label="Pilih status publikasi"
+                labelPlacement="outside"
+                variant="bordered"
+                name="status_id"
+                selectedKeys={status_id}
+                onSelectionChange={setStatusId}
+                classNames={{
+                  base: "hidden",
+                  label: "after:text-danger-primary text-xs text-text-secondary",
+                  trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                  value: "text-xs",
+                  errorMessage: "text-danger-primary text-xs",
+                }}
+              >
+                {statuses.length === 0 ? (
+                  <SelectItem key="nodata" isDisabled>
+                    Data belum tersedia
+                  </SelectItem>
+                ) : (
+                  statuses.map((item) => (
+                    <SelectItem
+                      key={item.status_id}
+                      classNames={{
+                        title: "text-xs hover:!text-primary-primary",
+                        selectedIcon: "text-primary-primary",
+                      }}
+                    >
+                      {item.status_name}
                     </SelectItem>
                   ))
                 )}

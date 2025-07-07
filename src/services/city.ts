@@ -21,7 +21,7 @@ export async function createCity(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllCities() {
+export async function getCityAll() {
   try {
     const res = await api.get<ApiResponse<CityItem[]>>("/cities");
     if (res.data.status === "success") {

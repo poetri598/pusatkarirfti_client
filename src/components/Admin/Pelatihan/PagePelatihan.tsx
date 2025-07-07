@@ -4,16 +4,38 @@ import { useState, useEffect } from "react";
 import { SearchNormal1, ArrowRight2, FilterEdit, Sort, Element3, Firstline, Eye, Edit, Trash } from "iconsax-react";
 
 // Components
-import { Breadcrumbs, BreadcrumbItem, Input, NumberInput, Pagination, Button, Spinner, Select, SelectItem, Avatar, Tooltip, Link, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@heroui/react";
+import {
+  Breadcrumbs,
+  BreadcrumbItem,
+  Input,
+  NumberInput,
+  Pagination,
+  Button,
+  Spinner,
+  Select,
+  SelectItem,
+  Selection,
+  Avatar,
+  Tooltip,
+  Link,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  getKeyValue,
+} from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
 import CardPelatihanAdmin from "@/components/Card/CardPelatihanAdmin";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
-import { getRelativeTimeRaw } from "@/utils/time";
-import { formatViews } from "@/utils/view";
 
-import { createFetcher } from "@/utils/createFetcher";
+// Types
+import { TrainingItem } from "@/types/training";
 import { TrainingTypeItem } from "@/types/trainingType";
 import { CompanyItem } from "@/types/company";
+import { UserItem } from "@/types/user";
+import { StatusItem } from "@/types/status";
 import { CityItem } from "@/types/city";
 import { CountryItem } from "@/types/country";
 import { EducationItem } from "@/types/education";
@@ -22,50 +44,88 @@ import { ProgramStudyItem } from "@/types/programStudy";
 import { ProvinceItem } from "@/types/province";
 import { SemesterItem } from "@/types/semester";
 import { SkillItem } from "@/types/skill";
+
+// Services
+import { getTrainingTypeAll } from "@/services/trainingType";
+import { getCompanyAll } from "@/services/company";
+import { getUserAllAdmin } from "@/services/user";
+import { getStatusAll } from "@/services/status";
+import { getCityAll } from "@/services/city";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getModeAll } from "@/services/mode";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+import { getSemesterAll } from "@/services/semester";
+import { getSkillAll } from "@/services/skill";
 import { searchTrainings, deleteTrainingById } from "@/services/training";
-import { TrainingItem } from "@/types/training";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
+import { formatViews } from "@/utils/view";
+import { getRelativeTimeRaw } from "@/utils/time";
 
 export default function PagePelatihan() {
-  // trainingTypes
-  const [trainingTypes, setTrainingTypes] = useState<TrainingTypeItem[]>([]);
-  const [isLoadingTrainingTypes, setIsLoadingTrainingTypes] = useState(true);
-  const [apiErrorTrainingTypes, setApiErrorTrainingTypes] = useState<string | null>(null);
   // companies
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
+  const [company_id, setCompanyId] = useState<Selection>(new Set([]));
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
   const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
+  // users
+  const [users, setUsers] = useState<UserItem[]>([]);
+  const [user_id, setUserId] = useState<Selection>(new Set([]));
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [apiErrorUsers, setApiErrorUsers] = useState<string | null>(null);
+  // statuses
+  const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [status_id, setStatusId] = useState<Selection>(new Set(["1"]));
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
+  const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
   // cities
   const [cities, setCities] = useState<CityItem[]>([]);
+  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
   // countries
   const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
   const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
   // educations
   const [educations, setEducations] = useState<EducationItem[]>([]);
+  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
   const [isLoadingEducations, setIsLoadingEducations] = useState(true);
   const [apiErrorEducations, setApiErrorEducations] = useState<string | null>(null);
   // modes
   const [modes, setModes] = useState<ModeItem[]>([]);
+  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
   const [isLoadingModes, setIsLoadingModes] = useState(true);
   const [apiErrorModes, setApiErrorModes] = useState<string | null>(null);
   // programStudies
   const [programStudies, setProgramStudies] = useState<ProgramStudyItem[]>([]);
+  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
   const [isLoadingProgramStudies, setIsLoadingProgramStudies] = useState(true);
   const [apiErrorProgramStudies, setApiErrorProgramStudies] = useState<string | null>(null);
   // provinces
   const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
   const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
   const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
   // semesters
   const [semesters, setSemesters] = useState<SemesterItem[]>([]);
+  const [semester_ids, setSemesterIds] = useState<Selection>(new Set([]));
   const [isLoadingSemesters, setIsLoadingSemesters] = useState(true);
   const [apiErrorSemesters, setApiErrorSemesters] = useState<string | null>(null);
   // skills
   const [skills, setSkills] = useState<SkillItem[]>([]);
+  const [skill_ids, setSkillIds] = useState<Selection>(new Set([]));
   const [isLoadingSkills, setIsLoadingSkills] = useState(true);
   const [apiErrorSkills, setApiErrorSkills] = useState<string | null>(null);
+  // trainingTypes
+  const [trainingTypes, setTrainingTypes] = useState<TrainingTypeItem[]>([]);
+  const [training_type_ids, setTrainingTypeIds] = useState<Selection>(new Set([]));
+  const [isLoadingTrainingTypes, setIsLoadingTrainingTypes] = useState(true);
+  const [apiErrorTrainingTypes, setApiErrorTrainingTypes] = useState<string | null>(null);
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const [sort, setSort] = useState<string>("");
@@ -88,16 +148,18 @@ export default function PagePelatihan() {
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createFetcher<TrainingTypeItem[]>("/training-types", setTrainingTypes, setApiErrorTrainingTypes, setIsLoadingTrainingTypes),
-        createFetcher<CompanyItem[]>("/companies", setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createFetcher<CityItem[]>("/cities", setCities, setApiErrorCities, setIsLoadingCities),
-        createFetcher<CountryItem[]>("/countries", setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createFetcher<EducationItem[]>("/educations", setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createFetcher<ModeItem[]>("/modes", setModes, setApiErrorModes, setIsLoadingModes),
-        createFetcher<ProgramStudyItem[]>("/program-studies", setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createFetcher<ProvinceItem[]>("/provinces", setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
-        createFetcher<SemesterItem[]>("/semesters", setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
-        createFetcher<SkillItem[]>("/skills", setSkills, setApiErrorSkills, setIsLoadingSkills),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getUserAllAdmin, setUsers, setApiErrorUsers, setIsLoadingUsers),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getSemesterAll, setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
+        createServiceFetcher(getSkillAll, setSkills, setApiErrorSkills, setIsLoadingSkills),
+        createServiceFetcher(getTrainingTypeAll, setTrainingTypes, setApiErrorTrainingTypes, setIsLoadingTrainingTypes),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));
@@ -133,8 +195,9 @@ export default function PagePelatihan() {
   }, [searchKeyword, sort, filters]);
 
   const selecItem = [
-    { key: "training_type_id", label: "Tipe" },
     { key: "company_id", label: "Perusahaan" },
+    { key: "user_id", label: "Penulis" },
+    { key: "status_id", label: "Status" },
     { key: "city_id", label: "Kota" },
     { key: "country_id", label: "Negara" },
     { key: "education_id", label: "Jenjang Pendidikan" },
@@ -143,6 +206,7 @@ export default function PagePelatihan() {
     { key: "province_id", label: "Provinsi" },
     { key: "semester_id", label: "Semester" },
     { key: "skill_id", label: "Skill" },
+    { key: "training_type_id", label: "Tipe" },
   ];
 
   const sortOptions = [
@@ -291,45 +355,6 @@ export default function PagePelatihan() {
       </section>
 
       <section className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4  w-full">
-        {/* training_type_id */}
-        {selectedFilters.has("training_type_id") && (
-          <Select
-            label="Pilih tipe"
-            labelPlacement="outside"
-            variant="bordered"
-            name="training_type_id"
-            selectedKeys={new Set([filters.training_type_id || ""])}
-            onSelectionChange={(key) => {
-              const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, training_type_id: value }));
-            }}
-            classNames={{
-              label: "after:text-danger-primary text-xs text-text-secondary",
-              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-              value: "text-xs",
-              errorMessage: "text-danger-primary text-xs",
-            }}
-          >
-            {trainingTypes.length === 0 ? (
-              <SelectItem key="nodata" isDisabled>
-                Data belum tersedia
-              </SelectItem>
-            ) : (
-              trainingTypes.map((item) => (
-                <SelectItem
-                  key={item.training_type_id}
-                  classNames={{
-                    title: "text-xs hover:!text-primary-primary",
-                    selectedIcon: "text-primary-primary",
-                  }}
-                >
-                  {item.training_type_name}
-                </SelectItem>
-              ))
-            )}
-          </Select>
-        )}
-
         {/* company_id */}
         {selectedFilters.has("company_id") && (
           <Select
@@ -373,6 +398,98 @@ export default function PagePelatihan() {
               >
                 {company.company_name}
               </SelectItem>
+            )}
+          </Select>
+        )}
+
+        {/* user_id */}
+        {selectedFilters.has("user_id") && (
+          <Select
+            isMultiline={true}
+            items={users}
+            label="Pilih nama peserta"
+            labelPlacement="outside"
+            variant="bordered"
+            name="user_id"
+            renderValue={(items) => (
+              <div className="flex flex-wrap gap-2">
+                {items.map((item) => (
+                  <div key={item.data?.user_id} className="flex items-center gap-2">
+                    <Avatar alt={item.data?.user_fullname} className="w-6 h-6" src={item.data?.user_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                    <div className="flex flex-col">
+                      <span className="text-xs">{item.data?.user_fullname}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            selectedKeys={new Set([filters.user_id || ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, user_id: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary",
+            }}
+          >
+            {(user) => (
+              <SelectItem
+                key={user.user_id}
+                textValue={user.user_name}
+                classNames={{
+                  title: "text-xs hover:!text-primary-primary",
+                  selectedIcon: "text-primary-primary",
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <Avatar alt={user.user_fullname} className="w-6 h-6" src={user.user_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                  <div className="flex flex-col">
+                    <span className="text-xs">{user.user_fullname}</span>
+                  </div>
+                </div>
+              </SelectItem>
+            )}
+          </Select>
+        )}
+
+        {/* status_id */}
+        {selectedFilters.has("status_id") && (
+          <Select
+            label="Pilih status publikasi"
+            labelPlacement="outside"
+            variant="bordered"
+            name="status_id"
+            selectedKeys={new Set([filters.status_id || ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, status_id: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs text-text-secondary",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary text-xs",
+            }}
+          >
+            {statuses.length === 0 ? (
+              <SelectItem key="nodata" isDisabled>
+                Data belum tersedia
+              </SelectItem>
+            ) : (
+              statuses.map((item) => (
+                <SelectItem
+                  key={item.status_id}
+                  classNames={{
+                    title: "text-xs hover:!text-primary-primary",
+                    selectedIcon: "text-primary-primary",
+                  }}
+                >
+                  {item.status_name}
+                </SelectItem>
+              ))
             )}
           </Select>
         )}
@@ -683,6 +800,45 @@ export default function PagePelatihan() {
                   }}
                 >
                   {item.skill_name}
+                </SelectItem>
+              ))
+            )}
+          </Select>
+        )}
+
+        {/* training_type_id */}
+        {selectedFilters.has("training_type_id") && (
+          <Select
+            label="Pilih tipe"
+            labelPlacement="outside"
+            variant="bordered"
+            name="training_type_id"
+            selectedKeys={new Set([filters.training_type_id || ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, training_type_id: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs text-text-secondary",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary text-xs",
+            }}
+          >
+            {trainingTypes.length === 0 ? (
+              <SelectItem key="nodata" isDisabled>
+                Data belum tersedia
+              </SelectItem>
+            ) : (
+              trainingTypes.map((item) => (
+                <SelectItem
+                  key={item.training_type_id}
+                  classNames={{
+                    title: "text-xs hover:!text-primary-primary",
+                    selectedIcon: "text-primary-primary",
+                  }}
+                >
+                  {item.training_type_name}
                 </SelectItem>
               ))
             )}

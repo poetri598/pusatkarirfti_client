@@ -2,17 +2,22 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+// Iconsax
 import { Camera, Building, Link21 } from "iconsax-react";
 
-import { Breadcrumbs, BreadcrumbItem, Form, Input, Button, Select, SelectItem, Selection, NumberInput, DatePicker, Avatar } from "@heroui/react";
+// Components
+import { Breadcrumbs, BreadcrumbItem, Form, Input, Button, Select, SelectItem, Selection, NumberInput, DatePicker, Avatar, Spinner } from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
-import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 import RichTextEditor from "@/components/Custom/RichTextEditor";
 
-import { createFetcher } from "@/utils/createFetcher";
+// Context
+import { useAuth } from "@/context/AuthContext";
+
+// Types
 import { TrainingTypeItem } from "@/types/trainingType";
 import { CompanyItem } from "@/types/company";
+import { StatusItem } from "@/types/status";
 import { CityItem } from "@/types/city";
 import { CountryItem } from "@/types/country";
 import { EducationItem } from "@/types/education";
@@ -21,54 +26,106 @@ import { ProgramStudyItem } from "@/types/programStudy";
 import { ProvinceItem } from "@/types/province";
 import { SemesterItem } from "@/types/semester";
 import { SkillItem } from "@/types/skill";
-import { Spinner } from "@heroui/react";
 
+// Services
+import { getTrainingTypeAll } from "@/services/trainingType";
+import { getCompanyAll } from "@/services/company";
+import { getStatusAll } from "@/services/status";
+import { getCityAll } from "@/services/city";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getModeAll } from "@/services/mode";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+import { getSemesterAll } from "@/services/semester";
+import { getSkillAll } from "@/services/skill";
 import { createTraining } from "@/services/training";
-import { useAuth } from "@/context/AuthContext";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
+import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
+import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
 
 export default function page() {
   const router = useRouter();
   const { user } = useAuth();
-  // trainingTypes
-  const [trainingTypes, setTrainingTypes] = useState<TrainingTypeItem[]>([]);
-  const [isLoadingTrainingTypes, setIsLoadingTrainingTypes] = useState(true);
-  const [apiErrorTrainingTypes, setApiErrorTrainingTypes] = useState<string | null>(null);
   // companies
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
+  const [company_id, setCompanyId] = useState<Selection>(new Set([]));
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
   const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
+  // statuses
+  const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [status_id, setStatusId] = useState<Selection>(new Set(["1"]));
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
+  const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
   // cities
   const [cities, setCities] = useState<CityItem[]>([]);
+  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
   // countries
   const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
   const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
   // educations
   const [educations, setEducations] = useState<EducationItem[]>([]);
+  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
   const [isLoadingEducations, setIsLoadingEducations] = useState(true);
   const [apiErrorEducations, setApiErrorEducations] = useState<string | null>(null);
   // modes
   const [modes, setModes] = useState<ModeItem[]>([]);
+  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
   const [isLoadingModes, setIsLoadingModes] = useState(true);
   const [apiErrorModes, setApiErrorModes] = useState<string | null>(null);
   // programStudies
   const [programStudies, setProgramStudies] = useState<ProgramStudyItem[]>([]);
+  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
   const [isLoadingProgramStudies, setIsLoadingProgramStudies] = useState(true);
   const [apiErrorProgramStudies, setApiErrorProgramStudies] = useState<string | null>(null);
   // provinces
   const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
   const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
   const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
   // semesters
   const [semesters, setSemesters] = useState<SemesterItem[]>([]);
+  const [semester_ids, setSemesterIds] = useState<Selection>(new Set([]));
   const [isLoadingSemesters, setIsLoadingSemesters] = useState(true);
   const [apiErrorSemesters, setApiErrorSemesters] = useState<string | null>(null);
   // skills
   const [skills, setSkills] = useState<SkillItem[]>([]);
+  const [skill_ids, setSkillIds] = useState<Selection>(new Set([]));
   const [isLoadingSkills, setIsLoadingSkills] = useState(true);
   const [apiErrorSkills, setApiErrorSkills] = useState<string | null>(null);
+  // trainingTypes
+  const [trainingTypes, setTrainingTypes] = useState<TrainingTypeItem[]>([]);
+  const [training_type_ids, setTrainingTypeIds] = useState<Selection>(new Set([]));
+  const [isLoadingTrainingTypes, setIsLoadingTrainingTypes] = useState(true);
+  const [apiErrorTrainingTypes, setApiErrorTrainingTypes] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      const fetchers = [
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getSemesterAll, setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
+        createServiceFetcher(getSkillAll, setSkills, setApiErrorSkills, setIsLoadingSkills),
+        createServiceFetcher(getTrainingTypeAll, setTrainingTypes, setApiErrorTrainingTypes, setIsLoadingTrainingTypes),
+      ];
+
+      await Promise.all(fetchers.map((fetch) => fetch()));
+    };
+
+    fetchAll();
+  }, []);
 
   // Image
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -82,37 +139,8 @@ export default function page() {
   const [training_date, setTrainingDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
   const [training_open_date, setTrainingOpenDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
   const [training_close_date, setTrainingCloseDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
-  const [training_type_ids, setTrainingTypeIds] = useState<Selection>(new Set([]));
-  const [company_id, setCompanyId] = useState<Selection>(new Set([]));
-  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
-  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
-  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
-  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
-  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
-  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
-  const [semester_ids, setSemesterIds] = useState<Selection>(new Set([]));
-  const [skill_ids, setSkillIds] = useState<Selection>(new Set([]));
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      const fetchers = [
-        createFetcher<TrainingTypeItem[]>("training-types", setTrainingTypes, setApiErrorTrainingTypes, setIsLoadingTrainingTypes),
-        createFetcher<CompanyItem[]>("/companies", setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createFetcher<CityItem[]>("/cities", setCities, setApiErrorCities, setIsLoadingCities),
-        createFetcher<CountryItem[]>("/countries", setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createFetcher<EducationItem[]>("/educations", setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createFetcher<ModeItem[]>("/modes", setModes, setApiErrorModes, setIsLoadingModes),
-        createFetcher<ProgramStudyItem[]>("/program-studies", setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createFetcher<ProvinceItem[]>("/provinces", setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
-        createFetcher<SemesterItem[]>("/semesters", setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
-        createFetcher<SkillItem[]>("/skills", setSkills, setApiErrorSkills, setIsLoadingSkills),
-      ];
-
-      await Promise.all(fetchers.map((fetch) => fetch()));
-    };
-
-    fetchAll();
-  }, []);
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -123,9 +151,7 @@ export default function page() {
       showErrorDialog("Ukuran gambar tidak boleh lebih dari 5MB.");
       return;
     }
-    // Simpan file untuk dikirim
     setTrainingImgFile(file);
-    // Simpan preview (string base64)
     const reader = new FileReader();
     reader.onloadend = () => {
       setTrainingImg(reader.result as string);
@@ -138,92 +164,57 @@ export default function page() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
-
+    setLoading(true);
     const formData = new FormData();
-
-    // Form values
-    formData.append("user_id", String(user?.user_id));
     formData.append("training_name", training_name);
+    if (training_img_file) formData.append("training_img", training_img_file);
     formData.append("training_desc", training_desc);
     formData.append("training_location", training_location);
     formData.append("training_link", training_link);
+    if (training_date) formData.append("training_date", training_date.toAbsoluteString());
+    if (training_open_date) formData.append("training_open_date", training_open_date.toAbsoluteString());
+    if (training_close_date) formData.append("training_close_date", training_close_date.toAbsoluteString());
     formData.append("training_price", String(training_price));
-
-    // Dates
-    if (training_date) {
-      formData.append("training_date", training_date.toAbsoluteString());
-    }
-    if (training_open_date) {
-      formData.append("training_open_date", training_open_date.toAbsoluteString());
-    }
-    if (training_close_date) {
-      formData.append("training_close_date", training_close_date.toAbsoluteString());
-    }
-
-    // --- SINGLE: training_type_id, company_id, ipk_id
-    if (company_id instanceof Set && company_id.size > 0) {
-      formData.append("company_id", String(Array.from(company_id)[0]));
-    }
-
-    // Multiple ID fields
-    if (training_type_ids instanceof Set) {
-      Array.from(training_type_ids).forEach((id) => formData.append("training_type_ids[]", String(id)));
-    }
-
-    if (city_ids instanceof Set) {
-      Array.from(city_ids).forEach((id) => formData.append("city_ids[]", String(id)));
-    }
-
-    if (country_ids instanceof Set) {
-      Array.from(country_ids).forEach((id) => formData.append("country_ids[]", String(id)));
-    }
-
-    if (education_ids instanceof Set) {
-      Array.from(education_ids).forEach((id) => formData.append("education_ids[]", String(id)));
-    }
-
-    if (mode_ids instanceof Set) {
-      Array.from(mode_ids).forEach((id) => formData.append("mode_ids[]", String(id)));
-    }
-
-    if (program_study_ids instanceof Set) {
-      Array.from(program_study_ids).forEach((id) => formData.append("program_study_ids[]", String(id)));
-    }
-
-    if (province_ids instanceof Set) {
-      Array.from(province_ids).forEach((id) => formData.append("province_ids[]", String(id)));
-    }
-
-    if (semester_ids instanceof Set) {
-      Array.from(semester_ids).forEach((id) => formData.append("semester_ids[]", String(id)));
-    }
-
-    if (skill_ids instanceof Set) {
-      Array.from(skill_ids).forEach((id) => formData.append("skill_ids[]", String(id)));
-    }
-
-    // File
-    if (training_img_file) {
-      formData.append("training_img", training_img_file);
-    }
-
-    // Kirim ke server
+    appendSingle(formData, "company_id", company_id);
+    formData.append("user_id", String(user?.user_id));
+    appendSingle(formData, "status_id", status_id);
+    appendMultiple(formData, "city_ids", city_ids);
+    appendMultiple(formData, "country_ids", country_ids);
+    appendMultiple(formData, "education_ids", education_ids);
+    appendMultiple(formData, "mode_ids", mode_ids);
+    appendMultiple(formData, "program_study_ids", program_study_ids);
+    appendMultiple(formData, "province_ids", province_ids);
+    appendMultiple(formData, "semester_ids", semester_ids);
+    appendMultiple(formData, "skill_ids", skill_ids);
+    appendMultiple(formData, "training_type_ids", training_type_ids);
     const { success, error } = await createTraining(formData);
-
+    setLoading(true);
     if (success) {
       await showSuccessDialog();
       router.push("/pelatihan");
     } else {
       await showErrorDialog(error);
     }
+    setLoading(false);
   };
   return (
     <>
       <>
         <main className="xs:p-0 md:p-8  flex flex-col xs:gap-2 md:gap-8 overflow-hidden">
+          {loading && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+              <Spinner
+                label="Loading..."
+                variant="wave"
+                classNames={{
+                  label: "text-primary-primary mt-4",
+                  dots: "border-5 border-primary-primary",
+                }}
+              />
+            </div>
+          )}
           {/*  Breadcrumb */}
           <Breadcrumbs
             className="text-xs text-text-secondary"
@@ -731,7 +722,7 @@ export default function page() {
                           selectedIcon: "text-primary-primary",
                         }}
                       >
-                        {`Semester ${item.semester_no}`}
+                        {item.semester_no}
                       </SelectItem>
                     ))
                   )}
@@ -955,6 +946,58 @@ export default function page() {
                         }}
                       >
                         {item.mode_name}
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
+              {/* Status */}
+              {isLoadingStatuses ? (
+                <div className="w-full flex justify-center items-center py-8">
+                  <Spinner
+                    label="Sedang memuat data..."
+                    labelColor="primary"
+                    variant="dots"
+                    classNames={{
+                      label: "text-primary-primary mt-4",
+                      dots: "border-5 border-primary-primary",
+                    }}
+                  />
+                </div>
+              ) : apiErrorStatuses ? (
+                <p className="text-start text-xs text-danger-primary">{apiErrorStatuses}</p>
+              ) : (
+                <Select
+                  isRequired
+                  label="Pilih status publikasi"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="status_id"
+                  selectedKeys={status_id}
+                  onSelectionChange={setStatusId}
+                  classNames={{
+                    base: "hidden",
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {statuses.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    statuses.map((item) => (
+                      <SelectItem
+                        key={item.status_id}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.status_name}
                       </SelectItem>
                     ))
                   )}

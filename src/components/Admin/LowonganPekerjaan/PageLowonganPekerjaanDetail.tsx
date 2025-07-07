@@ -1,13 +1,22 @@
 "use client";
 import React, { useState, useEffect } from "react";
+
+// Iconsax
 import { Calendar, Eye, Building } from "iconsax-react";
+
+// Components
 import { Avatar, Breadcrumbs, BreadcrumbItem, Image, Tooltip, Snippet, Spinner } from "@heroui/react";
-import { getRelativeTimeRaw, getFullTimeRaw } from "@/utils/time";
-import { JobItem } from "@/types/job";
-import { formatViews } from "@/utils/view";
 import RichTextDisplay from "@/components/Custom/RichTextDisplay";
 
+// Types
+import { JobItem } from "@/types/job";
+
+// Services
 import { getJobBySlug, incrementJobView } from "@/services/job";
+
+// Utils
+import { getRelativeTimeRaw, getFullTimeRaw } from "@/utils/time";
+import { formatViews } from "@/utils/view";
 
 export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: string }) {
   const [job, setJob] = useState<JobItem | null>(null);
@@ -37,11 +46,10 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
 
   if (loading)
     return (
-      <div className="w-full flex justify-center items-center py-8">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
         <Spinner
-          label="Sedang memuat data..."
-          labelColor="primary"
-          variant="dots"
+          label="Loading..."
+          variant="wave"
           classNames={{
             label: "text-primary-primary mt-4",
             dots: "border-5 border-primary-primary",
@@ -49,7 +57,13 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
         />
       </div>
     );
-  if (!job) return <p>Data tidak ditemukan.</p>;
+
+  if (!job)
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+        <p>Data tidak ditemukan.</p>
+      </div>
+    );
 
   const relativeDate = getRelativeTimeRaw(job.job_created_at);
   const fullDate = getFullTimeRaw(job.job_created_at);

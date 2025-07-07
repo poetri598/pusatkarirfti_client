@@ -19,7 +19,7 @@ export async function createProgramStudy(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllProgramStudies() {
+export async function getProgramStudyAll() {
   try {
     const res = await api.get<ApiResponse<ProgramStudyItem[]>>("/program-studies");
     if (res.data.status === "success") {

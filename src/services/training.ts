@@ -21,7 +21,7 @@ export async function createTraining(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllTrainings() {
+export async function getTrainingAll() {
   try {
     const res = await api.get<ApiResponse<TrainingItem[]>>("/trainings");
     if (res.data.status === "success") {

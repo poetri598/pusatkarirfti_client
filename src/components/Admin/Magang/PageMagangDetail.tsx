@@ -37,11 +37,10 @@ export default function PageLowonganMagangDetail({ internship_slug }: { internsh
 
   if (loading)
     return (
-      <div className="w-full flex justify-center items-center py-8">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
         <Spinner
-          label="Sedang memuat data..."
-          labelColor="primary"
-          variant="dots"
+          label="Loading..."
+          variant="wave"
           classNames={{
             label: "text-primary-primary mt-4",
             dots: "border-5 border-primary-primary",
@@ -49,7 +48,12 @@ export default function PageLowonganMagangDetail({ internship_slug }: { internsh
         />
       </div>
     );
-  if (!internship) return <p>Data tidak ditemukan.</p>;
+  if (!internship)
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+        <p>Data tidak ditemukan.</p>
+      </div>
+    );
 
   const relativeDate = getRelativeTimeRaw(internship.internship_created_at);
   const fullDate = getFullTimeRaw(internship.internship_created_at);

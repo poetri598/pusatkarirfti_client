@@ -22,7 +22,7 @@ export async function createCounselingType(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllCounselingTypes() {
+export async function getCounselingTypeAll() {
   try {
     const res = await api.get<ApiResponse<CounselingTypeItem[]>>("/counseling-types");
     if (res.data.status === "success") {

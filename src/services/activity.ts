@@ -21,7 +21,7 @@ export async function createActivity(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllActivities() {
+export async function getActivityAll() {
   try {
     const res = await api.get<ApiResponse<ActivityItem[]>>("/activities");
     if (res.data.status === "success") {

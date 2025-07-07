@@ -2,75 +2,101 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+// Iconsax
 import { Camera, Building, Link21 } from "iconsax-react";
 
-import { Breadcrumbs, BreadcrumbItem, Form, Input, Button, Select, SelectItem, Selection, NumberInput, DatePicker, Avatar } from "@heroui/react";
+// Components
+import { Breadcrumbs, BreadcrumbItem, Form, Input, Button, Select, SelectItem, Selection, NumberInput, DatePicker, Avatar, Spinner } from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
-import { ZonedDateTime, now, getLocalTimeZone, parseAbsoluteToLocal } from "@internationalized/date";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 import RichTextEditor from "@/components/Custom/RichTextEditor";
 
-import { createFetcher } from "@/utils/createFetcher";
-import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
-import { ExpoTypeItem } from "@/types/expoType";
-import { CompanyItem } from "@/types/company";
+// Context
+import { useAuth } from "@/context/AuthContext";
+
+// Types
+import { StatusItem } from "@/types/status";
 import { CityItem } from "@/types/city";
+import { CompanyItem } from "@/types/company";
 import { CountryItem } from "@/types/country";
 import { EducationItem } from "@/types/education";
+import { ExpoTypeItem } from "@/types/expoType";
 import { ModeItem } from "@/types/mode";
+import { PositionItem } from "@/types/position";
 import { ProgramStudyItem } from "@/types/programStudy";
 import { ProvinceItem } from "@/types/province";
-import { PositionItem } from "@/types/position";
-import { StatusItem } from "@/types/status";
-import { Spinner } from "@heroui/react";
 
+// Services
 import { getExpoBySlug, updateExpoById } from "@/services/expo";
-import { useAuth } from "@/context/AuthContext";
+import { getStatusAll } from "@/services/status";
+import { getCityAll } from "@/services/city";
+import { getCompanyAll } from "@/services/company";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getExpoTypeAll } from "@/services/expoType";
+import { getModeAll } from "@/services/mode";
+import { getPositionAll } from "@/services/position";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+
+// Utils
+import { ZonedDateTime, now, getLocalTimeZone, parseAbsoluteToLocal } from "@internationalized/date";
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
+import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
 
 export default function page({ expo_slug }: { expo_slug: string }) {
   const router = useRouter();
   const { user } = useAuth();
+  // statuses
+  const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [status_id, setStatusId] = useState<Selection>(new Set(["1"]));
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
+  const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
   // cities
   const [cities, setCities] = useState<CityItem[]>([]);
+  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
   // companies
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
+  const [company_ids, setCompanyIds] = useState<Selection>(new Set([]));
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
   const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
   // countries
   const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
   const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
-  // educations
-  const [educations, setEducations] = useState<EducationItem[]>([]);
-  const [isLoadingEducations, setIsLoadingEducations] = useState(true);
-  const [apiErrorEducations, setApiErrorEducations] = useState<string | null>(null);
   // expoTypes
   const [expoTypes, setExpoTypes] = useState<ExpoTypeItem[]>([]);
+  const [expo_type_ids, setExpoTypeIds] = useState<Selection>(new Set([]));
   const [isLoadingExpoTypes, setIsLoadingExpoTypes] = useState(true);
   const [apiErrorExpoTypes, setApiErrorExpoTypes] = useState<string | null>(null);
+  // educations
+  const [educations, setEducations] = useState<EducationItem[]>([]);
+  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
+  const [isLoadingEducations, setIsLoadingEducations] = useState(true);
+  const [apiErrorEducations, setApiErrorEducations] = useState<string | null>(null);
   // modes
   const [modes, setModes] = useState<ModeItem[]>([]);
+  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
   const [isLoadingModes, setIsLoadingModes] = useState(true);
   const [apiErrorModes, setApiErrorModes] = useState<string | null>(null);
-  // positions
+  // position
   const [positions, setPositions] = useState<PositionItem[]>([]);
+  const [position_ids, setPositionIds] = useState<Selection>(new Set([]));
   const [isLoadingPositions, setIsLoadingPositions] = useState(true);
   const [apiErrorPositions, setApiErrorPositions] = useState<string | null>(null);
   // programStudies
   const [programStudies, setProgramStudies] = useState<ProgramStudyItem[]>([]);
+  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
   const [isLoadingProgramStudies, setIsLoadingProgramStudies] = useState(true);
   const [apiErrorProgramStudies, setApiErrorProgramStudies] = useState<string | null>(null);
   // provinces
   const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
   const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
   const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
-  // statuses
-  const [statuses, setStatuses] = useState<StatusItem[]>([]);
-  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
-  const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Image
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -85,31 +111,24 @@ export default function page({ expo_slug }: { expo_slug: string }) {
   const [expo_date, setExpoDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
   const [expo_open_date, setExpoOpenDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
   const [expo_close_date, setExpoCloseDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
-  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
-  const [company_ids, setCompanyIds] = useState<Selection>(new Set([]));
-  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
-  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
-  const [expo_type_ids, setExpoTypeIds] = useState<Selection>(new Set([]));
-  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
-  const [position_ids, setPositionIds] = useState<Selection>(new Set([]));
-  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
-  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
-  const [status_id, setStatusId] = useState<Selection>(new Set([]));
+
+  const [loading, setLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
+    setLoading(true);
     const fetchAll = async () => {
       const fetchers = [
-        createFetcher<CityItem[]>("/cities", setCities, setApiErrorCities, setIsLoadingCities),
-        createFetcher<CompanyItem[]>("/companies", setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createFetcher<CountryItem[]>("/countries", setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createFetcher<EducationItem[]>("/educations", setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createFetcher<ExpoTypeItem[]>("expo-types", setExpoTypes, setApiErrorExpoTypes, setIsLoadingExpoTypes),
-        createFetcher<ModeItem[]>("/modes", setModes, setApiErrorModes, setIsLoadingModes),
-        createFetcher<PositionItem[]>("/positions", setPositions, setApiErrorPositions, setIsLoadingPositions),
-        createFetcher<ProgramStudyItem[]>("/program-studies", setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createFetcher<ProvinceItem[]>("/provinces", setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
-        createFetcher<StatusItem[]>("/statuses", setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getExpoTypeAll, setExpoTypes, setApiErrorExpoTypes, setIsLoadingExpoTypes),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getPositionAll, setPositions, setApiErrorPositions, setIsLoadingPositions),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));
@@ -119,29 +138,17 @@ export default function page({ expo_slug }: { expo_slug: string }) {
         await showErrorDialog(error || "Gagal mengambil data magang.");
         return;
       }
-
-      if (data.expo_img) {
-        setExpoImg(data.expo_img);
-      }
       setExpoId(data.expo_id);
+      if (data.expo_img) setExpoImg(data.expo_img);
       setExpoName(data.expo_name);
       setExpoDesc(data.expo_desc);
+      setExpoPrice(data.expo_price);
       setExpoLocation(data.expo_location);
       setExpoLink(data.expo_link);
-      setExpoPrice(data.expo_price);
-
-      if (data.expo_date) {
-        setExpoDate(parseAbsoluteToLocal(data.expo_date));
-      }
-
-      if (data.expo_open_date) {
-        setExpoOpenDate(parseAbsoluteToLocal(data.expo_open_date));
-      }
-
-      if (data.expo_close_date) {
-        setExpoCloseDate(parseAbsoluteToLocal(data.expo_close_date));
-      }
-
+      if (data.expo_date) setExpoDate(parseAbsoluteToLocal(data.expo_date));
+      if (data.expo_open_date) setExpoOpenDate(parseAbsoluteToLocal(data.expo_open_date));
+      if (data.expo_close_date) setExpoCloseDate(parseAbsoluteToLocal(data.expo_close_date));
+      setStatusId(new Set([String(data.status_id)]));
       setCityIds(new Set(String(data.city_ids).split(",")));
       setCompanyIds(new Set(String(data.company_ids).split(",")));
       setCountryIds(new Set(String(data.country_ids).split(",")));
@@ -151,8 +158,7 @@ export default function page({ expo_slug }: { expo_slug: string }) {
       setPositionIds(new Set(String(data.position_ids).split(",")));
       setProgramStudyIds(new Set(String(data.program_study_ids).split(",")));
       setProvinceIds(new Set(String(data.province_ids).split(",")));
-      setStatusId(new Set([String(data.status_id)]));
-      setIsLoading(false);
+      setLoading(false);
     };
 
     fetchAll();
@@ -167,50 +173,35 @@ export default function page({ expo_slug }: { expo_slug: string }) {
       showErrorDialog("Ukuran gambar tidak boleh lebih dari 5MB.");
       return;
     }
-    // Simpan file untuk dikirim
     setExpoImgFile(file);
-    // Simpan preview (string base64)
     const reader = new FileReader();
     reader.onloadend = () => {
       setExpoImg(reader.result as string);
     };
     reader.readAsDataURL(file);
   };
+
   const handleIconClick = () => {
     fileInputRef.current?.click();
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
-
+    setUpdateLoading(true);
     const formData = new FormData();
-
-    // Form values
     formData.append("user_id", String(user?.user_id));
+    if (expo_img_file) formData.append("expo_img", expo_img_file);
     formData.append("expo_name", expo_name);
     formData.append("expo_desc", expo_desc);
     formData.append("expo_location", expo_location);
     formData.append("expo_link", expo_link);
     formData.append("expo_price", String(expo_price));
-
-    // Dates
-    if (expo_date) {
-      formData.append("expo_date", expo_date.toAbsoluteString());
-    }
-    if (expo_open_date) {
-      formData.append("expo_open_date", expo_open_date.toAbsoluteString());
-    }
-    if (expo_close_date) {
-      formData.append("expo_close_date", expo_close_date.toAbsoluteString());
-    }
-
-    // SINGLE
+    if (expo_date) formData.append("expo_date", expo_date.toAbsoluteString());
+    if (expo_open_date) formData.append("expo_open_date", expo_open_date.toAbsoluteString());
+    if (expo_close_date) formData.append("expo_close_date", expo_close_date.toAbsoluteString());
     appendSingle(formData, "status_id", status_id);
-
-    // MULTIPLE
     appendMultiple(formData, "city_ids", city_ids);
     appendMultiple(formData, "company_ids", company_ids);
     appendMultiple(formData, "country_ids", country_ids);
@@ -220,16 +211,9 @@ export default function page({ expo_slug }: { expo_slug: string }) {
     appendMultiple(formData, "position_ids", position_ids);
     appendMultiple(formData, "program_study_ids", program_study_ids);
     appendMultiple(formData, "province_ids", province_ids);
-
-    // File
-    if (expo_img_file) {
-      formData.append("expo_img", expo_img_file);
-    }
-
-    // Kirim ke server
     const { success, error } = await updateExpoById(expo_id, formData);
-
     if (success) {
+      setUpdateLoading(false);
       await showSuccessDialog();
       router.push("/expo");
     } else {
@@ -237,25 +221,35 @@ export default function page({ expo_slug }: { expo_slug: string }) {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full flex justify-center items-center py-8">
-        <Spinner
-          label="Sedang memuat data..."
-          labelColor="primary"
-          variant="dots"
-          classNames={{
-            label: "text-primary-primary mt-4",
-            dots: "border-5 border-primary-primary",
-          }}
-        />
-      </div>
-    );
-  }
   return (
     <>
       <>
         <main className="xs:p-0 md:p-8  flex flex-col xs:gap-2 md:gap-8 overflow-hidden">
+          {loading && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+              <Spinner
+                label="Loading..."
+                variant="wave"
+                classNames={{
+                  label: "text-primary-primary mt-4",
+                  dots: "border-5 border-primary-primary",
+                }}
+              />
+            </div>
+          )}
+
+          {updateLoading && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+              <Spinner
+                label="Loading..."
+                variant="wave"
+                classNames={{
+                  label: "text-primary-primary mt-4",
+                  dots: "border-5 border-primary-primary",
+                }}
+              />
+            </div>
+          )}
           {/*  Breadcrumb */}
           <Breadcrumbs
             className="text-xs text-text-secondary"
@@ -992,7 +986,7 @@ export default function page({ expo_slug }: { expo_slug: string }) {
             </div>
 
             <Button type="submit" className="login">
-              Simpan
+              Simpan Perubahan
             </Button>
           </Form>
         </main>

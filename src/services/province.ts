@@ -19,7 +19,7 @@ export async function createProvince(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllProvinces() {
+export async function getProvinceAll() {
   try {
     const res = await api.get<ApiResponse<ProvinceItem[]>>("/provinces");
     if (res.data.status === "success") {

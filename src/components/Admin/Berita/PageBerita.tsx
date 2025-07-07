@@ -1,26 +1,81 @@
 "use client";
 import { useState, useEffect } from "react";
+
 // Iconsax
 import { SearchNormal1, ArrowRight2, FilterEdit, Sort, Element3, Firstline, Eye, Edit, Trash } from "iconsax-react";
-import type { NewsItem } from "@/types/news";
 
 // Components
-import { Breadcrumbs, BreadcrumbItem, Input, NumberInput, Pagination, Button, Spinner, Select, SelectItem, Tooltip, Link, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@heroui/react";
+import {
+  Breadcrumbs,
+  BreadcrumbItem,
+  Input,
+  NumberInput,
+  Pagination,
+  Button,
+  Spinner,
+  Select,
+  SelectItem,
+  Selection,
+  Tooltip,
+  Link,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  getKeyValue,
+  Avatar,
+} from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
 import CardBeritaAdmin from "@/components/Card/CardBeritaAdmin";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
+
+// Types
+import { NewsItem } from "@/types/news";
+import { NewsTypeItem } from "@/types/newsType";
+import { UserItem } from "@/types/user";
+import { StatusItem } from "@/types/status";
+
+// Services
+import { searchNews, deleteNewsById } from "@/services/news";
+import { getNewsTypeAll } from "@/services/newsType";
+import { getUserAllAdmin } from "@/services/user";
+import { getStatusAll } from "@/services/status";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 import { getRelativeTimeRaw } from "@/utils/time";
 import { formatViews } from "@/utils/view";
-
-import { createFetcher } from "@/utils/createFetcher";
-import { NewsTypeItem } from "@/types/newsType";
-import { searchNews, deleteNewsById } from "@/services/news";
 
 export default function PageBerita() {
   // newsTypes
   const [newsTypes, setNewsTypes] = useState<NewsTypeItem[]>([]);
+  const [news_type_id, setNewsTypeId] = useState<Selection>(new Set([]));
   const [isLoadingNewsTypes, setIsLoadingNewsTypes] = useState(true);
   const [apiErrorNewsTypes, setApiErrorNewsTypes] = useState<string | null>(null);
+  // users
+  const [users, setUsers] = useState<UserItem[]>([]);
+  const [user_id, setUserId] = useState<Selection>(new Set([]));
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [apiErrorUsers, setApiErrorUsers] = useState<string | null>(null);
+  // statuses
+  const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [status_id, setStatusId] = useState<Selection>(new Set([]));
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
+  const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      const fetchers = [
+        createServiceFetcher(getNewsTypeAll, setNewsTypes, setApiErrorNewsTypes, setIsLoadingNewsTypes),
+        createServiceFetcher(getUserAllAdmin, setUsers, setApiErrorUsers, setIsLoadingUsers),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+      ];
+      await Promise.all(fetchers.map((fetch) => fetch()));
+    };
+    fetchAll();
+  }, []);
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const [sort, setSort] = useState<string>("");
@@ -39,15 +94,6 @@ export default function PageBerita() {
   const minValue = 1;
   const currentItems = News.slice((currentPage - 1) * amount, currentPage * amount);
   const totalPage = Math.ceil(maxValue / amount);
-
-  useEffect(() => {
-    const fetchAll = async () => {
-      const fetchers = [createFetcher<NewsTypeItem[]>("/news-types", setNewsTypes, setApiErrorNewsTypes, setIsLoadingNewsTypes)];
-      await Promise.all(fetchers.map((fetch) => fetch()));
-    };
-
-    fetchAll();
-  }, []);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -78,7 +124,11 @@ export default function PageBerita() {
     fetchNews();
   }, [searchKeyword, sort, filters]);
 
-  const selecItem = [{ key: "news_type_id", label: "Tipe" }];
+  const selecItem = [
+    { key: "news_type_id", label: "Tipe" },
+    { key: "user_id", label: "Penulis" },
+    { key: "status_id", label: "Status Publikasi" },
+  ];
 
   const sortOptions = [
     { key: "", label: "— Tidak diurutkan —" },
@@ -258,6 +308,97 @@ export default function PageBerita() {
                   }}
                 >
                   {item.news_type_name}
+                </SelectItem>
+              ))
+            )}
+          </Select>
+        )}
+        {/* user_id */}
+        {selectedFilters.has("user_id") && (
+          <Select
+            isMultiline={true}
+            items={users}
+            label="Pilih nama peserta"
+            labelPlacement="outside"
+            variant="bordered"
+            name="user_id"
+            renderValue={(items) => (
+              <div className="flex flex-wrap gap-2">
+                {items.map((item) => (
+                  <div key={item.data?.user_id} className="flex items-center gap-2">
+                    <Avatar alt={item.data?.user_fullname} className="w-6 h-6" src={item.data?.user_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                    <div className="flex flex-col">
+                      <span className="text-xs">{item.data?.user_fullname}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            selectedKeys={new Set([filters.user_id || ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, user_id: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary",
+            }}
+          >
+            {(user) => (
+              <SelectItem
+                key={user.user_id}
+                textValue={user.user_name}
+                classNames={{
+                  title: "text-xs hover:!text-primary-primary",
+                  selectedIcon: "text-primary-primary",
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <Avatar alt={user.user_fullname} className="w-6 h-6" src={user.user_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                  <div className="flex flex-col">
+                    <span className="text-xs">{user.user_fullname}</span>
+                  </div>
+                </div>
+              </SelectItem>
+            )}
+          </Select>
+        )}
+
+        {/* status_id */}
+        {selectedFilters.has("status_id") && (
+          <Select
+            label="Pilih status publikasi"
+            labelPlacement="outside"
+            variant="bordered"
+            name="status_id"
+            selectedKeys={new Set([filters.status_id || ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, status_id: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs text-text-secondary",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary text-xs",
+            }}
+          >
+            {statuses.length === 0 ? (
+              <SelectItem key="nodata" isDisabled>
+                Data belum tersedia
+              </SelectItem>
+            ) : (
+              statuses.map((item) => (
+                <SelectItem
+                  key={item.status_id}
+                  classNames={{
+                    title: "text-xs hover:!text-primary-primary",
+                    selectedIcon: "text-primary-primary",
+                  }}
+                >
+                  {item.status_name}
                 </SelectItem>
               ))
             )}

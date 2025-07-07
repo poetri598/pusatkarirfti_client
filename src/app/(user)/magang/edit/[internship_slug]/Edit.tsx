@@ -32,20 +32,20 @@ import { ReligionItem } from "@/types/religion";
 import { SemesterItem } from "@/types/semester";
 
 // Services
-import { getAllInternshipTypes } from "@/services/internshipType";
-import { getAllIpks } from "@/services/ipk";
-import { getAllCompanies } from "@/services/company";
-import { getAllStatuses } from "@/services/status";
-import { getAllCities } from "@/services/city";
-import { getAllCountries } from "@/services/country";
-import { getAllEducations } from "@/services/education";
-import { getAllGenders } from "@/services/gender";
-import { getAllModes } from "@/services/mode";
-import { getAllPositions } from "@/services/position";
-import { getAllProgramStudies } from "@/services/programStudy";
-import { getAllProvinces } from "@/services/province";
-import { getAllReligions } from "@/services/religion";
-import { getAllSemesters } from "@/services/semester";
+import { getInternshipTypeAll } from "@/services/internshipType";
+import { getIpkAll } from "@/services/ipk";
+import { getCompanyAll } from "@/services/company";
+import { getStatusAll } from "@/services/status";
+import { getCityAll } from "@/services/city";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getGenderAll } from "@/services/gender";
+import { getModeAll } from "@/services/mode";
+import { getPositionAll } from "@/services/position";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+import { getReligionAll } from "@/services/religion";
+import { getSemesterAll } from "@/services/semester";
 import { getInternshipBySlug, updateInternshipById } from "@/services/internship";
 
 // Utils
@@ -147,20 +147,20 @@ export default function Edit({ internship_slug }: { internship_slug: string }) {
     const fetchAll = async () => {
       setLoading(true);
       const fetchers = [
-        createServiceFetcher(getAllInternshipTypes, setInternshipTypes, setApiErrorInternshipTypes, setIsLoadingInternshipTypes),
-        createServiceFetcher(getAllIpks, setIpks, setApiErrorIpks, setIsLoadingIpks),
-        createServiceFetcher(getAllCompanies, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createServiceFetcher(getAllStatuses, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
-        createServiceFetcher(getAllCities, setCities, setApiErrorCities, setIsLoadingCities),
-        createServiceFetcher(getAllCountries, setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createServiceFetcher(getAllEducations, setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createServiceFetcher(getAllGenders, setGenders, setApiErrorGenders, setIsLoadingGenders),
-        createServiceFetcher(getAllModes, setModes, setApiErrorModes, setIsLoadingModes),
-        createServiceFetcher(getAllPositions, setPositions, setApiErrorPositions, setIsLoadingPositions),
-        createServiceFetcher(getAllProgramStudies, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createServiceFetcher(getAllProvinces, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
-        createServiceFetcher(getAllReligions, setReligions, setApiErrorReligions, setIsLoadingReligions),
-        createServiceFetcher(getAllSemesters, setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
+        createServiceFetcher(getInternshipTypeAll, setInternshipTypes, setApiErrorInternshipTypes, setIsLoadingInternshipTypes),
+        createServiceFetcher(getIpkAll, setIpks, setApiErrorIpks, setIsLoadingIpks),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getGenderAll, setGenders, setApiErrorGenders, setIsLoadingGenders),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getPositionAll, setPositions, setApiErrorPositions, setIsLoadingPositions),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getReligionAll, setReligions, setApiErrorReligions, setIsLoadingReligions),
+        createServiceFetcher(getSemesterAll, setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));
@@ -171,8 +171,8 @@ export default function Edit({ internship_slug }: { internship_slug: string }) {
         return;
       }
       setInternshipId(data.internship_id);
-      if (data.internship_img) setInternshipImg(data.internship_img);
       setInternshipName(data.internship_name);
+      if (data.internship_img) setInternshipImg(data.internship_img);
       setInternshipDesc(data.internship_desc);
       setInternshipLocation(data.internship_location);
       setInternshipLink(data.internship_link);
@@ -181,8 +181,8 @@ export default function Edit({ internship_slug }: { internship_slug: string }) {
       if (data.internship_open_date) setInternshipOpenDate(parseAbsoluteToLocal(data.internship_open_date));
       if (data.internship_close_date) setInternshipCloseDate(parseAbsoluteToLocal(data.internship_close_date));
       setInternshipTypeId(new Set([String(data.internship_type_id)]));
-      setCompanyId(new Set([String(data.company_id)]));
       setIpkId(new Set([String(data.ipk_id)]));
+      setCompanyId(new Set([String(data.company_id)]));
       setStatusId(new Set([String(data.status_id)]));
       setCityIds(new Set(String(data.city_ids).split(",")));
       setCountryIds(new Set(String(data.country_ids).split(",")));
@@ -226,9 +226,8 @@ export default function Edit({ internship_slug }: { internship_slug: string }) {
     if (!confirm.isConfirmed) return;
     setUpdateLoading(true);
     const formData = new FormData();
-    formData.append("user_id", String(user?.user_id)); // File
-    if (internship_img_file) formData.append("internship_img", internship_img_file);
     formData.append("internship_name", internship_name);
+    if (internship_img_file) formData.append("internship_img", internship_img_file);
     formData.append("internship_desc", internship_desc);
     formData.append("internship_location", internship_location);
     formData.append("internship_link", internship_link);
@@ -239,6 +238,7 @@ export default function Edit({ internship_slug }: { internship_slug: string }) {
     appendSingle(formData, "internship_type_id", internship_type_id);
     appendSingle(formData, "company_id", company_id);
     appendSingle(formData, "ipk_id", ipk_id);
+    formData.append("user_id", String(user?.user_id));
     appendSingle(formData, "status_id", status_id);
     appendMultiple(formData, "city_ids", city_ids);
     appendMultiple(formData, "country_ids", country_ids);
@@ -249,6 +249,7 @@ export default function Edit({ internship_slug }: { internship_slug: string }) {
     appendMultiple(formData, "program_study_ids", program_study_ids);
     appendMultiple(formData, "province_ids", province_ids);
     appendMultiple(formData, "religion_ids", religion_ids);
+    appendMultiple(formData, "semester_ids", semester_ids);
     const { success, error } = await updateInternshipById(internship_id, formData);
     if (success) {
       await showSuccessDialog();

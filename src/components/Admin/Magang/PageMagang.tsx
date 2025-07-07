@@ -2,20 +2,41 @@
 import { useState, useEffect } from "react";
 // Iconsax
 import { SearchNormal1, ArrowRight2, FilterEdit, Sort, Element3, Firstline, Eye, Edit, Trash } from "iconsax-react";
-import type { InternshipItem } from "@/types/internship";
 
 // Components
-import { Breadcrumbs, BreadcrumbItem, Input, NumberInput, Pagination, Button, Spinner, Select, SelectItem, Avatar, Tooltip, Link, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@heroui/react";
+import {
+  Breadcrumbs,
+  BreadcrumbItem,
+  Input,
+  NumberInput,
+  Pagination,
+  Button,
+  Spinner,
+  Select,
+  SelectItem,
+  Selection,
+  Avatar,
+  Tooltip,
+  Link,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  getKeyValue,
+} from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
 import CardMagangAdmin from "@/components/Card/CardMagangAdmin";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
-import { getRelativeTimeRaw } from "@/utils/time";
-import { formatViews } from "@/utils/view";
+
 // Types
-import { createFetcher } from "@/utils/createFetcher";
+import type { InternshipItem } from "@/types/internship";
+import { IpkItem } from "@/types/ipk";
 import { InternshipTypeItem } from "@/types/internshipType";
 import { CompanyItem } from "@/types/company";
-import { IpkItem } from "@/types/ipk";
+import { UserItem } from "@/types/user";
+import { StatusItem } from "@/types/status";
 import { CityItem } from "@/types/city";
 import { CountryItem } from "@/types/country";
 import { EducationItem } from "@/types/education";
@@ -26,62 +47,106 @@ import { ProgramStudyItem } from "@/types/programStudy";
 import { ProvinceItem } from "@/types/province";
 import { ReligionItem } from "@/types/religion";
 import { SemesterItem } from "@/types/semester";
+
+// Services
+import { getInternshipTypeAll } from "@/services/internshipType";
+import { getIpkAll } from "@/services/ipk";
+import { getCompanyAll } from "@/services/company";
+import { getStatusAll } from "@/services/status";
+import { getUserAllAdmin } from "@/services/user";
+import { getCityAll } from "@/services/city";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getGenderAll } from "@/services/gender";
+import { getModeAll } from "@/services/mode";
+import { getPositionAll } from "@/services/position";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+import { getReligionAll } from "@/services/religion";
+import { getSemesterAll } from "@/services/semester";
 import { searchInternships, deleteInternshipById } from "@/services/internship";
 
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
+import { getRelativeTimeRaw } from "@/utils/time";
+import { formatViews } from "@/utils/view";
+
 export default function PageMagang() {
-  // internsipTypes
+  // internshipTypes
   const [internshipTypes, setInternshipTypes] = useState<InternshipTypeItem[]>([]);
+  const [internship_type_id, setInternshipTypeId] = useState<Selection>(new Set([]));
   const [isLoadingInternshipTypes, setIsLoadingInternshipTypes] = useState(true);
   const [apiErrorInternshipTypes, setApiErrorInternshipTypes] = useState<string | null>(null);
-  // companies
-  const [companies, setCompanies] = useState<CompanyItem[]>([]);
-  const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
-  const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
   // ipks
   const [ipks, setIpks] = useState<IpkItem[]>([]);
+  const [ipk_id, setIpkId] = useState<Selection>(new Set([]));
   const [isLoadingIpks, setIsLoadingIpks] = useState(true);
   const [apiErrorIpks, setApiErrorIpks] = useState<string | null>(null);
+  // companies
+  const [companies, setCompanies] = useState<CompanyItem[]>([]);
+  const [company_id, setCompanyId] = useState<Selection>(new Set([]));
+  const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
+  const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
+  // users
+  const [users, setUsers] = useState<UserItem[]>([]);
+  const [user_id, setUserId] = useState<Selection>(new Set([]));
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [apiErrorUsers, setApiErrorUsers] = useState<string | null>(null);
+  // statuses
+  const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [status_id, setStatusId] = useState<Selection>(new Set(["1"]));
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
+  const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
   // cities
   const [cities, setCities] = useState<CityItem[]>([]);
+  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
   // countries
   const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
   const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
   // educations
   const [educations, setEducations] = useState<EducationItem[]>([]);
+  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
   const [isLoadingEducations, setIsLoadingEducations] = useState(true);
   const [apiErrorEducations, setApiErrorEducations] = useState<string | null>(null);
   // genders
   const [genders, setGenders] = useState<GenderItem[]>([]);
+  const [gender_ids, setGenderIds] = useState<Selection>(new Set([]));
   const [isLoadingGenders, setIsLoadingGenders] = useState(true);
   const [apiErrorGenders, setApiErrorGenders] = useState<string | null>(null);
   // modes
   const [modes, setModes] = useState<ModeItem[]>([]);
+  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
   const [isLoadingModes, setIsLoadingModes] = useState(true);
   const [apiErrorModes, setApiErrorModes] = useState<string | null>(null);
   // positions
   const [positions, setPositions] = useState<PositionItem[]>([]);
+  const [position_ids, setPositionIds] = useState<Selection>(new Set([]));
   const [isLoadingPositions, setIsLoadingPositions] = useState(true);
   const [apiErrorPositions, setApiErrorPositions] = useState<string | null>(null);
   // programStudies
   const [programStudies, setProgramStudies] = useState<ProgramStudyItem[]>([]);
+  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
   const [isLoadingProgramStudies, setIsLoadingProgramStudies] = useState(true);
   const [apiErrorProgramStudies, setApiErrorProgramStudies] = useState<string | null>(null);
   // provinces
   const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
   const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
   const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
   // religions
   const [religions, setReligions] = useState<ReligionItem[]>([]);
+  const [religion_ids, setReligionIds] = useState<Selection>(new Set([]));
   const [isLoadingReligions, setIsLoadingReligions] = useState(true);
   const [apiErrorReligions, setApiErrorReligions] = useState<string | null>(null);
   // semesters
   const [semesters, setSemesters] = useState<SemesterItem[]>([]);
+  const [semester_ids, setSemesterIds] = useState<Selection>(new Set([]));
   const [isLoadingSemesters, setIsLoadingSemesters] = useState(true);
   const [apiErrorSemesters, setApiErrorSemesters] = useState<string | null>(null);
-
   const [searchKeyword, setSearchKeyword] = useState("");
   const [sort, setSort] = useState<string>("");
   const [filters, setFilters] = useState<{ [key: string]: string | number }>({});
@@ -103,19 +168,21 @@ export default function PageMagang() {
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createFetcher<InternshipTypeItem[]>("/internship-types", setInternshipTypes, setApiErrorInternshipTypes, setIsLoadingInternshipTypes),
-        createFetcher<CompanyItem[]>("/companies", setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createFetcher<IpkItem[]>("/ipks", setIpks, setApiErrorIpks, setIsLoadingIpks),
-        createFetcher<CityItem[]>("/cities", setCities, setApiErrorCities, setIsLoadingCities),
-        createFetcher<CountryItem[]>("/countries", setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createFetcher<EducationItem[]>("/educations", setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createFetcher<GenderItem[]>("/genders", setGenders, setApiErrorGenders, setIsLoadingGenders),
-        createFetcher<ModeItem[]>("/modes", setModes, setApiErrorModes, setIsLoadingModes),
-        createFetcher<PositionItem[]>("/positions", setPositions, setApiErrorPositions, setIsLoadingPositions),
-        createFetcher<ProgramStudyItem[]>("/program-studies", setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createFetcher<ProvinceItem[]>("/provinces", setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
-        createFetcher<ReligionItem[]>("/religions", setReligions, setApiErrorReligions, setIsLoadingReligions),
-        createFetcher<SemesterItem[]>("/semesters", setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
+        createServiceFetcher(getInternshipTypeAll, setInternshipTypes, setApiErrorInternshipTypes, setIsLoadingInternshipTypes),
+        createServiceFetcher(getIpkAll, setIpks, setApiErrorIpks, setIsLoadingIpks),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getUserAllAdmin, setUsers, setApiErrorUsers, setIsLoadingUsers),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getGenderAll, setGenders, setApiErrorGenders, setIsLoadingGenders),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getPositionAll, setPositions, setApiErrorPositions, setIsLoadingPositions),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getReligionAll, setReligions, setApiErrorReligions, setIsLoadingReligions),
+        createServiceFetcher(getSemesterAll, setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));
@@ -155,8 +222,10 @@ export default function PageMagang() {
 
   const selecItem = [
     { key: "internship_type_id", label: "Tipe" },
-    { key: "company_id", label: "Perusahaan" },
     { key: "ipk_id", label: "Ipk" },
+    { key: "company_id", label: "Perusahaan" },
+    { key: "user_id", label: "Penulis" },
+    { key: "status_id", label: "Status Publikasi" },
     { key: "city_id", label: "Kota" },
     { key: "country_id", label: "Negara" },
     { key: "education_id", label: "Jenjang Pendidikan" },
@@ -352,6 +421,45 @@ export default function PageMagang() {
           </Select>
         )}
 
+        {/* ipk_id */}
+        {selectedFilters.has("ipk_id") && (
+          <Select
+            label="Pilih ipk minimal"
+            labelPlacement="outside"
+            variant="bordered"
+            name="ipk_id"
+            selectedKeys={new Set([filters.ipk_id || ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, ipk_id: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs text-text-secondary",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary text-xs",
+            }}
+          >
+            {ipks.length === 0 ? (
+              <SelectItem key="nodata" isDisabled>
+                Data belum tersedia
+              </SelectItem>
+            ) : (
+              ipks.map((item) => (
+                <SelectItem
+                  key={item.ipk_id}
+                  classNames={{
+                    title: "text-xs hover:!text-primary-primary",
+                    selectedIcon: "text-primary-primary",
+                  }}
+                >
+                  {item.ipk_no}
+                </SelectItem>
+              ))
+            )}
+          </Select>
+        )}
+
         {/* company_id */}
         {selectedFilters.has("company_id") && (
           <Select
@@ -399,17 +507,70 @@ export default function PageMagang() {
           </Select>
         )}
 
-        {/* ipk_id */}
-        {selectedFilters.has("ipk_id") && (
+        {/* user_id */}
+        {selectedFilters.has("user_id") && (
           <Select
-            label="Pilih ipk minimal"
+            isMultiline={true}
+            items={users}
+            label="Pilih nama peserta"
             labelPlacement="outside"
             variant="bordered"
-            name="ipk_id"
-            selectedKeys={new Set([filters.ipk_id || ""])}
+            name="user_id"
+            renderValue={(items) => (
+              <div className="flex flex-wrap gap-2">
+                {items.map((item) => (
+                  <div key={item.data?.user_id} className="flex items-center gap-2">
+                    <Avatar alt={item.data?.user_fullname} className="w-6 h-6" src={item.data?.user_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                    <div className="flex flex-col">
+                      <span className="text-xs">{item.data?.user_fullname}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            selectedKeys={new Set([filters.user_id || ""])}
             onSelectionChange={(key) => {
               const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, ipk_id: value }));
+              setFilters((prev) => ({ ...prev, user_id: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary",
+            }}
+          >
+            {(user) => (
+              <SelectItem
+                key={user.user_id}
+                textValue={user.user_name}
+                classNames={{
+                  title: "text-xs hover:!text-primary-primary",
+                  selectedIcon: "text-primary-primary",
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <Avatar alt={user.user_fullname} className="w-6 h-6" src={user.user_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                  <div className="flex flex-col">
+                    <span className="text-xs">{user.user_fullname}</span>
+                  </div>
+                </div>
+              </SelectItem>
+            )}
+          </Select>
+        )}
+
+        {/* status_id */}
+        {selectedFilters.has("status_id") && (
+          <Select
+            label="Pilih status publikasi"
+            labelPlacement="outside"
+            variant="bordered"
+            name="status_id"
+            selectedKeys={new Set([filters.status_id || ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, status_id: value }));
             }}
             classNames={{
               label: "after:text-danger-primary text-xs text-text-secondary",
@@ -418,20 +579,20 @@ export default function PageMagang() {
               errorMessage: "text-danger-primary text-xs",
             }}
           >
-            {ipks.length === 0 ? (
+            {statuses.length === 0 ? (
               <SelectItem key="nodata" isDisabled>
                 Data belum tersedia
               </SelectItem>
             ) : (
-              ipks.map((item) => (
+              statuses.map((item) => (
                 <SelectItem
-                  key={item.ipk_id}
+                  key={item.status_id}
                   classNames={{
                     title: "text-xs hover:!text-primary-primary",
                     selectedIcon: "text-primary-primary",
                   }}
                 >
-                  {item.ipk_no}
+                  {item.status_name}
                 </SelectItem>
               ))
             )}

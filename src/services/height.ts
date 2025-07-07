@@ -19,7 +19,7 @@ export async function createHeight(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllHeights() {
+export async function getHeightAll() {
   try {
     const res = await api.get<ApiResponse<HeightItem[]>>("/heights");
     if (res.data.status === "success") {

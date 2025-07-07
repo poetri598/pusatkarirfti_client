@@ -22,7 +22,7 @@ export async function createExpoType(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllExpoTypes() {
+export async function getExpoTypeAll() {
   try {
     const res = await api.get<ApiResponse<ExpoTypeItem[]>>("/expo-types");
     if (res.data.status === "success") {

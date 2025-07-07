@@ -19,7 +19,7 @@ export async function createJobType(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllJobTypes() {
+export async function getJobTypeAll() {
   try {
     const res = await api.get<ApiResponse<JobTypeItem[]>>("/job-types");
     if (res.data.status === "success") {

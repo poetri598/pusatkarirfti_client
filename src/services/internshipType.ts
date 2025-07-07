@@ -19,7 +19,7 @@ export async function createInternshipType(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllInternshipTypes() {
+export async function getInternshipTypeAll() {
   try {
     const res = await api.get<ApiResponse<InternshipTypeItem[]>>("/internship-types");
     if (res.data.status === "success") {

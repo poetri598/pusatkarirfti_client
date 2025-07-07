@@ -19,7 +19,7 @@ export async function createCompany(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllCompanies() {
+export async function getCompanyAll() {
   try {
     const res = await api.get<ApiResponse<CompanyItem[]>>("/companies");
     if (res.data.status === "success") {

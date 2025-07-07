@@ -19,7 +19,7 @@ export async function createNewsType(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllNewsTypes() {
+export async function getNewsTypeAll() {
   try {
     const res = await api.get<ApiResponse<NewsTypeItem[]>>("/news-types");
     if (res.data.status === "success") {

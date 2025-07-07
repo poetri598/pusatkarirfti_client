@@ -19,7 +19,7 @@ export async function createMode(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllModes() {
+export async function getModeAll() {
   try {
     const res = await api.get<ApiResponse<ModeItem[]>>("/modes");
     if (res.data.status === "success") {

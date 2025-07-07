@@ -22,7 +22,7 @@ export async function createCountry(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllCountries() {
+export async function getCountryAll() {
   try {
     const res = await api.get<ApiResponse<CountryItem[]>>("/countries");
     if (res.data.status === "success") {

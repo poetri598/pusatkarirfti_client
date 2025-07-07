@@ -47,9 +47,14 @@ export default function CardLowonganPekerjaan(props: JobItem) {
       </div>
       <div className="flex justify-between items-end gap-1">
         <div className="flex flex-col">
-          <span className="text-xs font-bold text-primary-primary w-full">
-            {`Rp. ${Number(job_salary_min).toLocaleString("id-ID")}`} - {`Rp. ${Number(job_salary_max).toLocaleString("id-ID")}`}
-          </span>
+          {job_salary_min === "0.00" && job_salary_max === "0.00" ? (
+            <span className="text-xs font-bold text-primary-primary">Tidak ada informasi gaji</span>
+          ) : (
+            <span className="text-xs font-bold text-primary-primary w-full">
+              {`Rp. ${Number(job_salary_min).toLocaleString("id-ID")}`} - {`Rp. ${Number(job_salary_max).toLocaleString("id-ID")}`}
+            </span>
+          )}
+
           <Tooltip content={fullDate} placement="top" classNames={{ content: "text-xs text-background-primary bg-primary-primary" }}>
             <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
           </Tooltip>

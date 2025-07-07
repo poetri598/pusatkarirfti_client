@@ -12,21 +12,21 @@ import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/co
 import { useAuth } from "@/context/AuthContext";
 
 // Services
-import { getAllAges } from "@/services/age";
-import { getAllWeights } from "@/services/weight";
-import { getAllHeights } from "@/services/height";
-import { getAllEducations } from "@/services/education";
-import { getAllProgramStudies } from "@/services/programStudy";
-import { getAllSemesters } from "@/services/semester";
-import { getAllIpks } from "@/services/ipk";
-import { getAllCities } from "@/services/city";
-import { getAllGenders } from "@/services/gender";
-import { getAllReligions } from "@/services/religion";
-import { getAllMaritalStatuses } from "@/services/maritalStatus";
-import { getAllPositions } from "@/services/position";
-import { getAllCompanies } from "@/services/company";
-import { getAllRoles } from "@/services/role";
-import { getAllStatuses } from "@/services/status";
+import { getAgeAll } from "@/services/age";
+import { getWeightAll } from "@/services/weight";
+import { getHeightAll } from "@/services/height";
+import { getEducationAll } from "@/services/education";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getSemesterAll } from "@/services/semester";
+import { getIpkAll } from "@/services/ipk";
+import { getCityAll } from "@/services/city";
+import { getGenderAll } from "@/services/gender";
+import { getReligionAll } from "@/services/religion";
+import { getMaritalStatusAll } from "@/services/maritalStatus";
+import { getPositionAll } from "@/services/position";
+import { getCompanyAll } from "@/services/company";
+import { getRoleAll } from "@/services/role";
+import { getStatusAll } from "@/services/status";
 import { updateUserProfile } from "@/services/user";
 
 // Types
@@ -135,21 +135,21 @@ export default function UbahProfil() {
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createServiceFetcher(getAllAges, setAges, setApiErrorAges, setIsLoadingAges),
-        createServiceFetcher(getAllCities, setCities, setApiErrorCities, setIsLoadingCities),
-        createServiceFetcher(getAllCompanies, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createServiceFetcher(getAllEducations, setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createServiceFetcher(getAllGenders, setGenders, setApiErrorGenders, setIsLoadingGenders),
-        createServiceFetcher(getAllHeights, setHeights, setApiErrorHeights, setIsLoadingHeights),
-        createServiceFetcher(getAllIpks, setIpks, setApiErrorIpks, setIsLoadingIpks),
-        createServiceFetcher(getAllPositions, setPositions, setApiErrorPositions, setIsLoadingPositions),
-        createServiceFetcher(getAllMaritalStatuses, setMaritalStatuses, setApiErrorMaritalStatuses, setIsLoadingMaritalStatuses),
-        createServiceFetcher(getAllProgramStudies, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createServiceFetcher(getAllReligions, setReligions, setApiErrorReligions, setIsLoadingReligions),
-        createServiceFetcher(getAllRoles, setRoles, setApiErrorRoles, setIsLoadingRoles),
-        createServiceFetcher(getAllSemesters, setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
-        createServiceFetcher(getAllStatuses, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
-        createServiceFetcher(getAllWeights, setWeights, setApiErrorWeights, setIsLoadingWeights),
+        createServiceFetcher(getAgeAll, setAges, setApiErrorAges, setIsLoadingAges),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getGenderAll, setGenders, setApiErrorGenders, setIsLoadingGenders),
+        createServiceFetcher(getHeightAll, setHeights, setApiErrorHeights, setIsLoadingHeights),
+        createServiceFetcher(getIpkAll, setIpks, setApiErrorIpks, setIsLoadingIpks),
+        createServiceFetcher(getPositionAll, setPositions, setApiErrorPositions, setIsLoadingPositions),
+        createServiceFetcher(getMaritalStatusAll, setMaritalStatuses, setApiErrorMaritalStatuses, setIsLoadingMaritalStatuses),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getReligionAll, setReligions, setApiErrorReligions, setIsLoadingReligions),
+        createServiceFetcher(getRoleAll, setRoles, setApiErrorRoles, setIsLoadingRoles),
+        createServiceFetcher(getSemesterAll, setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getWeightAll, setWeights, setApiErrorWeights, setIsLoadingWeights),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));

@@ -2,40 +2,45 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+// Iconsax
 import { Camera } from "iconsax-react";
 
-import { Breadcrumbs, BreadcrumbItem, Form, Input, Button, Select, SelectItem, Selection, NumberInput, DatePicker, Avatar } from "@heroui/react";
+// Components
+import { Breadcrumbs, BreadcrumbItem, Form, Input, Button, Select, SelectItem, Selection, Spinner } from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 import RichTextEditor from "@/components/Custom/RichTextEditor";
 
-import { createFetcher } from "@/utils/createFetcher";
-import { appendSingle } from "@/utils/formDataHelpers";
+// Context
+import { useAuth } from "@/context/AuthContext";
+
+// Types
 import { NewsTypeItem } from "@/types/newsType";
 import { StatusItem } from "@/types/status";
 
-import { Spinner } from "@heroui/react";
-
+// Services
 import { getNewsBySlug, updateNewsById } from "@/services/news";
-import { useAuth } from "@/context/AuthContext";
-import { ExpoItem } from "@/types/expo";
-import { ExpoTypeItem } from "@/types/expoType";
+import { getNewsTypeAll } from "@/services/newsType";
+import { getStatusAll } from "@/services/status";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
+import { appendSingle } from "@/utils/formDataHelpers";
 
 export default function page({ news_slug }: { news_slug: string }) {
   const router = useRouter();
   const { user } = useAuth();
   // newsTypes
   const [newsTypes, setNewsTypes] = useState<NewsTypeItem[]>([]);
+  const [news_type_id, setNewsTypeId] = useState<Selection>(new Set([]));
   const [isLoadingNewsTypes, setIsLoadingNewsTypes] = useState(true);
   const [apiErrorNewsTypes, setApiErrorNewsTypes] = useState<string | null>(null);
-
   // statuses
   const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [status_id, setStatusId] = useState<Selection>(new Set([]));
   const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
   const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Image
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [news_id, setNewsId] = useState<number>(0);
   const [news_img, setNewsImg] = useState<string>("/tambah-bg.png"); // preview
@@ -43,32 +48,28 @@ export default function page({ news_slug }: { news_slug: string }) {
   const [news_name, setNewsName] = useState<string>("");
   const [news_desc, setNewsDesc] = useState<string>("");
   const [news_tags, setNewsTags] = useState<string>("");
-  const [news_type_id, setNewsTypeId] = useState<Selection>(new Set([]));
-  const [status_id, setStatusId] = useState<Selection>(new Set([]));
+
+  const [loading, setLoading] = useState(true);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
+    setLoading(true);
     const fetchAll = async () => {
-      const fetchers = [createFetcher<NewsTypeItem[]>("/news-types", setNewsTypes, setApiErrorNewsTypes, setIsLoadingNewsTypes), createFetcher<StatusItem[]>("/statuses", setStatuses, setApiErrorStatuses, setIsLoadingStatuses)];
-
+      const fetchers = [createServiceFetcher(getNewsTypeAll, setNewsTypes, setApiErrorNewsTypes, setIsLoadingNewsTypes), createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses)];
       await Promise.all(fetchers.map((fetch) => fetch()));
-
       const { success, data, error } = await getNewsBySlug(news_slug);
       if (!success || !data) {
         await showErrorDialog(error || "Gagal mengambil data berita.");
         return;
       }
-
-      if (data.news_img) {
-        setNewsImg(data.news_img);
-      }
       setNewsId(data.news_id);
       setNewsName(data.news_name);
+      if (data.news_img) setNewsImg(data.news_img);
       setNewsDesc(data.news_desc);
       setNewsTags(data.news_tags);
       setNewsTypeId(new Set([String(data.news_type_id)]));
       setStatusId(new Set([String(data.status_id)]));
-      setIsLoading(false);
+      setLoading(false);
     };
 
     fetchAll();
@@ -83,9 +84,7 @@ export default function page({ news_slug }: { news_slug: string }) {
       showErrorDialog("Ukuran gambar tidak boleh lebih dari 5MB.");
       return;
     }
-    // Simpan file untuk dikirim
     setNewsImgFile(file);
-    // Simpan preview (string base64)
     const reader = new FileReader();
     reader.onloadend = () => {
       setNewsImg(reader.result as string);
@@ -98,31 +97,20 @@ export default function page({ news_slug }: { news_slug: string }) {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
-
+    setUpdateLoading(true);
     const formData = new FormData();
-
-    // Form values
-    formData.append("user_id", String(user?.user_id));
     formData.append("news_name", news_name);
+    if (news_img_file) formData.append("news_img", news_img_file);
     formData.append("news_desc", news_desc);
     formData.append("news_tags", news_tags);
-
-    // SINGLE
-    appendSingle(formData, "status_id", status_id);
     appendSingle(formData, "news_type_id", news_type_id);
-
-    // File
-    if (news_img_file) {
-      formData.append("news_img", news_img_file);
-    }
-
-    // Kirim ke server
+    formData.append("user_id", String(user?.user_id));
+    appendSingle(formData, "status_id", status_id);
     const { success, error } = await updateNewsById(news_id, formData);
-
     if (success) {
+      setUpdateLoading(false);
       await showSuccessDialog();
       router.push("/berita");
     } else {
@@ -130,25 +118,35 @@ export default function page({ news_slug }: { news_slug: string }) {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full flex justify-center items-center py-8">
-        <Spinner
-          label="Sedang memuat data..."
-          labelColor="primary"
-          variant="dots"
-          classNames={{
-            label: "text-primary-primary mt-4",
-            dots: "border-5 border-primary-primary",
-          }}
-        />
-      </div>
-    );
-  }
   return (
     <>
       <>
         <main className="xs:p-0 md:p-8  flex flex-col xs:gap-2 md:gap-8 overflow-hidden">
+          {loading && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+              <Spinner
+                label="Loading..."
+                variant="wave"
+                classNames={{
+                  label: "text-primary-primary mt-4",
+                  dots: "border-5 border-primary-primary",
+                }}
+              />
+            </div>
+          )}
+
+          {updateLoading && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+              <Spinner
+                label="Loading..."
+                variant="wave"
+                classNames={{
+                  label: "text-primary-primary mt-4",
+                  dots: "border-5 border-primary-primary",
+                }}
+              />
+            </div>
+          )}
           {/*  Breadcrumb */}
           <Breadcrumbs
             className="text-xs text-text-secondary"
@@ -335,7 +333,7 @@ export default function page({ news_slug }: { news_slug: string }) {
               </Select>
             )}
             <Button type="submit" className="login">
-              Simpan
+              Simpan Perubahan
             </Button>
           </Form>
         </main>

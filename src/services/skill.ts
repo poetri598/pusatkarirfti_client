@@ -19,7 +19,7 @@ export async function createSkill(payload: FormData) {
 }
 
 // ✅ GET ALL
-export async function getAllSkills() {
+export async function getSkillAll() {
   try {
     const res = await api.get<ApiResponse<SkillItem[]>>("/skills");
     if (res.data.status === "success") {
