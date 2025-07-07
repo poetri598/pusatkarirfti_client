@@ -1,0 +1,38 @@
+/* Plus Jakarta Sans */
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+/* Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.gradient-style {
+  background: linear-gradient(90deg, #008ba5 0%, #005e70 52%, #00353f 100%);
+}
+.gradient-style-2 {
+  background: linear-gradient(90deg, #c8f2f4 0%, #2b9ea5 100%);
+}
+.gradient-style-3 {
+  @apply bg-gradient-to-r from-[#005E70] via-[#008BA5] to-[#00353F];
+}
+
+.login {
+  @apply text-sm font-medium flex justify-center items-center
+    px-4 py-2 rounded-medium 
+    bg-primary-primary text-background-primary 
+    hover:bg-primary-hover hover:text-secondary-primary 
+    active:bg-primary-pressed active:text-secondary-primary 
+    focus:outline-none focus:ring-2 focus:ring-primary-border focus:bg-primary-primary focus:text-secondary-primary 
+    transition duration-150 ease-in-out;
+}
+
+.signup {
+  @apply text-sm font-medium flex justify-center items-center
+    px-4 py-2 rounded-medium 
+    bg-secondary-primary text-primary-primary 
+    hover:bg-secondary-surface hover:text-primary-primary 
+    active:bg-secondary-surface active:text-primary-primary 
+    focus:outline-none focus:ring-2 focus:ring-primary-border focus:bg-secondary-primary focus:text-primary-primary 
+    transition duration-150 ease-in-out;
+}

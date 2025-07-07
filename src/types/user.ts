@@ -1,0 +1,55 @@
+export interface UserItem {
+  user_id: number;
+  user_img: string;
+  user_fullname: string;
+  user_name: string;
+  user_nim: string;
+  user_phone: string;
+  user_email: string;
+  user_password: string;
+  user_password_confirm: string;
+  user_birthdate: string;
+  user_admission_date: string;
+  user_graduation_date: string;
+  age_id: number;
+  age_no: number;
+  weight_id: number;
+  weight_no: number;
+  height_id: number;
+  height_no: number;
+  education_id: number;
+  education_name: string;
+  program_study_id: number;
+  program_study_name: string;
+  semester_id: number;
+  semester_no: string;
+  ipk_id: number;
+  ipk_no: string;
+  city_id: number;
+  city_name: string;
+  gender_id: number;
+  gender_name: string;
+  religion_id: number;
+  religion_name: string;
+  marital_status_id: number;
+  marital_status_name: string;
+  dream_position_id: number;
+  dream_position_name: string;
+  dream_company_id: number;
+  dream_company_name: string;
+  dream_company_img: string;
+  user_is_employed: boolean;
+  current_position_id: number | null;
+  current_position_name: string;
+  current_company_id: number | null;
+  current_company_name: string;
+  current_company_img: string;
+  role_id: number;
+  role_name: string;
+  status_id: number;
+  status_name: string;
+}
+
+export type UpdateEmailPayload = Pick<UserItem, "user_email" | "user_password">;
+
+export type UpdatePasswordPayload = Pick<UserItem, "user_password" | "user_password_confirm">;

@@ -1,0 +1,165 @@
+import api from "@/utils/api";
+import { extractErrorMessage } from "@/utils/helpers";
+import { updateStoredUser } from "@/utils/updateStoredUser";
+import type { UserItem } from "@/types/user";
+import type { ApiResponse } from "@/utils/responseController";
+
+// ✅ CREATE USER (FormData)
+export async function createUser(payload: FormData) {
+  try {
+    const res = await api.post<ApiResponse<UserItem>>("/users", payload, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal membuat user"),
+    };
+  }
+}
+
+// ✅ GET ALL USERS
+export async function getUserAll() {
+  try {
+    const res = await api.get<ApiResponse<UserItem[]>>("/users");
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mengambil semua data user"),
+    };
+  }
+}
+
+// ✅ GET USER BY ID
+export async function getUserById(user_id: number | string) {
+  try {
+    const res = await api.get<ApiResponse<UserItem>>(`/users/${user_id}`);
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mengambil data user berdasarkan ID"),
+    };
+  }
+}
+
+// ✅ DELETE USER BY ID
+export async function deleteUserById(user_id: number | string) {
+  try {
+    const res = await api.delete<ApiResponse<null>>(`/users/${user_id}`);
+    if (res.data.status === "success") {
+      return { success: true };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal menghapus user berdasarkan ID"),
+    };
+  }
+}
+
+// ✅ GET USER BY USERNAME
+export async function getUserByUsername(user_name: string) {
+  try {
+    const res = await api.get<ApiResponse<UserItem>>(`/users/username/${user_name}`);
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mengambil data user berdasarkan username"),
+    };
+  }
+}
+
+// ✅ UPDATE PROFILE (FormData only)
+export async function updateUserProfile(user_name: string, payload: FormData) {
+  try {
+    const res = await api.put<ApiResponse<null>>(`/users/username/${user_name}`, payload, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (res.data.status === "success") {
+      const userRes = await api.get<ApiResponse<UserItem>>(`/users/username/${user_name}`);
+      if (userRes.data.status === "success") {
+        updateStoredUser(userRes.data.data);
+      }
+      return { success: true };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal memperbarui profil"),
+    };
+  }
+}
+
+// ✅ UPDATE EMAIL (FormData)
+export async function updateUserEmailByUsername(user_name: string, payload: FormData) {
+  try {
+    const res = await api.put<ApiResponse<null>>(`/users/email/${user_name}`, payload, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (res.data.status === "success") {
+      const userRes = await api.get<ApiResponse<UserItem>>(`/users/username/${user_name}`);
+      if (userRes.data.status === "success") {
+        updateStoredUser(userRes.data.data);
+      }
+      return { success: true };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal memperbarui email"),
+    };
+  }
+}
+
+// ✅ UPDATE PASSWORD (FormData)
+export async function updateUserPasswordByUsername(user_name: string, payload: FormData) {
+  try {
+    const res = await api.put<ApiResponse<null>>(`/users/password/${user_name}`, payload, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (res.data.status === "success") {
+      return { success: true };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal memperbarui password"),
+    };
+  }
+}
+
+// ✅ DELETE USER BY USERNAME
+export async function deleteUserByUsername(user_name: string) {
+  try {
+    const res = await api.delete<ApiResponse<null>>(`/users/username/${user_name}`);
+    if (res.data.status === "success") {
+      return { success: true };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal menghapus user berdasarkan username"),
+    };
+  }
+}
