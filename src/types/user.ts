@@ -11,6 +11,8 @@ export interface UserItem {
   user_birthdate: string;
   user_admission_date: string;
   user_graduation_date: string;
+  user_created_at: string;
+  user_updated_at: string;
   age_id: number;
   age_no: number;
   weight_id: number;

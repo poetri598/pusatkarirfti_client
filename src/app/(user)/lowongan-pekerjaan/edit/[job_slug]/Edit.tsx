@@ -349,7 +349,7 @@ export default function Edit({ job_slug }: { job_slug: string }) {
           </Breadcrumbs>
 
           {/* Section Title */}
-          <TitleSectionAdmin label="Ubah lowongan pekerjaan" />
+          <TitleSectionAdmin label="Ubah data lowongan pekerjaan" />
 
           {/* Form */}
           <Form className="flex flex-col items-end gap-4" onSubmit={handleSubmit}>

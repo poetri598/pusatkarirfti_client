@@ -156,7 +156,7 @@ export default function page({ news_slug }: { news_slug: string }) {
           >
             <BreadcrumbItem href="/beranda">Beranda</BreadcrumbItem>
             <BreadcrumbItem href="/berita">Berita</BreadcrumbItem>
-            <BreadcrumbItem href={`/berita/edit/${news_slug}`}>Ubah Berita</BreadcrumbItem>
+            <BreadcrumbItem href={`/berita/edit/${news_slug}`}>Ubah Data Berita</BreadcrumbItem>
           </Breadcrumbs>
 
           {/* Section Title */}

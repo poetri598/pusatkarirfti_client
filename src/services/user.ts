@@ -3,6 +3,7 @@ import { extractErrorMessage } from "@/utils/helpers";
 import { updateStoredUser } from "@/utils/updateStoredUser";
 import type { UserItem } from "@/types/user";
 import type { ApiResponse } from "@/utils/responseController";
+import { useAuth } from "@/context/AuthContext";
 
 // ✅ CREATE USER (FormData)
 export async function createUser(payload: FormData) {
@@ -63,9 +64,8 @@ export async function updateUserById(user_id: number, payload: FormData) {
     if (res.data.status === "success") {
       const userRes = await api.get<ApiResponse<UserItem>>(`/users/${user_id}`);
       if (userRes.data.status === "success") {
-        updateStoredUser(userRes.data.data);
+        return { success: true };
       }
-      return { success: true };
     }
     return { success: false, error: res.data.message };
   } catch (err) {
@@ -198,6 +198,29 @@ export async function deleteUserByUsername(user_name: string) {
     return {
       success: false,
       error: extractErrorMessage(err, "Gagal menghapus user berdasarkan username"),
+    };
+  }
+}
+
+// ✅ SEARCH & FILTER & SORT
+export async function searchUsers(filters: Record<string, any>) {
+  try {
+    const cleanedFilters: Record<string, string> = {};
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        cleanedFilters[key] = String(value);
+      }
+    });
+    const query = new URLSearchParams(cleanedFilters).toString();
+    const res = await api.get<ApiResponse<UserItem[]>>(`/users/search?${query}`);
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mencari atau memfilter User"),
     };
   }
 }

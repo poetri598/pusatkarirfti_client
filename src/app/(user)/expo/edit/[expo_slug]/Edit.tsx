@@ -259,7 +259,7 @@ export default function page({ expo_slug }: { expo_slug: string }) {
           >
             <BreadcrumbItem href="/beranda">Beranda</BreadcrumbItem>
             <BreadcrumbItem href="/expo">Expo</BreadcrumbItem>
-            <BreadcrumbItem href={`/expo/edit/${expo_slug}`}>Ubah Expo</BreadcrumbItem>
+            <BreadcrumbItem href={`/expo/edit/${expo_slug}`}>Ubah Data Expo</BreadcrumbItem>
           </Breadcrumbs>
 
           {/* Section Title */}

@@ -3,11 +3,28 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 // Components
-import { Sms, Eye, EyeSlash, Google } from "iconsax-react";
+import { Sms, Eye, EyeSlash } from "iconsax-react";
 import Logo from "@/components/HeaderFooter/Logo";
 import { Form, Link, Avatar, Button, Input, DatePicker, Select, SelectItem, Selection, Switch, Spinner } from "@heroui/react";
 import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
+
+// Types
+import { AgeItem } from "@/types/age";
+import { WeightItem } from "@/types/weight";
+import { HeightItem } from "@/types/height";
+import { EducationItem } from "@/types/education";
+import { ProgramStudyItem } from "@/types/programStudy";
+import { SemesterItem } from "@/types/semester";
+import { IpkItem } from "@/types/ipk";
+import { CityItem } from "@/types/city";
+import { GenderItem } from "@/types/gender";
+import { ReligionItem } from "@/types/religion";
+import { MaritalStatusItem } from "@/types/maritalStatus";
+import { PositionItem } from "@/types/position";
+import { CompanyItem } from "@/types/company";
+import { RoleItem } from "@/types/role";
+import { StatusItem } from "@/types/status";
 
 // Services
 import { getAgeAll } from "@/services/age";
@@ -26,23 +43,6 @@ import { getCompanyAll } from "@/services/company";
 import { getRoleAll } from "@/services/role";
 import { getStatusAll } from "@/services/status";
 import { createUser } from "@/services/user";
-
-// Types
-import { AgeItem } from "@/types/age";
-import { WeightItem } from "@/types/weight";
-import { HeightItem } from "@/types/height";
-import { EducationItem } from "@/types/education";
-import { ProgramStudyItem } from "@/types/programStudy";
-import { SemesterItem } from "@/types/semester";
-import { IpkItem } from "@/types/ipk";
-import { CityItem } from "@/types/city";
-import { GenderItem } from "@/types/gender";
-import { ReligionItem } from "@/types/religion";
-import { MaritalStatusItem } from "@/types/maritalStatus";
-import { PositionItem } from "@/types/position";
-import { CompanyItem } from "@/types/company";
-import { RoleItem } from "@/types/role";
-import { StatusItem } from "@/types/status";
 
 // Utils
 import { createServiceFetcher } from "@/utils/createServiceFetcher";

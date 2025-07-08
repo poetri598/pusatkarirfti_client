@@ -129,7 +129,7 @@ export default function page() {
           </Breadcrumbs>
 
           {/* Section Title */}
-          <TitleSectionAdmin label="Tambah Berita" />
+          <TitleSectionAdmin label="Tambah berita" />
 
           {/* Form */}
           <Form className="flex flex-col items-end gap-4" onSubmit={handleSubmit}>

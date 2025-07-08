@@ -266,11 +266,11 @@ export default function page({ training_slug }: { training_slug: string }) {
           >
             <BreadcrumbItem href="/beranda">Beranda</BreadcrumbItem>
             <BreadcrumbItem href="/pelatihan">Pelatihan</BreadcrumbItem>
-            <BreadcrumbItem href="/pelatihan/tambah">Tambah Pelatihan</BreadcrumbItem>
+            <BreadcrumbItem href="/pelatihan/tambah">Ubah Data Pelatihan</BreadcrumbItem>
           </Breadcrumbs>
 
           {/* Section Title */}
-          <TitleSectionAdmin label="Tambah Pelatihan" />
+          <TitleSectionAdmin label="Ubah data pelatihan" />
 
           {/* Form */}
           <Form className="flex flex-col items-end gap-4" onSubmit={handleSubmit}>
