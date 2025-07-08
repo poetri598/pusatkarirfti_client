@@ -150,3 +150,26 @@ export async function searchInternships(filters: Record<string, any>) {
     };
   }
 }
+
+// ✅ SEARCH & FILTER & SORT ACTIVE
+export async function searchInternshipsActive(filters: Record<string, any>) {
+  try {
+    const cleanedFilters: Record<string, string> = {};
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        cleanedFilters[key] = String(value);
+      }
+    });
+    const query = new URLSearchParams(cleanedFilters).toString();
+    const res = await api.get<ApiResponse<InternshipItem[]>>(`/internships/search-active?${query}`);
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mencari atau memfilter internship"),
+    };
+  }
+}

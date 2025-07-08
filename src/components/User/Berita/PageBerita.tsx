@@ -6,20 +6,34 @@ import { SearchNormal1, ArrowRight2, FilterEdit, Sort } from "iconsax-react";
 
 // Components
 import TitleKarir from "@/components/Custom/TitleKarir";
-import { Button, Input, Select, SelectItem, Pagination, Spinner } from "@heroui/react";
+import { Button, Input, Select, SelectItem, Selection, Pagination, Spinner } from "@heroui/react";
 import CardBerita2 from "@/components/Card/CardBerita2";
 
 // Types
-import { createFetcher } from "@/utils/createFetcher";
-import type { NewsItem } from "@/types/news";
+import { NewsItem } from "@/types/news";
 import { NewsTypeItem } from "@/types/newsType";
-import { searchNews } from "@/services/news";
+
+// Services
+import { searchNewsActive } from "@/services/news";
+import { getNewsTypeAll } from "@/services/newsType";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function Berita() {
   // newsTypes
   const [newsTypes, setNewsTypes] = useState<NewsTypeItem[]>([]);
+  const [news_type_id, setNewsTypeId] = useState<Selection>(new Set([]));
   const [isLoadingNewsTypes, setIsLoadingNewsTypes] = useState(true);
   const [apiErrorNewsTypes, setApiErrorNewsTypes] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      const fetchers = [createServiceFetcher(getNewsTypeAll, setNewsTypes, setApiErrorNewsTypes, setIsLoadingNewsTypes)];
+      await Promise.all(fetchers.map((fetch) => fetch()));
+    };
+    fetchAll();
+  }, []);
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const [sort, setSort] = useState<string>("");
@@ -40,15 +54,6 @@ export default function Berita() {
   const totalPage = Math.ceil(maxValue / amount);
 
   useEffect(() => {
-    const fetchAll = async () => {
-      const fetchers = [createFetcher<NewsTypeItem[]>("/news-types", setNewsTypes, setApiErrorNewsTypes, setIsLoadingNewsTypes)];
-      await Promise.all(fetchers.map((fetch) => fetch()));
-    };
-
-    fetchAll();
-  }, []);
-
-  useEffect(() => {
     const fetchNews = async () => {
       setIsLoadingAllNews(true);
       setApiErrorAllNews(null);
@@ -60,7 +65,7 @@ export default function Berita() {
           ...filters,
         };
 
-        const { success, data, error } = await searchNews(queryParams);
+        const { success, data, error } = await searchNewsActive(queryParams);
 
         if (success) {
           setNews(data || []);
@@ -86,6 +91,7 @@ export default function Berita() {
     { key: "news_created_at:desc", label: "Terbaru" },
     { key: "news_created_at:asc", label: "Terlama" },
   ];
+
   return (
     <>
       <>
@@ -243,7 +249,7 @@ export default function Berita() {
           </div>
 
           {/* Section Card */}
-          <section className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xs:gap-2 lg:gap-8">
+          <section className="grid xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {isLoadingAllNews ? (
               <div className="w-full flex justify-center items-center py-8">
                 <Spinner
@@ -258,13 +264,12 @@ export default function Berita() {
               </div>
             ) : apiErrorAllNews ? (
               <p className="text-start text-xs text-danger-primary">{apiErrorAllNews}</p>
-            ) : news.length === 0 ? (
-              <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
+            ) : currentItems.length === 0 ? (
+              <p className="text-center text-xs text-gray-500 col-span-full py-8">Data belum tersedia</p>
             ) : (
               currentItems.map((item) => <CardBerita2 key={item.news_id} {...item} />)
             )}
           </section>
-
           {/* Pagination */}
           <div className="w-full  flex justify-end item-center">
             <div className="flex items-center">

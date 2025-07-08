@@ -142,7 +142,7 @@ export default function CounselingTable() {
       >
         <TableHeader columns={columns}>{(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}</TableHeader>
 
-        <TableBody items={tableItems} emptyContent={<span className="text-xs text-text-secondary">Belum ada data konseling</span>}>
+        <TableBody items={tableItems} emptyContent={<span className="text-xs text-text-secondary">Anda belum melakukan konseling</span>}>
           {(item) => (
             <TableRow key={item.key}>
               {(columnKey) => {

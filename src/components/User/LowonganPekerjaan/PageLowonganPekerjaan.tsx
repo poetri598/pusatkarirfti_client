@@ -2,18 +2,21 @@
 import { useState, useEffect } from "react";
 // Iconsax
 import { SearchNormal1, ArrowRight2, FilterEdit, Sort } from "iconsax-react";
-import type { JobItem } from "@/types/job";
 
 // Components
-import { Breadcrumbs, BreadcrumbItem, Input, NumberInput, Pagination, Button, Spinner, Select, SelectItem, Avatar } from "@heroui/react";
+import { Input, Pagination, Button, Spinner, Select, SelectItem, Selection, Avatar } from "@heroui/react";
 import HeroKarir from "@/components/Custom/HeroKarir";
 import TitleKarir from "@/components/Custom/TitleKarir";
 import CardLowonganPekerjaan from "@/components/Card/CardLowonganPekerjaan";
 
-import { createFetcher } from "@/utils/createFetcher";
+// Types
+import type { JobItem } from "@/types/job";
+import { AgeItem } from "@/types/age";
+import { WeightItem } from "@/types/weight";
+import { HeightItem } from "@/types/height";
 import { JobTypeItem } from "@/types/jobType";
-import { CompanyItem } from "@/types/company";
 import { IpkItem } from "@/types/ipk";
+import { CompanyItem } from "@/types/company";
 import { CityItem } from "@/types/city";
 import { CountryItem } from "@/types/country";
 import { EducationItem } from "@/types/education";
@@ -25,47 +28,98 @@ import { PositionItem } from "@/types/position";
 import { ProgramStudyItem } from "@/types/programStudy";
 import { ProvinceItem } from "@/types/province";
 import { ReligionItem } from "@/types/religion";
-import { searchJobs } from "@/services/job";
+
+// Services
+import { getAgeAll } from "@/services/age";
+import { getWeightAll } from "@/services/weight";
+import { getHeightAll } from "@/services/height";
+import { getJobTypeAll } from "@/services/jobType";
+import { getIpkAll } from "@/services/ipk";
+import { getCompanyAll } from "@/services/company";
+import { getCityAll } from "@/services/city";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getExperienceAll } from "@/services/experience";
+import { getGenderAll } from "@/services/gender";
+import { getMaritalStatusAll } from "@/services/maritalStatus";
+import { getModeAll } from "@/services/mode";
+import { getPositionAll } from "@/services/position";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+import { getReligionAll } from "@/services/religion";
+import { searchJobsActive } from "@/services/job";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function PageLowonganPekerjaan() {
+  // ages
+  const [ages, setAges] = useState<AgeItem[]>([]);
+  const [age_min_id, setAgeMinId] = useState<Selection>(new Set([]));
+  const [age_max_id, setAgeMaxId] = useState<Selection>(new Set([]));
+  const [isLoadingAges, setIsLoadingAges] = useState(true);
+  const [apiErrorAges, setApiErrorAges] = useState<string | null>(null);
+  // weights
+  const [weights, setWeights] = useState<WeightItem[]>([]);
+  const [weight_min_id, setWeightMinId] = useState<Selection>(new Set([]));
+  const [weight_max_id, setWeightMaxId] = useState<Selection>(new Set([]));
+  const [isLoadingWeights, setIsLoadingWeights] = useState(true);
+  const [apiErrorWeights, setApiErrorWeights] = useState<string | null>(null);
+  // heights
+  const [heights, setHeights] = useState<HeightItem[]>([]);
+  const [height_min_id, setHeightMinId] = useState<Selection>(new Set([]));
+  const [height_max_id, setHeightMaxId] = useState<Selection>(new Set([]));
+  const [isLoadingHeights, setIsLoadingHeights] = useState(true);
+  const [apiErrorHeights, setApiErrorHeights] = useState<string | null>(null);
   // jobTypes
   const [jobTypes, setJobTypes] = useState<JobTypeItem[]>([]);
+  const [job_type_id, setJobTypeId] = useState<Selection>(new Set([]));
   const [isLoadingJobTypes, setIsLoadingJobTypes] = useState(true);
   const [apiErrorJobTypes, setApiErrorJobTypes] = useState<string | null>(null);
-  // companies
-  const [companies, setCompanies] = useState<CompanyItem[]>([]);
-  const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
-  const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
   // ipks
   const [ipks, setIpks] = useState<IpkItem[]>([]);
+  const [ipk_id, setIpkId] = useState<Selection>(new Set([]));
   const [isLoadingIpks, setIsLoadingIpks] = useState(true);
   const [apiErrorIpks, setApiErrorIpks] = useState<string | null>(null);
+  // companies
+  const [companies, setCompanies] = useState<CompanyItem[]>([]);
+  const [company_id, setCompanyId] = useState<Selection>(new Set([]));
+  const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
+  const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
   // cities
   const [cities, setCities] = useState<CityItem[]>([]);
+  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
   // countries
   const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
   const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
   // educations
   const [educations, setEducations] = useState<EducationItem[]>([]);
+  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
   const [isLoadingEducations, setIsLoadingEducations] = useState(true);
   const [apiErrorEducations, setApiErrorEducations] = useState<string | null>(null);
   // experiences
   const [experiences, setExperiences] = useState<ExperienceItem[]>([]);
+  const [experience_ids, setExperienceIds] = useState<Selection>(new Set([]));
   const [isLoadingExperiences, setIsLoadingExperiences] = useState(true);
   const [apiErrorExperiences, setApiErrorExperiences] = useState<string | null>(null);
   // genders
   const [genders, setGenders] = useState<GenderItem[]>([]);
+  const [gender_ids, setGenderIds] = useState<Selection>(new Set([]));
   const [isLoadingGenders, setIsLoadingGenders] = useState(true);
   const [apiErrorGenders, setApiErrorGenders] = useState<string | null>(null);
   // maritalStatuses
   const [maritalStatuses, setMaritalStatuses] = useState<MaritalStatusItem[]>([]);
+  const [marital_status_ids, setMaritalStatusIds] = useState<Selection>(new Set([]));
   const [isLoadingMaritalStatuses, setIsLoadingMaritalStatuses] = useState(true);
   const [apiErrorMaritalStatuses, setApiErrorMaritalStatuses] = useState<string | null>(null);
   // modes
   const [modes, setModes] = useState<ModeItem[]>([]);
+  const [position_ids, setPositionIds] = useState<Selection>(new Set([]));
+  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
   const [isLoadingModes, setIsLoadingModes] = useState(true);
   const [apiErrorModes, setApiErrorModes] = useState<string | null>(null);
   // positions
@@ -74,16 +128,47 @@ export default function PageLowonganPekerjaan() {
   const [apiErrorPositions, setApiErrorPositions] = useState<string | null>(null);
   // programStudies
   const [programStudies, setProgramStudies] = useState<ProgramStudyItem[]>([]);
+  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
   const [isLoadingProgramStudies, setIsLoadingProgramStudies] = useState(true);
   const [apiErrorProgramStudies, setApiErrorProgramStudies] = useState<string | null>(null);
   // provinces
   const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
   const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
   const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
   // religions
   const [religions, setReligions] = useState<ReligionItem[]>([]);
+  const [religion_ids, setReligionIds] = useState<Selection>(new Set([]));
   const [isLoadingReligions, setIsLoadingReligions] = useState(true);
   const [apiErrorReligions, setApiErrorReligions] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      const fetchers = [
+        createServiceFetcher(getAgeAll, setAges, setApiErrorAges, setIsLoadingAges),
+        createServiceFetcher(getHeightAll, setHeights, setApiErrorHeights, setIsLoadingHeights),
+        createServiceFetcher(getWeightAll, setWeights, setApiErrorWeights, setIsLoadingWeights),
+        createServiceFetcher(getJobTypeAll, setJobTypes, setApiErrorJobTypes, setIsLoadingJobTypes),
+        createServiceFetcher(getIpkAll, setIpks, setApiErrorIpks, setIsLoadingIpks),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getExperienceAll, setExperiences, setApiErrorExperiences, setIsLoadingExperiences),
+        createServiceFetcher(getGenderAll, setGenders, setApiErrorGenders, setIsLoadingGenders),
+        createServiceFetcher(getMaritalStatusAll, setMaritalStatuses, setApiErrorMaritalStatuses, setIsLoadingMaritalStatuses),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getPositionAll, setPositions, setApiErrorPositions, setIsLoadingPositions),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getReligionAll, setReligions, setApiErrorReligions, setIsLoadingReligions),
+      ];
+
+      await Promise.all(fetchers.map((fetch) => fetch()));
+    };
+
+    fetchAll();
+  }, []);
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const [sort, setSort] = useState<string>("");
@@ -104,31 +189,6 @@ export default function PageLowonganPekerjaan() {
   const totalPage = Math.ceil(maxValue / amount);
 
   useEffect(() => {
-    const fetchAll = async () => {
-      const fetchers = [
-        createFetcher<JobTypeItem>("/job-types", setJobTypes, setApiErrorJobTypes, setIsLoadingJobTypes),
-        createFetcher<CompanyItem>("/companies", setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createFetcher<IpkItem>("/ipks", setIpks, setApiErrorIpks, setIsLoadingIpks),
-        createFetcher<CityItem>("/cities", setCities, setApiErrorCities, setIsLoadingCities),
-        createFetcher<CountryItem>("/countries", setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createFetcher<EducationItem>("/educations", setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createFetcher<ExperienceItem>("/experiences", setExperiences, setApiErrorExperiences, setIsLoadingExperiences),
-        createFetcher<GenderItem>("/genders", setGenders, setApiErrorGenders, setIsLoadingGenders),
-        createFetcher<MaritalStatusItem>("/marital-statuses", setMaritalStatuses, setApiErrorMaritalStatuses, setIsLoadingMaritalStatuses),
-        createFetcher<ModeItem>("/modes", setModes, setApiErrorModes, setIsLoadingModes),
-        createFetcher<PositionItem>("/positions", setPositions, setApiErrorPositions, setIsLoadingPositions),
-        createFetcher<ProgramStudyItem>("/program-studies", setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createFetcher<ProvinceItem>("/provinces", setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
-        createFetcher<ReligionItem>("/religions", setReligions, setApiErrorReligions, setIsLoadingReligions),
-      ];
-
-      await Promise.all(fetchers.map((fetch) => fetch()));
-    };
-
-    fetchAll();
-  }, []);
-
-  useEffect(() => {
     const fetchJobs = async () => {
       setIsLoadingAllJob(true);
       setApiErrorAllJob(null);
@@ -140,7 +200,7 @@ export default function PageLowonganPekerjaan() {
           ...filters,
         };
 
-        const { success, data, error } = await searchJobs(queryParams);
+        const { success, data, error } = await searchJobsActive(queryParams);
 
         if (success) {
           setJobs(data || []);
@@ -158,6 +218,12 @@ export default function PageLowonganPekerjaan() {
   }, [searchKeyword, sort, filters]);
 
   const selecItem = [
+    { key: "age_min_id", label: "Umur Min" },
+    { key: "age_max_id", label: "Umur Max" },
+    { key: "height_min_id", label: "Tinggi Badan Min" },
+    { key: "height_max_id", label: "Tinggi badan Max" },
+    { key: "weight_min_id", label: "Berat Badan Min" },
+    { key: "weight_max_id", label: "Berat Badan Max" },
     { key: "job_type_id", label: "Tipe" },
     { key: "company_id", label: "Perusahaan" },
     { key: "ipk_id", label: "Ipk" },
@@ -176,14 +242,22 @@ export default function PageLowonganPekerjaan() {
 
   const sortOptions = [
     { key: "", label: "— Tidak diurutkan —" },
-    { key: "job_age_min:asc", label: "Umur Minimum Terkecil" },
-    { key: "job_age_max:desc", label: "Umur Maksimum Terbesar" },
-    { key: "job_height_min:asc", label: "Tinggi Badan Minimum Terkecil" },
-    { key: "job_height_max:desc", label: "Tinggi Badan Maksimum Terbesar" },
-    { key: "job_weight_min:asc", label: "Berat Badan Minimum Terkecil" },
-    { key: "job_weight_max:desc", label: "Berat Badan Maksimum Terbesar" },
-    { key: "job_salary_min:desc", label: "Gaji Tertinggi" },
-    { key: "job_salary_min:asc", label: "Gaji Terendah" },
+    { key: "age_min_id:asc", label: "Umur Minimum Terkecil" },
+    { key: "age_min_id:desc", label: "Umur Minimum Terbesar" },
+    { key: "age_max_id:asc", label: "Umur Maksimum Terkecil" },
+    { key: "age_max_id:desc", label: "Umur Maksimum Terbesar" },
+    { key: "height_min_id:asc", label: "Tinggi Badan Minimum Terkecil" },
+    { key: "height_min_id:desc", label: "Tinggi Badan Maksimum Terbesar" },
+    { key: "height_max_id:asc", label: "Tinggi Badan Minimum Terkecil" },
+    { key: "height_max_id:desc", label: "Tinggi Badan Maksimum Terbesar" },
+    { key: "weight_min_id:asc", label: "Berat Badan Minimum Terkecil" },
+    { key: "weight_min_id:desc", label: "Berat Badan Maksimum Terbesar" },
+    { key: "weight_max_id:asc", label: "Berat Badan Minimum Terkecil" },
+    { key: "weight_max_id:desc", label: "Berat Badan Maksimum Terbesar" },
+    { key: "job_salary_min:asc", label: "Gaji Minimum Terendah" },
+    { key: "job_salary_min:desc", label: "Gaji Minimum Tertinggi" },
+    { key: "job_salary_max:asc", label: "Gaji Maximum Terendah" },
+    { key: "job_salary_max:desc", label: "Gaji Maximum Tertinggi" },
     { key: "job_views:desc", label: "Paling Banyak Dilihat" },
     { key: "job_views:asc", label: "Paling Sedikit Dilihat" },
     { key: "job_created_at:desc", label: "Terbaru" },
@@ -293,6 +367,246 @@ export default function PageLowonganPekerjaan() {
             </section>
 
             <section className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4  w-full">
+              {/* age_min_id */}
+              {selectedFilters.has("age_min_id") && (
+                <Select
+                  label="Pilih persyaratan umur minimum"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="age_min_id"
+                  selectedKeys={new Set([filters.age_min_id || ""])}
+                  onSelectionChange={(key) => {
+                    const value = Array.from(key)[0];
+                    setFilters((prev) => ({ ...prev, age_min_id: value }));
+                  }}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {ages.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    ages.map((item) => (
+                      <SelectItem
+                        key={item.age_id}
+                        textValue={`${item.age_no} Tahun`}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.age_no} Tahun
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
+              {/* age_max_id */}
+              {selectedFilters.has("age_max_id") && (
+                <Select
+                  label="Pilih persyaratan umur maksimum"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="age_max_id"
+                  selectedKeys={new Set([filters.age_max_id || ""])}
+                  onSelectionChange={(key) => {
+                    const value = Array.from(key)[0];
+                    setFilters((prev) => ({ ...prev, age_max_id: value }));
+                  }}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {ages.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    ages.map((item) => (
+                      <SelectItem
+                        key={item.age_id}
+                        textValue={`${item.age_no} Tahun`}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.age_no} Tahun
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
+              {/* weight_min_id */}
+              {selectedFilters.has("weight_min_id") && (
+                <Select
+                  label="Pilih persyaratan berat badan minimum"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="weight_min_id"
+                  selectedKeys={new Set([filters.weight_min_id || ""])}
+                  onSelectionChange={(key) => {
+                    const value = Array.from(key)[0];
+                    setFilters((prev) => ({ ...prev, weight_min_id: value }));
+                  }}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {weights.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    weights.map((item) => (
+                      <SelectItem
+                        key={item.weight_id}
+                        textValue={`${item.weight_no} kg`}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.weight_no} kg
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
+              {/* weight_max_id */}
+              {selectedFilters.has("weight_max_id") && (
+                <Select
+                  label="Pilih persyaratan berat badan maksimum"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="weight_max_id"
+                  selectedKeys={new Set([filters.weight_max_id || ""])}
+                  onSelectionChange={(key) => {
+                    const value = Array.from(key)[0];
+                    setFilters((prev) => ({ ...prev, weight_max_id: value }));
+                  }}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {weights.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    weights.map((item) => (
+                      <SelectItem
+                        key={item.weight_id}
+                        textValue={`${item.weight_no} kg`}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.weight_no} kg
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
+              {/* height_min_id */}
+              {selectedFilters.has("height_min_id") && (
+                <Select
+                  label="Pilih persyaratan tinggi badan minimum"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="height_min_id"
+                  selectedKeys={new Set([filters.height_min_id || ""])}
+                  onSelectionChange={(key) => {
+                    const value = Array.from(key)[0];
+                    setFilters((prev) => ({ ...prev, height_min_id: value }));
+                  }}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {heights.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    heights.map((item) => (
+                      <SelectItem
+                        key={item.height_id}
+                        textValue={`${item.height_no} cm`}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.height_no} cm
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
+              {/* height_max_id */}
+              {selectedFilters.has("height_max_id") && (
+                <Select
+                  label="Pilih persyaratan tinggi badan maksimum"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="height_max_id"
+                  selectedKeys={new Set([filters.height_max_id || ""])}
+                  onSelectionChange={(key) => {
+                    const value = Array.from(key)[0];
+                    setFilters((prev) => ({ ...prev, height_max_id: value }));
+                  }}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {heights.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    heights.map((item) => (
+                      <SelectItem
+                        key={item.height_id}
+                        textValue={`${item.height_no} cm`}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.height_no} cm
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
               {/* job_type_id */}
               {selectedFilters.has("job_type_id") && (
                 <Select
@@ -326,6 +640,45 @@ export default function PageLowonganPekerjaan() {
                         }}
                       >
                         {item.job_type_name}
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
+              {/* ipk_id */}
+              {selectedFilters.has("ipk_id") && (
+                <Select
+                  label="Pilih ipk minimal"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="ipk_id"
+                  selectedKeys={new Set([filters.ipk_id || ""])}
+                  onSelectionChange={(key) => {
+                    const value = Array.from(key)[0];
+                    setFilters((prev) => ({ ...prev, ipk_id: value }));
+                  }}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {ipks.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    ipks.map((item) => (
+                      <SelectItem
+                        key={item.ipk_id}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.ipk_no}
                       </SelectItem>
                     ))
                   )}
@@ -375,45 +728,6 @@ export default function PageLowonganPekerjaan() {
                     >
                       {company.company_name}
                     </SelectItem>
-                  )}
-                </Select>
-              )}
-
-              {/* ipk_id */}
-              {selectedFilters.has("ipk_id") && (
-                <Select
-                  label="Pilih ipk minimal"
-                  labelPlacement="outside"
-                  variant="bordered"
-                  name="ipk_id"
-                  selectedKeys={new Set([filters.ipk_id || ""])}
-                  onSelectionChange={(key) => {
-                    const value = Array.from(key)[0];
-                    setFilters((prev) => ({ ...prev, ipk_id: value }));
-                  }}
-                  classNames={{
-                    label: "after:text-danger-primary text-xs text-text-secondary",
-                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                    value: "text-xs",
-                    errorMessage: "text-danger-primary text-xs",
-                  }}
-                >
-                  {ipks.length === 0 ? (
-                    <SelectItem key="nodata" isDisabled>
-                      Data belum tersedia
-                    </SelectItem>
-                  ) : (
-                    ipks.map((item) => (
-                      <SelectItem
-                        key={item.ipk_id}
-                        classNames={{
-                          title: "text-xs hover:!text-primary-primary",
-                          selectedIcon: "text-primary-primary",
-                        }}
-                      >
-                        {item.ipk_no}
-                      </SelectItem>
-                    ))
                   )}
                 </Select>
               )}
@@ -881,6 +1195,8 @@ export default function PageLowonganPekerjaan() {
                 </div>
               ) : apiErrorAllJob ? (
                 <p className="text-start text-xs text-danger-primary">{apiErrorAllJob}</p>
+              ) : currentItems.length === 0 ? (
+                <p className="text-center text-xs text-gray-500 col-span-full py-8">Data belum tersedia</p>
               ) : (
                 currentItems.map((item) => <CardLowonganPekerjaan key={item.job_id} {...item} />)
               )}

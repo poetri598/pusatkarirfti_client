@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import { SearchNormal1, ArrowRight2, FilterEdit, Sort } from "iconsax-react";
 
 // Components
-import { Input, Pagination, Button, Spinner, Select, SelectItem, Avatar } from "@heroui/react";
+import { Input, Pagination, Button, Spinner, Select, SelectItem, Selection, Avatar } from "@heroui/react";
 import TitleKarir from "@/components/Custom/TitleKarir";
 import CardPelatihan from "@/components/Card/CardPelatihan";
 import HeroKarir from "@/components/Custom/HeroKarir";
 
 // Types
-import { createFetcher } from "@/utils/createFetcher";
+import { TrainingItem } from "@/types/training";
 import { TrainingTypeItem } from "@/types/trainingType";
 import { CompanyItem } from "@/types/company";
 import { CityItem } from "@/types/city";
@@ -21,50 +21,74 @@ import { ProgramStudyItem } from "@/types/programStudy";
 import { ProvinceItem } from "@/types/province";
 import { SemesterItem } from "@/types/semester";
 import { SkillItem } from "@/types/skill";
-import { searchTrainings } from "@/services/training";
-import { TrainingItem } from "@/types/training";
+
+// Services
+import { getTrainingTypeAll } from "@/services/trainingType";
+import { getCompanyAll } from "@/services/company";
+import { getCityAll } from "@/services/city";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getModeAll } from "@/services/mode";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+import { getSemesterAll } from "@/services/semester";
+import { getSkillAll } from "@/services/skill";
+import { searchTrainingsActive } from "@/services/training";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function Pelatihan() {
-  // trainingTypes
-  const [trainingTypes, setTrainingTypes] = useState<TrainingTypeItem[]>([]);
-  const [isLoadingTrainingTypes, setIsLoadingTrainingTypes] = useState(true);
-  const [apiErrorTrainingTypes, setApiErrorTrainingTypes] = useState<string | null>(null);
   // companies
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
+  const [company_id, setCompanyId] = useState<Selection>(new Set([]));
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
   const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
   // cities
   const [cities, setCities] = useState<CityItem[]>([]);
+  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
   // countries
   const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
   const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
   // educations
   const [educations, setEducations] = useState<EducationItem[]>([]);
+  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
   const [isLoadingEducations, setIsLoadingEducations] = useState(true);
   const [apiErrorEducations, setApiErrorEducations] = useState<string | null>(null);
   // modes
   const [modes, setModes] = useState<ModeItem[]>([]);
+  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
   const [isLoadingModes, setIsLoadingModes] = useState(true);
   const [apiErrorModes, setApiErrorModes] = useState<string | null>(null);
   // programStudies
   const [programStudies, setProgramStudies] = useState<ProgramStudyItem[]>([]);
+  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
   const [isLoadingProgramStudies, setIsLoadingProgramStudies] = useState(true);
   const [apiErrorProgramStudies, setApiErrorProgramStudies] = useState<string | null>(null);
   // provinces
   const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
   const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
   const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
   // semesters
   const [semesters, setSemesters] = useState<SemesterItem[]>([]);
+  const [semester_ids, setSemesterIds] = useState<Selection>(new Set([]));
   const [isLoadingSemesters, setIsLoadingSemesters] = useState(true);
   const [apiErrorSemesters, setApiErrorSemesters] = useState<string | null>(null);
   // skills
   const [skills, setSkills] = useState<SkillItem[]>([]);
+  const [skill_ids, setSkillIds] = useState<Selection>(new Set([]));
   const [isLoadingSkills, setIsLoadingSkills] = useState(true);
   const [apiErrorSkills, setApiErrorSkills] = useState<string | null>(null);
+  // trainingTypes
+  const [trainingTypes, setTrainingTypes] = useState<TrainingTypeItem[]>([]);
+  const [training_type_ids, setTrainingTypeIds] = useState<Selection>(new Set([]));
+  const [isLoadingTrainingTypes, setIsLoadingTrainingTypes] = useState(true);
+  const [apiErrorTrainingTypes, setApiErrorTrainingTypes] = useState<string | null>(null);
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const [sort, setSort] = useState<string>("");
@@ -87,16 +111,16 @@ export default function Pelatihan() {
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createFetcher<TrainingTypeItem[]>("/training-types", setTrainingTypes, setApiErrorTrainingTypes, setIsLoadingTrainingTypes),
-        createFetcher<CompanyItem[]>("/companies", setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createFetcher<CityItem[]>("/cities", setCities, setApiErrorCities, setIsLoadingCities),
-        createFetcher<CountryItem[]>("/countries", setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createFetcher<EducationItem[]>("/educations", setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createFetcher<ModeItem[]>("/modes", setModes, setApiErrorModes, setIsLoadingModes),
-        createFetcher<ProgramStudyItem[]>("/program-studies", setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createFetcher<ProvinceItem[]>("/provinces", setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
-        createFetcher<SemesterItem[]>("/semesters", setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
-        createFetcher<SkillItem[]>("/skills", setSkills, setApiErrorSkills, setIsLoadingSkills),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getSemesterAll, setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
+        createServiceFetcher(getSkillAll, setSkills, setApiErrorSkills, setIsLoadingSkills),
+        createServiceFetcher(getTrainingTypeAll, setTrainingTypes, setApiErrorTrainingTypes, setIsLoadingTrainingTypes),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));
@@ -115,7 +139,7 @@ export default function Pelatihan() {
           ...(sort && { sort }),
           ...filters,
         };
-        const { success, data, error } = await searchTrainings(queryParams);
+        const { success, data, error } = await searchTrainingsActive(queryParams);
         if (success) {
           setTrainings(data || []);
         } else {
@@ -132,7 +156,6 @@ export default function Pelatihan() {
   }, [searchKeyword, sort, filters]);
 
   const selecItem = [
-    { key: "training_type_id", label: "Tipe" },
     { key: "company_id", label: "Perusahaan" },
     { key: "city_id", label: "Kota" },
     { key: "country_id", label: "Negara" },
@@ -142,6 +165,7 @@ export default function Pelatihan() {
     { key: "province_id", label: "Provinsi" },
     { key: "semester_id", label: "Semester" },
     { key: "skill_id", label: "Skill" },
+    { key: "training_type_id", label: "Tipe" },
   ];
 
   const sortOptions = [
@@ -258,45 +282,6 @@ export default function Pelatihan() {
             </section>
 
             <section className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4  w-full">
-              {/* training_type_id */}
-              {selectedFilters.has("training_type_id") && (
-                <Select
-                  label="Pilih tipe"
-                  labelPlacement="outside"
-                  variant="bordered"
-                  name="training_type_id"
-                  selectedKeys={new Set([filters.training_type_id || ""])}
-                  onSelectionChange={(key) => {
-                    const value = Array.from(key)[0];
-                    setFilters((prev) => ({ ...prev, training_type_id: value }));
-                  }}
-                  classNames={{
-                    label: "after:text-danger-primary text-xs text-text-secondary",
-                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                    value: "text-xs",
-                    errorMessage: "text-danger-primary text-xs",
-                  }}
-                >
-                  {trainingTypes.length === 0 ? (
-                    <SelectItem key="nodata" isDisabled>
-                      Data belum tersedia
-                    </SelectItem>
-                  ) : (
-                    trainingTypes.map((item) => (
-                      <SelectItem
-                        key={item.training_type_id}
-                        classNames={{
-                          title: "text-xs hover:!text-primary-primary",
-                          selectedIcon: "text-primary-primary",
-                        }}
-                      >
-                        {item.training_type_name}
-                      </SelectItem>
-                    ))
-                  )}
-                </Select>
-              )}
-
               {/* company_id */}
               {selectedFilters.has("company_id") && (
                 <Select
@@ -655,6 +640,45 @@ export default function Pelatihan() {
                   )}
                 </Select>
               )}
+
+              {/* training_type_id */}
+              {selectedFilters.has("training_type_id") && (
+                <Select
+                  label="Pilih tipe"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="training_type_id"
+                  selectedKeys={new Set([filters.training_type_id || ""])}
+                  onSelectionChange={(key) => {
+                    const value = Array.from(key)[0];
+                    setFilters((prev) => ({ ...prev, training_type_id: value }));
+                  }}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {trainingTypes.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    trainingTypes.map((item) => (
+                      <SelectItem
+                        key={item.training_type_id}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.training_type_name}
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
             </section>
 
             {/* Hasil */}
@@ -675,7 +699,7 @@ export default function Pelatihan() {
             </div>
 
             {/* Section Card */}
-            <section className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xs:gap-2 lg:gap-8">
+            <section className="grid xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {isLoadingAllTrainings ? (
                 <div className="w-full flex justify-center items-center py-8">
                   <Spinner
@@ -690,8 +714,8 @@ export default function Pelatihan() {
                 </div>
               ) : apiErrorAllTrainings ? (
                 <p className="text-start text-xs text-danger-primary">{apiErrorAllTrainings}</p>
-              ) : trainings.length === 0 ? (
-                <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
+              ) : currentItems.length === 0 ? (
+                <p className="text-center text-xs text-gray-500 col-span-full py-8">Data belum tersedia</p>
               ) : (
                 currentItems.map((item) => <CardPelatihan key={item.training_id} {...item} />)
               )}

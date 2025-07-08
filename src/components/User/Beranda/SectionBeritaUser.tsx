@@ -58,7 +58,7 @@ export default function SectionBeritaUser() {
           ) : apiErrorOneMostPopularNews ? (
             <p className="text-start text-xs text-danger-primary">{apiErrorOneMostPopularNews}</p>
           ) : !oneMostPopularNews ? (
-            <p className="text-center py-8">Data belum tersedia</p>
+            <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
           ) : (
             <CardBerita key={oneMostPopularNews.news_id} {...oneMostPopularNews} />
           )}

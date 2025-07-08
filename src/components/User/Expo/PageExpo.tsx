@@ -7,57 +7,79 @@ import { SearchNormal1, ArrowRight2, FilterEdit, Sort } from "iconsax-react";
 import TitleKarir from "@/components/Custom/TitleKarir";
 import CardExpo from "@/components/Card/CardExpo";
 import HeroKarir from "@/components/Custom/HeroKarir";
-import { Button, Input, Select, SelectItem, Pagination, Spinner, Avatar } from "@heroui/react";
+import { Button, Input, Select, SelectItem, Selection, Pagination, Spinner, Avatar } from "@heroui/react";
 
 // Types
-import { createFetcher } from "@/utils/createFetcher";
+import { ExpoItem } from "@/types/expo";
 import { CityItem } from "@/types/city";
 import { CompanyItem } from "@/types/company";
 import { CountryItem } from "@/types/country";
-import { ExpoTypeItem } from "@/types/expoType";
 import { EducationItem } from "@/types/education";
+import { ExpoTypeItem } from "@/types/expoType";
 import { ModeItem } from "@/types/mode";
 import { PositionItem } from "@/types/position";
 import { ProgramStudyItem } from "@/types/programStudy";
 import { ProvinceItem } from "@/types/province";
-import { searchExpos } from "@/services/expo";
-import { ExpoItem } from "@/types/expo";
+
+// Services
+import { searchExposActive } from "@/services/expo";
+import { getCityAll } from "@/services/city";
+import { getCompanyAll } from "@/services/company";
+import { getCountryAll } from "@/services/country";
+import { getEducationAll } from "@/services/education";
+import { getExpoTypeAll } from "@/services/expoType";
+import { getModeAll } from "@/services/mode";
+import { getPositionAll } from "@/services/position";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getProvinceAll } from "@/services/province";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function PageMagang() {
   // cities
   const [cities, setCities] = useState<CityItem[]>([]);
+  const [city_ids, setCityIds] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
   // companies
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
+  const [company_ids, setCompanyIds] = useState<Selection>(new Set([]));
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
   const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
   // countries
   const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_ids, setCountryIds] = useState<Selection>(new Set([]));
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
   const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
   // expoTypes
   const [expoTypes, setExpoTypes] = useState<ExpoTypeItem[]>([]);
+  const [expo_type_ids, setExpoTypeIds] = useState<Selection>(new Set([]));
   const [isLoadingExpoTypes, setIsLoadingExpoTypes] = useState(true);
   const [apiErrorExpoTypes, setApiErrorExpoTypes] = useState<string | null>(null);
   // educations
   const [educations, setEducations] = useState<EducationItem[]>([]);
+  const [education_ids, setEducationIds] = useState<Selection>(new Set([]));
   const [isLoadingEducations, setIsLoadingEducations] = useState(true);
   const [apiErrorEducations, setApiErrorEducations] = useState<string | null>(null);
   // modes
   const [modes, setModes] = useState<ModeItem[]>([]);
+  const [mode_ids, setModeIds] = useState<Selection>(new Set([]));
   const [isLoadingModes, setIsLoadingModes] = useState(true);
   const [apiErrorModes, setApiErrorModes] = useState<string | null>(null);
   // position
   const [positions, setPositions] = useState<PositionItem[]>([]);
+  const [position_ids, setPositionIds] = useState<Selection>(new Set([]));
   const [isLoadingPositions, setIsLoadingPositions] = useState(true);
   const [apiErrorPositions, setApiErrorPositions] = useState<string | null>(null);
   // programStudies
   const [programStudies, setProgramStudies] = useState<ProgramStudyItem[]>([]);
+  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
   const [isLoadingProgramStudies, setIsLoadingProgramStudies] = useState(true);
   const [apiErrorProgramStudies, setApiErrorProgramStudies] = useState<string | null>(null);
   // provinces
   const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_ids, setProvinceIds] = useState<Selection>(new Set([]));
   const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
   const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
 
@@ -82,15 +104,15 @@ export default function PageMagang() {
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createFetcher<CityItem[]>("/cities", setCities, setApiErrorCities, setIsLoadingCities),
-        createFetcher<CompanyItem[]>("/companies", setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createFetcher<CountryItem[]>("/countries", setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createFetcher<ExpoTypeItem[]>("/expo-types", setExpoTypes, setApiErrorExpoTypes, setIsLoadingExpoTypes),
-        createFetcher<EducationItem[]>("/educations", setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createFetcher<ModeItem[]>("/modes", setModes, setApiErrorModes, setIsLoadingModes),
-        createFetcher<PositionItem[]>("/positions", setPositions, setApiErrorPositions, setIsLoadingPositions),
-        createFetcher<ProgramStudyItem[]>("/program-studies", setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createFetcher<ProvinceItem[]>("/provinces", setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
+        createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
+        createServiceFetcher(getExpoTypeAll, setExpoTypes, setApiErrorExpoTypes, setIsLoadingExpoTypes),
+        createServiceFetcher(getModeAll, setModes, setApiErrorModes, setIsLoadingModes),
+        createServiceFetcher(getPositionAll, setPositions, setApiErrorPositions, setIsLoadingPositions),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));
@@ -109,7 +131,7 @@ export default function PageMagang() {
           ...(sort && { sort }),
           ...filters,
         };
-        const { success, data, error } = await searchExpos(queryParams);
+        const { success, data, error } = await searchExposActive(queryParams);
         if (success) {
           setExpos(data || []);
         } else {
@@ -146,6 +168,7 @@ export default function PageMagang() {
     { key: "expo_created_at:desc", label: "Terbaru" },
     { key: "expo_created_at:asc", label: "Terlama" },
   ];
+
   return (
     <>
       <>
@@ -250,17 +273,17 @@ export default function PageMagang() {
             </section>
 
             <section className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4  w-full">
-              {/* expo_type_id */}
-              {selectedFilters.has("expo_type_id") && (
+              {/* city_id */}
+              {selectedFilters.has("city_id") && (
                 <Select
-                  label="Pilih tipe"
+                  label="Pilih kota"
                   labelPlacement="outside"
                   variant="bordered"
-                  name="expo_type_id"
-                  selectedKeys={new Set([filters.expo_type_id || ""])}
+                  name="city_id"
+                  selectedKeys={new Set([filters.city_id || ""])}
                   onSelectionChange={(key) => {
                     const value = Array.from(key)[0];
-                    setFilters((prev) => ({ ...prev, expo_type_id: value }));
+                    setFilters((prev) => ({ ...prev, city_id: value }));
                   }}
                   classNames={{
                     label: "after:text-danger-primary text-xs text-text-secondary",
@@ -269,20 +292,20 @@ export default function PageMagang() {
                     errorMessage: "text-danger-primary text-xs",
                   }}
                 >
-                  {expoTypes.length === 0 ? (
+                  {cities.length === 0 ? (
                     <SelectItem key="nodata" isDisabled>
                       Data belum tersedia
                     </SelectItem>
                   ) : (
-                    expoTypes.map((item) => (
+                    cities.map((item) => (
                       <SelectItem
-                        key={item.expo_type_id}
+                        key={item.city_id}
                         classNames={{
                           title: "text-xs hover:!text-primary-primary",
                           selectedIcon: "text-primary-primary",
                         }}
                       >
-                        {item.expo_type_name}
+                        {item.city_name}
                       </SelectItem>
                     ))
                   )}
@@ -332,45 +355,6 @@ export default function PageMagang() {
                     >
                       {company.company_name}
                     </SelectItem>
-                  )}
-                </Select>
-              )}
-
-              {/* city_id */}
-              {selectedFilters.has("city_id") && (
-                <Select
-                  label="Pilih kota"
-                  labelPlacement="outside"
-                  variant="bordered"
-                  name="city_id"
-                  selectedKeys={new Set([filters.city_id || ""])}
-                  onSelectionChange={(key) => {
-                    const value = Array.from(key)[0];
-                    setFilters((prev) => ({ ...prev, city_id: value }));
-                  }}
-                  classNames={{
-                    label: "after:text-danger-primary text-xs text-text-secondary",
-                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                    value: "text-xs",
-                    errorMessage: "text-danger-primary text-xs",
-                  }}
-                >
-                  {cities.length === 0 ? (
-                    <SelectItem key="nodata" isDisabled>
-                      Data belum tersedia
-                    </SelectItem>
-                  ) : (
-                    cities.map((item) => (
-                      <SelectItem
-                        key={item.city_id}
-                        classNames={{
-                          title: "text-xs hover:!text-primary-primary",
-                          selectedIcon: "text-primary-primary",
-                        }}
-                      >
-                        {item.city_name}
-                      </SelectItem>
-                    ))
                   )}
                 </Select>
               )}
@@ -447,6 +431,45 @@ export default function PageMagang() {
                         }}
                       >
                         {item.education_name}
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
+              {/* expo_type_id */}
+              {selectedFilters.has("expo_type_id") && (
+                <Select
+                  label="Pilih tipe"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="expo_type_id"
+                  selectedKeys={new Set([filters.expo_type_id || ""])}
+                  onSelectionChange={(key) => {
+                    const value = Array.from(key)[0];
+                    setFilters((prev) => ({ ...prev, expo_type_id: value }));
+                  }}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {expoTypes.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    expoTypes.map((item) => (
+                      <SelectItem
+                        key={item.expo_type_id}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.expo_type_name}
                       </SelectItem>
                     ))
                   )}
@@ -628,7 +651,7 @@ export default function PageMagang() {
             </div>
 
             {/* Section Card */}
-            <section className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xs:gap-2 lg:gap-8">
+            <section className="grid xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {isLoadingAllExpos ? (
                 <div className="w-full flex justify-center items-center py-8">
                   <Spinner
@@ -643,6 +666,8 @@ export default function PageMagang() {
                 </div>
               ) : apiErrorAllExpos ? (
                 <p className="text-start text-xs text-danger-primary">{apiErrorAllExpos}</p>
+              ) : currentItems.length === 0 ? (
+                <p className="text-center text-xs text-gray-500 col-span-full py-8">Data belum tersedia</p>
               ) : (
                 currentItems.map((item) => <CardExpo key={item.expo_id} {...item} />)
               )}

@@ -45,7 +45,7 @@ export default function SectionHeroUser() {
         {/* Search */}
         <Input
           endContent={<SearchNormal1 size={32} color="currentColor" className="text-primary-primary transition-colors hover:text-background-primary hover:bg-primary-primary rounded-lg p-2" />}
-          placeholder="Cari Pelatihan terkait pemrograman........"
+          placeholder="Cari pelatihan sesuai minatmu..."
           type="text"
           classNames={{
             input: "placeholder:text-text-secondary placeholder:text-sm focus:!text-text-secondary focus:!border-primary-primary",

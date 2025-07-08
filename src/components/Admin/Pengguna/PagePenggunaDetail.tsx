@@ -65,7 +65,7 @@ export default function PagePenggunaDetail({ user_name }: { user_name: string })
           }}
         >
           <BreadcrumbItem href="/">Beranda</BreadcrumbItem>
-          <BreadcrumbItem href="/pengguna">Pelatihan</BreadcrumbItem>
+          <BreadcrumbItem href="/pengguna">Pengguna</BreadcrumbItem>
           <BreadcrumbItem href={`/pengguna/${user_name}`}>Detail Pengguna</BreadcrumbItem>
         </Breadcrumbs>
 

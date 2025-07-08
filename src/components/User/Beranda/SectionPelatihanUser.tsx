@@ -43,7 +43,7 @@ export default function SectionPelatihanUser() {
             ) : apiErrorThreeLatest ? (
               <p className="text-center py-8 text-red-500">{apiErrorThreeLatest}</p>
             ) : threeLatest.length === 0 ? (
-              <p className="text-start text-xs text-text-secondary">Belum ada informasi pelatihan</p>
+              <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
             ) : (
               threeLatest.map((item) => <CardPelatihan key={item.training_id} {...item} />)
             )}

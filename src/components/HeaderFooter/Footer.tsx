@@ -37,7 +37,7 @@ export default function Footer() {
                 <Link href={"/"} className="hover:text-primary-border">
                   Beranda
                 </Link>
-                <Link href={"/cdc-news"} className="hover:text-primary-border">
+                <Link href={"/berita"} className="hover:text-primary-border">
                   Berita
                 </Link>
                 <Link href={"/tracer-study"} className="hover:text-primary-border">
@@ -45,39 +45,39 @@ export default function Footer() {
                 </Link>
               </div>
               <div className="flex flex-col gap-4">
-                <Link href={"/job"} className="hover:text-primary-border font-bold">
+                <Link href={"/lowongan-pekerjaan"} className="hover:text-primary-border font-bold">
                   Karir
                 </Link>
                 <span className="flex flex-col gap-3">
-                  <Link href={"/job"} className="hover:text-primary-border">
+                  <Link href={"/lowongan-pekerjaan"} className="hover:text-primary-border">
                     Lowongan Kerja
                   </Link>
-                  <Link href={"/internship"} className="hover:text-primary-border">
+                  <Link href={"/magang"} className="hover:text-primary-border">
                     Magang
                   </Link>
-                  <Link href={"/training"} className="hover:text-primary-border">
+                  <Link href={"/pelatihan"} className="hover:text-primary-border">
                     Pelatihan
                   </Link>
                   <Link href={"/expo"} className="hover:text-primary-border">
                     Expo
                   </Link>
-                  <Link href={"/counseling"} className="hover:text-primary-border">
-                    Counseling
+                  <Link href={"/konseling"} className="hover:text-primary-border">
+                    Konseling
                   </Link>
                 </span>
               </div>
               <div className="flex flex-col gap-4">
-                <Link href={"/cdc-profile"} className="hover:text-primary-border font-bold">
+                <Link href={"/profil-cdc-fti"} className="hover:text-primary-border font-bold">
                   Tentang Kami
                 </Link>
                 <span className="flex flex-col gap-3">
-                  <Link href={"/cdc-profile"} className="hover:text-primary-border">
+                  <Link href={"/profil-cdc-fti"} className="hover:text-primary-border">
                     Profil CDC FTI
                   </Link>
-                  <Link href={"/cdc-activity"} className="hover:text-primary-border">
+                  <Link href={"/kegiatan-cdc-fti"} className="hover:text-primary-border">
                     Kegiatan CDC FTI
                   </Link>
-                  <Link href={"/cdc-contact"} className="hover:text-primary-border">
+                  <Link href={"/hubungi-kami"} className="hover:text-primary-border">
                     Hubungi Kami
                   </Link>
                 </span>

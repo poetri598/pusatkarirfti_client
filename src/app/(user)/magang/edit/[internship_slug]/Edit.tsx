@@ -1230,7 +1230,7 @@ export default function Edit({ internship_slug }: { internship_slug: string }) {
               )}
             </div>
             <Button type="submit" className="login">
-              Simpan
+              Simpan Perubahan
             </Button>
           </Form>
         </main>
