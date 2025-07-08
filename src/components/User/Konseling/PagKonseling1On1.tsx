@@ -7,45 +7,66 @@ import { useRouter } from "next/navigation";
 import { Profile } from "iconsax-react";
 
 // Components
-import { Breadcrumbs, BreadcrumbItem, Input, Selection, Select, SelectItem, Button, Spinner, DatePicker, Form } from "@heroui/react";
+import { Breadcrumbs, BreadcrumbItem, Input, Selection, Select, SelectItem, Button, Spinner, DatePicker, Form, Textarea } from "@heroui/react";
 import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
 import { showConfirmationDialog, showErrorDialog, showSuccessDialog } from "@/components/Custom/AlertButton";
 
+// Context
 import { useAuth } from "@/context/AuthContext";
+
+// Types
 import { ProgramStudyItem } from "@/types/programStudy";
 import { CounselingTypeItem } from "@/types/counselingType";
+import { StatusItem } from "@/types/status";
+
+// Services
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getCounselingTypeAll } from "@/services/counselingType";
+import { getStatusAll } from "@/services/status";
 import { createCounseling } from "@/services/counseling";
+
+// Utils
+import { appendSingle } from "@/utils/formDataHelpers";
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function Counseling1On1() {
   const { user } = useAuth();
   const router = useRouter();
   // Program Study
   const [programStudies, setProgramStudies] = useState<ProgramStudyItem[]>([]);
-  const [programStudy, setProgramStudy] = useState<Selection>(new Set([]));
+  const [program_study_id, setProgramStudyId] = useState<Selection>(new Set([]));
   const [isLoadingProgramStudies, setIsLoadingProgramStudies] = useState(true);
   const [apiErrorProgramStudies, setApiErrorProgramStudies] = useState<string | null>(null);
   // Counseling Type
   const [counselingTypes, setCounselingTypes] = useState<CounselingTypeItem[]>([]);
-  const [counselingType, setCounselingType] = useState<Selection>(new Set(["1"]));
+  const [counseling_type_id, setCounselingTypeId] = useState<Selection>(new Set(["1"]));
   const [isLoadingCounselingTypes, setIsLoadingCounselingTypes] = useState(true);
   const [apiErrorCounselingTypes, setApiErrorCounselingTypes] = useState<string | null>(null);
+  // Statuses
+  const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [status_id, setStatusId] = useState<Selection>(new Set(["2"]));
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
+  const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
 
   const user_fullname = user?.user_fullname || "";
   const user_phone = user?.user_phone || "";
   const user_nim = user?.user_nim || "";
   const [counseling_date, setCounselingDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
+  const [counseling_desc, setCounselingDesc] = useState("");
+  const [counseling_is_read, setCounselingIsRead] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user?.program_study_id) {
-      setProgramStudy(new Set([String(user.program_study_id)]));
-    }
+    if (user?.program_study_id) setProgramStudyId(new Set([String(user.program_study_id)]));
   }, [user?.program_study_id]);
 
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createFetcher<CounselingTypeItem[]>("/counseling-types", setCounselingTypes, setApiErrorCounselingTypes, setIsLoadingCounselingTypes),
-        createFetcher<ProgramStudyItem[]>("/program-studies", setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getCounselingTypeAll, setCounselingTypes, setApiErrorCounselingTypes, setIsLoadingCounselingTypes),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
       ];
       await Promise.all(fetchers.map((fetch) => fetch()));
     };
@@ -53,34 +74,18 @@ export default function Counseling1On1() {
     fetchAll();
   }, []);
 
-  // Set default selected program study dari user
-  useEffect(() => {
-    if (user?.program_study_id) {
-      setProgramStudy(new Set([String(user.program_study_id)]));
-    }
-  }, [user?.program_study_id]);
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
-
-    if (!user || !user.user_id) {
-      await showErrorDialog("User belum dimuat. Silakan tunggu sebentar dan coba lagi.");
-      return;
-    }
-
+    setLoading(true);
     const formData = new FormData();
-    formData.append("user_id", String(user.user_id));
-
-    if (counseling_date) {
-      formData.append("counseling_date", counseling_date.toAbsoluteString());
-    }
-
-    if (counselingType instanceof Set && counselingType.size > 0) {
-      formData.append("counseling_type_id", String(Array.from(counselingType)[0]));
-    }
-
+    formData.append("user_id", String(user?.user_id));
+    if (counseling_date) formData.append("counseling_date", counseling_date.toAbsoluteString());
+    formData.append("counseling_desc", counseling_desc);
+    formData.append("counseling_is_read", String(Number(counseling_is_read)));
+    appendSingle(formData, "counseling_type_id", counseling_type_id);
+    appendSingle(formData, "status_id", status_id);
     const { success, error } = await createCounseling(formData);
     if (success) {
       await showSuccessDialog();
@@ -88,12 +93,25 @@ export default function Counseling1On1() {
     } else {
       await showErrorDialog(error);
     }
+    setLoading(false);
   };
 
   return (
     <>
       <>
         <main className="xs:w-11/12 lg:w-10/12 bg-background-primary mx-auto flex flex-col py-8 gap-8">
+          {loading && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+              <Spinner
+                label="Loading..."
+                variant="wave"
+                classNames={{
+                  label: "text-primary-primary mt-4",
+                  dots: "border-5 border-primary-primary",
+                }}
+              />
+            </div>
+          )}
           {/* Breadcrumb */}
           <Breadcrumbs
             itemClasses={{
@@ -193,12 +211,13 @@ export default function Counseling1On1() {
                     labelPlacement="outside"
                     variant="bordered"
                     name="program_study_id"
-                    selectedKeys={programStudy}
-                    onSelectionChange={setProgramStudy}
+                    selectedKeys={program_study_id}
+                    onSelectionChange={setProgramStudyId}
                     classNames={{
                       label: "after:text-danger-primary text-xs text-text-secondary",
                       trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                       value: "text-xs",
+                      errorMessage: "text-danger-primary text-xs",
                     }}
                   >
                     {programStudies.length === 0 ? (
@@ -244,12 +263,13 @@ export default function Counseling1On1() {
                     labelPlacement="outside"
                     variant="bordered"
                     name="counseling_type_id"
-                    selectedKeys={counselingType}
-                    onSelectionChange={setCounselingType}
+                    selectedKeys={counseling_type_id}
+                    onSelectionChange={setCounselingTypeId}
                     classNames={{
                       label: "after:text-danger-primary text-xs text-text-secondary",
                       trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                       value: "text-xs",
+                      errorMessage: "text-danger-primary text-xs",
                     }}
                   >
                     {counselingTypes.length === 0 ? (
@@ -293,6 +313,75 @@ export default function Counseling1On1() {
                   }}
                 />
               </div>
+              {/* Counseling Desc */}
+              <Textarea
+                isRequired
+                label="Beri tahu kami secara singkat mengenai konseling anda"
+                labelPlacement="outside"
+                name="counseling_desc"
+                value={counseling_desc}
+                onValueChange={setCounselingDesc}
+                type="text"
+                variant="bordered"
+                classNames={{
+                  label: "after:text-danger-primary text-xs text-text-secondary",
+                  input: "focus:!border-primary-primary text-xs ",
+                  inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                  errorMessage: "text-danger-primary text-xs",
+                }}
+              />
+
+              {/* Status */}
+              {isLoadingStatuses ? (
+                <div className="w-full flex justify-center items-center py-8">
+                  <Spinner
+                    label="Sedang memuat data..."
+                    labelColor="primary"
+                    variant="dots"
+                    classNames={{
+                      label: "text-primary-primary mt-4",
+                      dots: "border-5 border-primary-primary",
+                    }}
+                  />
+                </div>
+              ) : apiErrorStatuses ? (
+                <p className="text-start text-xs text-danger-primary">{apiErrorStatuses}</p>
+              ) : (
+                <Select
+                  isRequired
+                  label="Pilih status publikasi"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="status_id"
+                  selectedKeys={status_id}
+                  onSelectionChange={setStatusId}
+                  classNames={{
+                    base: "hidden",
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {statuses.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    statuses.map((item) => (
+                      <SelectItem
+                        key={item.status_id}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.status_name}
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
             </div>
 
             <div className="flex xs:flex-col xs:items-start md:flex-row md:justify-between md:items-center gap-8">

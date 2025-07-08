@@ -69,9 +69,9 @@ export default function CounselingTable() {
         </Chip>
       ),
       status:
-        item.status_name === "aktif" ? (
+        item.status_id === 1 ? (
           <Chip className="text-xs font-medium px-3 py-0.5 rounded-full bg-primary-primary text-white" variant="flat" size="sm">
-            Disetujui
+            Diterima
           </Chip>
         ) : (
           <Chip className="text-xs font-medium px-3 py-0.5 rounded-full bg-default-200 text-text-primary" variant="flat" size="sm">

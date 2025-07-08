@@ -89,6 +89,70 @@ export async function getCounselingsByUserId(user_id: number) {
   }
 }
 
+// ✅ PATCH IS_READ
+export async function updateCounselingIsReadById(counseling_id: number) {
+  try {
+    const res = await api.patch<ApiResponse<null>>(`/counselings/${counseling_id}/is-read`);
+    if (res.data.status === "success") {
+      return { success: true };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal memperbarui status baca counseling"),
+    };
+  }
+}
+
+// ✅ PATCH STATUS
+export async function updateCounselingStatusById(counseling_id: number) {
+  try {
+    const res = await api.patch<ApiResponse<null>>(`/counselings/${counseling_id}/status`);
+    if (res.data.status === "success") {
+      return { success: true };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal memperbarui status counseling"),
+    };
+  }
+}
+
+// ✅ COUNT UNREAD
+export async function countUnreadCounselings() {
+  try {
+    const res = await api.get<ApiResponse<{ total: number }>>("/counselings/unread/count");
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data.total };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal menghitung counseling yang belum dibaca"),
+    };
+  }
+}
+
+// ✅ COUNT UNAPPROVED
+export async function countUnapprovedCounselings() {
+  try {
+    const res = await api.get<ApiResponse<{ total: number }>>("/counselings/unapproved/count");
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data.total };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal menghitung counseling yang belum disetujui"),
+    };
+  }
+}
+
 // ✅ SEARCH & FILTER & SORT
 export async function searchCounselings(filters: Record<string, any>) {
   try {

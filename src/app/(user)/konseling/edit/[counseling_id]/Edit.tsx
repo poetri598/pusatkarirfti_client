@@ -2,9 +2,9 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-import { Breadcrumbs, BreadcrumbItem, Form, Button, Select, SelectItem, Selection, DatePicker, Avatar, Spinner, Textarea } from "@heroui/react";
+import { Breadcrumbs, BreadcrumbItem, Form, Button, Select, SelectItem, Selection, DatePicker, Avatar, Spinner, Textarea, Switch } from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
-import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
+import { ZonedDateTime, now, getLocalTimeZone, parseAbsoluteToLocal } from "@internationalized/date";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 
 // Types
@@ -16,13 +16,13 @@ import { UserItem } from "@/types/user";
 import { getCounselingTypeAll } from "@/services/counselingType";
 import { getUserAll } from "@/services/user";
 import { getStatusAll } from "@/services/status";
-import { createCounseling } from "@/services/counseling";
+import { getCounselingById, updateCounselingById } from "@/services/counseling";
 
 // Utils
 import { appendSingle } from "@/utils/formDataHelpers";
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
-export default function page() {
+export default function page({ counseling_id }: { counseling_id: string }) {
   const router = useRouter();
   // counseling Type
   const [counselingTypes, setCounselingTypes] = useState<CounselingTypeItem[]>([]);
@@ -36,17 +36,18 @@ export default function page() {
   const [apiErrorUsers, setApiErrorUsers] = useState<string | null>(null);
   // statuses
   const [statuses, setStatuses] = useState<StatusItem[]>([]);
-  const [status_id, setStatusId] = useState<Selection>(new Set(["2"]));
+  const [status_id, setStatusId] = useState<Selection>(new Set([]));
   const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
   const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
 
   const [counseling_desc, setCounselingDesc] = useState<string>("");
-  const [counseling_date, setCounselingDate] = useState<ZonedDateTime | null>(now(getLocalTimeZone()));
+  const [counseling_date, setCounselingDate] = useState<ZonedDateTime | null>(null);
   const [counseling_is_read, setCounselingIsRead] = useState<boolean>(false);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     const fetchAll = async () => {
       const fetchers = [
         createServiceFetcher(getCounselingTypeAll, setCounselingTypes, setApiErrorCounselingTypes, setIsLoadingCounselingTypes),
@@ -54,6 +55,19 @@ export default function page() {
         createServiceFetcher(getUserAll, setUsers, setApiErrorUsers, setIsLoadingUsers),
       ];
       await Promise.all(fetchers.map((fetch) => fetch()));
+
+      const { success, data, error } = await getCounselingById(Number(counseling_id));
+      if (success && data) {
+        setCounselingDesc(data.counseling_desc);
+        if (data.counseling_date) setCounselingDate(parseAbsoluteToLocal(data.counseling_date));
+        setCounselingIsRead(data.counseling_is_read);
+        setCounselingTypeId(new Set([String(data.counseling_type_id)]));
+        setStatusId(new Set([String(data.status_id)]));
+        setUserId(new Set([String(data.user_id)]));
+      } else {
+        await showErrorDialog(error);
+      }
+      setLoading(false);
     };
 
     fetchAll();
@@ -71,7 +85,7 @@ export default function page() {
     appendSingle(formData, "user_id", user_id);
     appendSingle(formData, "counseling_type_id", counseling_type_id);
     appendSingle(formData, "status_id", status_id);
-    const { success, error } = await createCounseling(formData);
+    const { success, error } = await updateCounselingById(Number(counseling_id), formData);
     if (success) {
       await showSuccessDialog();
       router.push("/konseling");
@@ -94,11 +108,11 @@ export default function page() {
           >
             <BreadcrumbItem href="/beranda">Beranda</BreadcrumbItem>
             <BreadcrumbItem href="/konseling">Konseling</BreadcrumbItem>
-            <BreadcrumbItem href="/konseling/tambah">Tambah Konseling</BreadcrumbItem>
+            <BreadcrumbItem href={`/konseling/edit${counseling_id}`}>Ubah Data Konseling</BreadcrumbItem>
           </Breadcrumbs>
 
           {/* Section Title */}
-          <TitleSectionAdmin label="Tambah Konseling" />
+          <TitleSectionAdmin label="Ubah Data Konseling" />
 
           {/* Form */}
           <Form className="flex flex-col items-end xs:gap-2 md:gap-8" onSubmit={handleSubmit}>
@@ -267,7 +281,7 @@ export default function page() {
               }}
             />
 
-            {/* Status */}
+            {/* status_id */}
             {isLoadingStatuses ? (
               <div className="w-full flex justify-center items-center py-8">
                 <Spinner
@@ -285,14 +299,13 @@ export default function page() {
             ) : (
               <Select
                 isRequired
-                label="Pilih status publikasi"
+                label="Pilih status penerimaan"
                 labelPlacement="outside"
                 variant="bordered"
                 name="status_id"
                 selectedKeys={status_id}
                 onSelectionChange={setStatusId}
                 classNames={{
-                  base: "hidden",
                   label: "after:text-danger-primary text-xs text-text-secondary",
                   trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                   value: "text-xs",
@@ -312,15 +325,19 @@ export default function page() {
                         selectedIcon: "text-primary-primary",
                       }}
                     >
-                      {item.status_name}
+                      {item.status_name === "Aktif" ? "Disetujui" : "Menunggu"}
                     </SelectItem>
                   ))
                 )}
               </Select>
             )}
 
+            <Switch isSelected={counseling_is_read} onValueChange={setCounselingIsRead} classNames={{ thumb: "bg-primary-primary", label: "text-xs" }}>
+              {counseling_is_read ? "Dibaca" : "Belum dibaca"}
+            </Switch>
+
             <Button type="submit" className="login">
-              Simpan
+              Simpan Perubahan
             </Button>
           </Form>
         </main>

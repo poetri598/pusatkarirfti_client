@@ -13,7 +13,7 @@ import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/co
 // Types
 import { UserItem } from "@/types/user";
 
-export default function Cardpengguna(props: UserItem) {
+export default function CardPengguna(props: UserItem) {
   const { user_id, user_name, user_img, user_fullname, role_name, user_created_at } = props;
   const relativeDate = getRelativeTimeRaw(user_created_at);
   const fullDate = getFullTimeRaw(user_created_at);

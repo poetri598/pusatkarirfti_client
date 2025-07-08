@@ -2,85 +2,81 @@
 import { useState, useEffect } from "react";
 // Iconsax
 import { SearchNormal1, ArrowRight2, FilterEdit, Sort, Element3, Firstline, Eye, Edit, Trash } from "iconsax-react";
-import type { InternshipItem } from "@/types/internship";
 
 // Components
-import { Breadcrumbs, BreadcrumbItem, Input, NumberInput, Pagination, Button, Spinner, Select, SelectItem, Avatar, Tooltip, Link, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@heroui/react";
+import {
+  Breadcrumbs,
+  BreadcrumbItem,
+  Input,
+  NumberInput,
+  Pagination,
+  Button,
+  Spinner,
+  Select,
+  SelectItem,
+  Selection,
+  Avatar,
+  Tooltip,
+  Link,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  getKeyValue,
+} from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
-import CardMagangAdmin from "@/components/Card/CardMagangAdmin";
+import CardCounseling from "@/components/Card/CardCounseling";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
-import { getRelativeTimeRaw } from "@/utils/time";
-import { formatViews } from "@/utils/view";
-// Types
-import { createFetcher } from "@/utils/createFetcher";
-import { InternshipTypeItem } from "@/types/internshipType";
-import { CompanyItem } from "@/types/company";
-import { IpkItem } from "@/types/ipk";
-import { CityItem } from "@/types/city";
-import { CountryItem } from "@/types/country";
-import { EducationItem } from "@/types/education";
-import { GenderItem } from "@/types/gender";
-import { ModeItem } from "@/types/mode";
-import { PositionItem } from "@/types/position";
-import { ProgramStudyItem } from "@/types/programStudy";
-import { ProvinceItem } from "@/types/province";
-import { ReligionItem } from "@/types/religion";
-import { SemesterItem } from "@/types/semester";
-import { searchInternships, deleteInternshipById } from "@/services/internship";
 
-export default function PageKonseling() {
-  // internsipTypes
-  const [internshipTypes, setInternshipTypes] = useState<InternshipTypeItem[]>([]);
-  const [isLoadingInternshipTypes, setIsLoadingInternshipTypes] = useState(true);
-  const [apiErrorInternshipTypes, setApiErrorInternshipTypes] = useState<string | null>(null);
-  // companies
-  const [companies, setCompanies] = useState<CompanyItem[]>([]);
-  const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
-  const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
-  // ipks
-  const [ipks, setIpks] = useState<IpkItem[]>([]);
-  const [isLoadingIpks, setIsLoadingIpks] = useState(true);
-  const [apiErrorIpks, setApiErrorIpks] = useState<string | null>(null);
-  // cities
-  const [cities, setCities] = useState<CityItem[]>([]);
-  const [isLoadingCities, setIsLoadingCities] = useState(true);
-  const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
-  // countries
-  const [countries, setCountries] = useState<CountryItem[]>([]);
-  const [isLoadingCountries, setIsLoadingCountries] = useState(true);
-  const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
-  // educations
-  const [educations, setEducations] = useState<EducationItem[]>([]);
-  const [isLoadingEducations, setIsLoadingEducations] = useState(true);
-  const [apiErrorEducations, setApiErrorEducations] = useState<string | null>(null);
-  // genders
-  const [genders, setGenders] = useState<GenderItem[]>([]);
-  const [isLoadingGenders, setIsLoadingGenders] = useState(true);
-  const [apiErrorGenders, setApiErrorGenders] = useState<string | null>(null);
-  // modes
-  const [modes, setModes] = useState<ModeItem[]>([]);
-  const [isLoadingModes, setIsLoadingModes] = useState(true);
-  const [apiErrorModes, setApiErrorModes] = useState<string | null>(null);
-  // positions
-  const [positions, setPositions] = useState<PositionItem[]>([]);
-  const [isLoadingPositions, setIsLoadingPositions] = useState(true);
-  const [apiErrorPositions, setApiErrorPositions] = useState<string | null>(null);
+// Types
+import { CounselingItem } from "@/types/counseling";
+import { UserItem } from "@/types/user";
+import { ProgramStudyItem } from "@/types/programStudy";
+import { SemesterItem } from "@/types/semester";
+import { CounselingTypeItem } from "@/types/counselingType";
+import { StatusItem } from "@/types/status";
+
+// Services
+import { searchCounselings, deleteCounselingById } from "@/services/counseling";
+import { getUserAll } from "@/services/user";
+import { getSemesterAll } from "@/services/semester";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getCounselingTypeAll } from "@/services/counselingType";
+import { getStatusAll } from "@/services/status";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
+import { getFullTimeRaw, getRelativeTimeRaw } from "@/utils/time";
+import { parseAbsoluteToLocal } from "@internationalized/date";
+
+export default function PagePelatihan() {
+  // counseling Type
+  const [counselingTypes, setCounselingTypes] = useState<CounselingTypeItem[]>([]);
+  const [counseling_type_id, setCounselingTypeId] = useState<Selection>(new Set(["1"]));
+  const [isLoadingCounselingTypes, setIsLoadingCounselingTypes] = useState(true);
+  const [apiErrorCounselingTypes, setApiErrorCounselingTypes] = useState<string | null>(null);
+  // users
+  const [users, setUsers] = useState<UserItem[]>([]);
+  const [user_id, setUserId] = useState<Selection>(new Set([]));
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [apiErrorUsers, setApiErrorUsers] = useState<string | null>(null);
   // programStudies
   const [programStudies, setProgramStudies] = useState<ProgramStudyItem[]>([]);
+  const [program_study_ids, setProgramStudyIds] = useState<Selection>(new Set([]));
   const [isLoadingProgramStudies, setIsLoadingProgramStudies] = useState(true);
   const [apiErrorProgramStudies, setApiErrorProgramStudies] = useState<string | null>(null);
-  // provinces
-  const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
-  const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
-  const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
-  // religions
-  const [religions, setReligions] = useState<ReligionItem[]>([]);
-  const [isLoadingReligions, setIsLoadingReligions] = useState(true);
-  const [apiErrorReligions, setApiErrorReligions] = useState<string | null>(null);
   // semesters
   const [semesters, setSemesters] = useState<SemesterItem[]>([]);
+  const [semester_id, setSemesterId] = useState<Selection>(new Set([]));
   const [isLoadingSemesters, setIsLoadingSemesters] = useState(true);
   const [apiErrorSemesters, setApiErrorSemesters] = useState<string | null>(null);
+  // statuses
+  const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [status_id, setStatusId] = useState<Selection>(new Set(["1"]));
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
+  const [apiErrorStatuses, setApiErrorStatuses] = useState<string | null>(null);
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const [sort, setSort] = useState<string>("");
@@ -88,34 +84,26 @@ export default function PageKonseling() {
 
   const [selectedFilters, setSelectedFilters] = useState<Set<string>>(new Set());
 
-  const [internships, setInternships] = useState<InternshipItem[]>([]);
-  const [isLoadingAllInternships, setIsLoadingAllInternships] = useState(true);
-  const [apiErrorAllInternships, setApiErrorAllInternships] = useState<string | null>(null);
+  const [counselings, setCounselings] = useState<CounselingItem[]>([]);
+  const [isLoadingAllCounselings, setIsLoadingAllCounselings] = useState(true);
+  const [apiErrorAllCounselings, setApiErrorAllCounselings] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [amount, setAmount] = useState(8);
 
-  const maxValue = internships.length;
+  const maxValue = counselings.length;
   const minValue = 1;
-  const currentItems = internships.slice((currentPage - 1) * amount, currentPage * amount);
+  const currentItems = counselings.slice((currentPage - 1) * amount, currentPage * amount);
   const totalPage = Math.ceil(maxValue / amount);
 
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createFetcher<InternshipTypeItem[]>("/internship-types", setInternshipTypes, setApiErrorInternshipTypes, setIsLoadingInternshipTypes),
-        createFetcher<CompanyItem[]>("/companies", setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
-        createFetcher<IpkItem[]>("/ipks", setIpks, setApiErrorIpks, setIsLoadingIpks),
-        createFetcher<CityItem[]>("/cities", setCities, setApiErrorCities, setIsLoadingCities),
-        createFetcher<CountryItem[]>("/countries", setCountries, setApiErrorCountries, setIsLoadingCountries),
-        createFetcher<EducationItem[]>("/educations", setEducations, setApiErrorEducations, setIsLoadingEducations),
-        createFetcher<GenderItem[]>("/genders", setGenders, setApiErrorGenders, setIsLoadingGenders),
-        createFetcher<ModeItem[]>("/modes", setModes, setApiErrorModes, setIsLoadingModes),
-        createFetcher<PositionItem[]>("/positions", setPositions, setApiErrorPositions, setIsLoadingPositions),
-        createFetcher<ProgramStudyItem[]>("/program-studies", setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
-        createFetcher<ProvinceItem[]>("/provinces", setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
-        createFetcher<ReligionItem[]>("/religions", setReligions, setApiErrorReligions, setIsLoadingReligions),
-        createFetcher<SemesterItem[]>("/semesters", setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
+        createServiceFetcher(getCounselingTypeAll, setCounselingTypes, setApiErrorCounselingTypes, setIsLoadingCounselingTypes),
+        createServiceFetcher(getUserAll, setUsers, setApiErrorUsers, setIsLoadingUsers),
+        createServiceFetcher(getProgramStudyAll, setProgramStudies, setApiErrorProgramStudies, setIsLoadingProgramStudies),
+        createServiceFetcher(getSemesterAll, setSemesters, setApiErrorSemesters, setIsLoadingSemesters),
+        createServiceFetcher(getStatusAll, setStatuses, setApiErrorStatuses, setIsLoadingStatuses),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));
@@ -125,44 +113,44 @@ export default function PageKonseling() {
   }, []);
 
   useEffect(() => {
-    const fetchInternships = async () => {
-      setIsLoadingAllInternships(true);
-      setApiErrorAllInternships(null);
-
+    const fetchCounselings = async () => {
+      setIsLoadingAllCounselings(true);
+      setApiErrorAllCounselings(null);
       try {
         const queryParams: Record<string, any> = {
           ...(searchKeyword && { search: searchKeyword }),
           ...(sort && { sort }),
           ...filters,
         };
-
-        const { success, data, error } = await searchInternships(queryParams);
-
+        const { success, data, error } = await searchCounselings(queryParams);
         if (success) {
-          setInternships(data || []);
+          setCounselings(data || []);
         } else {
-          setApiErrorAllInternships(error || "Terjadi kesalahan");
+          setApiErrorAllCounselings(error || "Terjadi kesalahan");
         }
       } catch (err: any) {
-        setApiErrorAllInternships(err.message || "Terjadi kesalahan");
+        setApiErrorAllCounselings(err.message || "Terjadi kesalahan");
       } finally {
-        setIsLoadingAllInternships(false);
+        setIsLoadingAllCounselings(false);
       }
     };
 
-    fetchInternships();
+    fetchCounselings();
   }, [searchKeyword, sort, filters]);
 
   const selecItem = [
     { key: "counseling_type_id", label: "Tipe" },
-    { key: "counseling_is_read", label: "Status Terbaca" },
-    { key: "status_id ", label: "Status Diterima" },
+    { key: "user_id", label: "Peserta" },
+    { key: "program_study_id", label: "Program Studi" },
+    { key: "semester_id", label: "Semester" },
+    { key: "counseling_is_read", label: "Status Dibaca" },
+    { key: "status_id", label: "Status Diterima" },
   ];
 
   const sortOptions = [
     { key: "", label: "— Tidak diurutkan —" },
-    { key: "internship_views:desc", label: "Paling Banyak Dilihat" },
-    { key: "internship_views:asc", label: "Paling Sedikit Dilihat" },
+    { key: "counsleing_date:desc", label: "Jadwal Terdekat" },
+    { key: "counsleing_date:asc", label: "Jadwal Terlama" },
     { key: "counseling_created_at:desc", label: "Terbaru" },
     { key: "counseling_created_at:asc", label: "Terlama" },
   ];
@@ -171,20 +159,27 @@ export default function PageKonseling() {
 
   const columns = [
     { key: "no", label: "#" },
-    { key: "internship_name", label: "Judul" },
-    { key: "internship_created_at", label: "Tanggal Dibuat" },
-    { key: "internship_views", label: "Dilihat" },
+    { key: "user_fullname", label: "Nama Peserta" },
+    { key: "counseling_date", label: "Jadwal Konseling" },
+    { key: "counseling_created_at", label: "Tanggal Dibuat" },
     { key: "actions", label: "Aksi" },
   ];
 
-  const tableItems = currentItems.map((internship, index) => ({
-    key: internship.internship_id,
-    no: index + 1,
-    internship_name: internship.internship_name.length > 30 ? internship.internship_name.slice(0, 30) + "..." : internship.internship_name,
-    internship_created_at: getRelativeTimeRaw(internship.internship_created_at),
-    internship_views: formatViews(internship.internship_views),
-    actions: internship,
-  }));
+  const tableItems = currentItems.map((counseling, index) => {
+    const localDate = parseAbsoluteToLocal(counseling.counseling_date);
+    const counseling_date = `${localDate.year}-${String(localDate.month).padStart(2, "0")}-${String(localDate.day).padStart(2, "0")}T${String(localDate.hour).padStart(2, "0")}:${String(localDate.minute).padStart(2, "0")}:${String(
+      localDate.second
+    ).padStart(2, "0")}.${String(localDate.millisecond).padStart(3, "0")}Z`;
+
+    return {
+      key: counseling.counseling_id,
+      no: index + 1,
+      user_fullname: counseling.user_fullname.length > 30 ? counseling.user_fullname.slice(0, 30) + "..." : counseling.user_fullname,
+      counseling_date: getFullTimeRaw(counseling_date),
+      counseling_created_at: getRelativeTimeRaw(counseling.counseling_created_at),
+      actions: counseling,
+    };
+  });
 
   return (
     <main className="w-full mx-auto flex flex-col gap-4 xs:p-0 md:p-8 bg-background-primary overflow-hidden">
@@ -207,7 +202,7 @@ export default function PageKonseling() {
         {/* Search */}
         <Input
           startContent={<SearchNormal1 size={16} color="currentColor" className="text-text-secondary transition-colors  rounded-lg " />}
-          label="Cari informasi magang"
+          label="Cari informasi konseling"
           labelPlacement="outside"
           placeholder="Masukkan kata kunci"
           variant="bordered"
@@ -265,6 +260,7 @@ export default function PageKonseling() {
               </SelectItem>
             ))}
           </Select>
+
           {/* Sort */}
           <Select
             label="Urutkan"
@@ -303,17 +299,17 @@ export default function PageKonseling() {
       </section>
 
       <section className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4  w-full">
-        {/* internship_type_id */}
-        {selectedFilters.has("internship_type_id") && (
+        {/* counseling_type_id */}
+        {selectedFilters.has("counseling_type_id") && (
           <Select
-            label="Pilih tipe"
+            label="Pilih jenis konseling"
             labelPlacement="outside"
             variant="bordered"
-            name="internship_type_id"
-            selectedKeys={new Set([filters.internship_type_id || ""])}
+            name="counseling_type_id"
+            selectedKeys={new Set([filters.counseling_type_id || ""])}
             onSelectionChange={(key) => {
               const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, internship_type_id: value }));
+              setFilters((prev) => ({ ...prev, counseling_type_id: value }));
             }}
             classNames={{
               label: "after:text-danger-primary text-xs text-text-secondary",
@@ -322,49 +318,51 @@ export default function PageKonseling() {
               errorMessage: "text-danger-primary text-xs",
             }}
           >
-            {internshipTypes.length === 0 ? (
+            {counselingTypes.length === 0 ? (
               <SelectItem key="nodata" isDisabled>
                 Data belum tersedia
               </SelectItem>
             ) : (
-              internshipTypes.map((item) => (
+              counselingTypes.map((item) => (
                 <SelectItem
-                  key={item.internship_type_id}
+                  key={item.counseling_type_id}
                   classNames={{
                     title: "text-xs hover:!text-primary-primary",
                     selectedIcon: "text-primary-primary",
                   }}
                 >
-                  {item.internship_type_name}
+                  {item.counseling_type_name}
                 </SelectItem>
               ))
             )}
           </Select>
         )}
 
-        {/* company_id */}
-        {selectedFilters.has("company_id") && (
+        {/* user_id */}
+        {selectedFilters.has("user_id") && (
           <Select
             isMultiline={true}
-            items={companies}
-            label="Pilih perusahaan"
+            items={users}
+            label="Pilih nama peserta"
             labelPlacement="outside"
             variant="bordered"
-            name="company_id"
+            name="user_id"
             renderValue={(items) => (
               <div className="flex flex-wrap gap-2">
                 {items.map((item) => (
-                  <div key={item.data?.company_id} className="flex items-center gap-2">
-                    <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
-                    <span className="text-xs">{item.data?.company_name}</span>
+                  <div key={item.data?.user_id} className="flex items-center gap-2">
+                    <Avatar alt={item.data?.user_fullname} className="w-6 h-6" src={item.data?.user_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                    <div className="flex flex-col">
+                      <span className="text-xs">{item.data?.user_fullname}</span>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
-            selectedKeys={new Set([filters.company_id || ""])}
+            selectedKeys={new Set([filters.user_id || ""])}
             onSelectionChange={(key) => {
               const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, company_id: value }));
+              setFilters((prev) => ({ ...prev, user_id: value }));
             }}
             classNames={{
               label: "after:text-danger-primary text-xs",
@@ -373,33 +371,37 @@ export default function PageKonseling() {
               errorMessage: "text-danger-primary",
             }}
           >
-            {(company) => (
+            {(user) => (
               <SelectItem
-                key={company.company_id}
-                textValue={company.company_name}
-                startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                key={user.user_id}
+                textValue={user.user_name}
                 classNames={{
                   title: "text-xs hover:!text-primary-primary",
                   selectedIcon: "text-primary-primary",
                 }}
               >
-                {company.company_name}
+                <div className="flex items-center gap-2">
+                  <Avatar alt={user.user_fullname} className="w-6 h-6" src={user.user_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                  <div className="flex flex-col">
+                    <span className="text-xs">{user.user_fullname}</span>
+                  </div>
+                </div>
               </SelectItem>
             )}
           </Select>
         )}
 
-        {/* ipk_id */}
-        {selectedFilters.has("ipk_id") && (
+        {/* status_id */}
+        {selectedFilters.has("status_id") && (
           <Select
-            label="Pilih ipk minimal"
+            label="Pilih status"
             labelPlacement="outside"
             variant="bordered"
-            name="ipk_id"
-            selectedKeys={new Set([filters.ipk_id || ""])}
+            name="status_id"
+            selectedKeys={new Set([filters.status_id || ""])}
             onSelectionChange={(key) => {
               const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, ipk_id: value }));
+              setFilters((prev) => ({ ...prev, status_id: value }));
             }}
             classNames={{
               label: "after:text-danger-primary text-xs text-text-secondary",
@@ -408,254 +410,20 @@ export default function PageKonseling() {
               errorMessage: "text-danger-primary text-xs",
             }}
           >
-            {ipks.length === 0 ? (
+            {statuses.length === 0 ? (
               <SelectItem key="nodata" isDisabled>
                 Data belum tersedia
               </SelectItem>
             ) : (
-              ipks.map((item) => (
+              statuses.map((item) => (
                 <SelectItem
-                  key={item.ipk_id}
+                  key={item.status_id}
                   classNames={{
                     title: "text-xs hover:!text-primary-primary",
                     selectedIcon: "text-primary-primary",
                   }}
                 >
-                  {item.ipk_no}
-                </SelectItem>
-              ))
-            )}
-          </Select>
-        )}
-
-        {/* city_id */}
-        {selectedFilters.has("city_id") && (
-          <Select
-            label="Pilih kota"
-            labelPlacement="outside"
-            variant="bordered"
-            name="city_id"
-            selectedKeys={new Set([filters.city_id || ""])}
-            onSelectionChange={(key) => {
-              const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, city_id: value }));
-            }}
-            classNames={{
-              label: "after:text-danger-primary text-xs text-text-secondary",
-              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-              value: "text-xs",
-              errorMessage: "text-danger-primary text-xs",
-            }}
-          >
-            {cities.length === 0 ? (
-              <SelectItem key="nodata" isDisabled>
-                Data belum tersedia
-              </SelectItem>
-            ) : (
-              cities.map((item) => (
-                <SelectItem
-                  key={item.city_id}
-                  classNames={{
-                    title: "text-xs hover:!text-primary-primary",
-                    selectedIcon: "text-primary-primary",
-                  }}
-                >
-                  {item.city_name}
-                </SelectItem>
-              ))
-            )}
-          </Select>
-        )}
-
-        {/* country_id */}
-        {selectedFilters.has("country_id") && (
-          <Select
-            label="Pilih negara"
-            labelPlacement="outside"
-            variant="bordered"
-            name="country_id"
-            selectedKeys={new Set([filters.country_id || ""])}
-            onSelectionChange={(key) => {
-              const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, country_id: value }));
-            }}
-            classNames={{
-              label: "after:text-danger-primary text-xs text-text-secondary",
-              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-              value: "text-xs",
-              errorMessage: "text-danger-primary text-xs",
-            }}
-          >
-            {countries.length === 0 ? (
-              <SelectItem key="nodata" isDisabled>
-                Data belum tersedia
-              </SelectItem>
-            ) : (
-              countries.map((item) => (
-                <SelectItem
-                  key={item.country_id}
-                  classNames={{
-                    title: "text-xs hover:!text-primary-primary",
-                    selectedIcon: "text-primary-primary",
-                  }}
-                >
-                  {item.country_name}
-                </SelectItem>
-              ))
-            )}
-          </Select>
-        )}
-
-        {/* education_id */}
-        {selectedFilters.has("education_id") && (
-          <Select
-            label="Pilih jenjang pendidikan"
-            labelPlacement="outside"
-            variant="bordered"
-            name="education_id"
-            selectedKeys={new Set([filters.education_id || ""])}
-            onSelectionChange={(key) => {
-              const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, education_id: value }));
-            }}
-            classNames={{
-              label: "after:text-danger-primary text-xs text-text-secondary",
-              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-              value: "text-xs",
-              errorMessage: "text-danger-primary text-xs",
-            }}
-          >
-            {educations.length === 0 ? (
-              <SelectItem key="nodata" isDisabled>
-                Data belum tersedia
-              </SelectItem>
-            ) : (
-              educations.map((item) => (
-                <SelectItem
-                  key={item.education_id}
-                  classNames={{
-                    title: "text-xs hover:!text-primary-primary",
-                    selectedIcon: "text-primary-primary",
-                  }}
-                >
-                  {item.education_name}
-                </SelectItem>
-              ))
-            )}
-          </Select>
-        )}
-
-        {/* gender_id */}
-        {selectedFilters.has("gender_id") && (
-          <Select
-            label="Pilih jenis kelamin"
-            labelPlacement="outside"
-            variant="bordered"
-            name="gender_id"
-            selectedKeys={new Set([filters.gender_id || ""])}
-            onSelectionChange={(key) => {
-              const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, gender_id: value }));
-            }}
-            classNames={{
-              label: "after:text-danger-primary text-xs text-text-secondary",
-              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-              value: "text-xs",
-              errorMessage: "text-danger-primary text-xs",
-            }}
-          >
-            {genders.length === 0 ? (
-              <SelectItem key="nodata" isDisabled>
-                Data belum tersedia
-              </SelectItem>
-            ) : (
-              genders.map((item) => (
-                <SelectItem
-                  key={item.gender_id}
-                  classNames={{
-                    title: "text-xs hover:!text-primary-primary",
-                    selectedIcon: "text-primary-primary",
-                  }}
-                >
-                  {item.gender_name}
-                </SelectItem>
-              ))
-            )}
-          </Select>
-        )}
-
-        {/* mode_id */}
-        {selectedFilters.has("mode_id") && (
-          <Select
-            label="Pilih mode"
-            labelPlacement="outside"
-            variant="bordered"
-            name="mode_id"
-            selectedKeys={new Set([filters.mode_id || ""])}
-            onSelectionChange={(key) => {
-              const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, mode_id: value }));
-            }}
-            classNames={{
-              label: "after:text-danger-primary text-xs text-text-secondary",
-              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-              value: "text-xs",
-              errorMessage: "text-danger-primary text-xs",
-            }}
-          >
-            {modes.length === 0 ? (
-              <SelectItem key="nodata" isDisabled>
-                Data belum tersedia
-              </SelectItem>
-            ) : (
-              modes.map((item) => (
-                <SelectItem
-                  key={item.mode_id}
-                  classNames={{
-                    title: "text-xs hover:!text-primary-primary",
-                    selectedIcon: "text-primary-primary",
-                  }}
-                >
-                  {item.mode_name}
-                </SelectItem>
-              ))
-            )}
-          </Select>
-        )}
-
-        {/* position_id */}
-        {selectedFilters.has("position_id") && (
-          <Select
-            label="Pilih posisi"
-            labelPlacement="outside"
-            variant="bordered"
-            name="position_id"
-            selectedKeys={new Set([filters.position_id || ""])}
-            onSelectionChange={(key) => {
-              const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, position_id: value }));
-            }}
-            classNames={{
-              label: "after:text-danger-primary text-xs text-text-secondary",
-              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-              value: "text-xs",
-              errorMessage: "text-danger-primary text-xs",
-            }}
-          >
-            {positions.length === 0 ? (
-              <SelectItem key="nodata" isDisabled>
-                Data belum tersedia
-              </SelectItem>
-            ) : (
-              positions.map((item) => (
-                <SelectItem
-                  key={item.position_id}
-                  classNames={{
-                    title: "text-xs hover:!text-primary-primary",
-                    selectedIcon: "text-primary-primary",
-                  }}
-                >
-                  {item.position_name}
+                  {item.status_name}
                 </SelectItem>
               ))
             )}
@@ -701,84 +469,6 @@ export default function PageKonseling() {
           </Select>
         )}
 
-        {/* province_id */}
-        {selectedFilters.has("province_id") && (
-          <Select
-            label="Pilih provinsi"
-            labelPlacement="outside"
-            variant="bordered"
-            name="province_id"
-            selectedKeys={new Set([filters.province_id || ""])}
-            onSelectionChange={(key) => {
-              const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, province_id: value }));
-            }}
-            classNames={{
-              label: "after:text-danger-primary text-xs text-text-secondary",
-              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-              value: "text-xs",
-              errorMessage: "text-danger-primary text-xs",
-            }}
-          >
-            {provinces.length === 0 ? (
-              <SelectItem key="nodata" isDisabled>
-                Data belum tersedia
-              </SelectItem>
-            ) : (
-              provinces.map((item) => (
-                <SelectItem
-                  key={item.province_id}
-                  classNames={{
-                    title: "text-xs hover:!text-primary-primary",
-                    selectedIcon: "text-primary-primary",
-                  }}
-                >
-                  {item.province_name}
-                </SelectItem>
-              ))
-            )}
-          </Select>
-        )}
-
-        {/* religion_id */}
-        {selectedFilters.has("religion_id") && (
-          <Select
-            label="Pilih agama"
-            labelPlacement="outside"
-            variant="bordered"
-            name="religion_id"
-            selectedKeys={new Set([filters.religion_id || ""])}
-            onSelectionChange={(key) => {
-              const value = Array.from(key)[0];
-              setFilters((prev) => ({ ...prev, religion_id: value }));
-            }}
-            classNames={{
-              label: "after:text-danger-primary text-xs text-text-secondary",
-              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-              value: "text-xs",
-              errorMessage: "text-danger-primary text-xs",
-            }}
-          >
-            {religions.length === 0 ? (
-              <SelectItem key="nodata" isDisabled>
-                Data belum tersedia
-              </SelectItem>
-            ) : (
-              religions.map((item) => (
-                <SelectItem
-                  key={item.religion_id}
-                  classNames={{
-                    title: "text-xs hover:!text-primary-primary",
-                    selectedIcon: "text-primary-primary",
-                  }}
-                >
-                  {item.religion_name}
-                </SelectItem>
-              ))
-            )}
-          </Select>
-        )}
-
         {/* semester_id */}
         {selectedFilters.has("semester_id") && (
           <Select
@@ -805,16 +495,56 @@ export default function PageKonseling() {
             ) : (
               semesters.map((item) => (
                 <SelectItem
-                  key={item.semester_id}
+                  key={item.semester_id.toString()}
                   classNames={{
                     title: "text-xs hover:!text-primary-primary",
                     selectedIcon: "text-primary-primary",
                   }}
                 >
-                  {`Semester ${item.semester_no}`}
+                  {item.semester_no}
                 </SelectItem>
               ))
             )}
+          </Select>
+        )}
+
+        {/* counseling_is_read*/}
+        {selectedFilters.has("counseling_is_read") && (
+          <Select
+            label="Pilih status dibaca"
+            labelPlacement="outside"
+            variant="bordered"
+            name="counseling_is_read"
+            selectedKeys={new Set([filters.counseling_is_read !== undefined ? String(filters.counseling_is_read) : ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, counseling_is_read: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs text-text-secondary",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary text-xs",
+            }}
+          >
+            <SelectItem
+              key="1"
+              classNames={{
+                title: "text-xs hover:!text-primary-primary",
+                selectedIcon: "text-primary-primary",
+              }}
+            >
+              Dibaca
+            </SelectItem>
+            <SelectItem
+              key="0"
+              classNames={{
+                title: "text-xs hover:!text-primary-primary",
+                selectedIcon: "text-primary-primary",
+              }}
+            >
+              Belum Dibaca
+            </SelectItem>
           </Select>
         )}
       </section>
@@ -830,7 +560,7 @@ export default function PageKonseling() {
               </span>
             </span>
             <span className="text-xs text-text-secondary">
-              Kami menemukan <span className="font-bold text-primary-primary">{internships.length}</span> tempat magang
+              Kami menemukan <span className="font-bold text-primary-primary">{counselings.length}</span> peserta
             </span>
           </div>
         )}
@@ -839,7 +569,7 @@ export default function PageKonseling() {
       {/* Section Tampilan Card / Table */}
       {viewMode === "card" ? (
         <section className="grid xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {isLoadingAllInternships ? (
+          {isLoadingAllCounselings ? (
             <div className="w-full flex justify-center items-center py-8">
               <Spinner
                 label="Sedang memuat data..."
@@ -851,10 +581,10 @@ export default function PageKonseling() {
                 }}
               />
             </div>
-          ) : apiErrorAllInternships ? (
-            <p className="text-start text-xs text-danger-primary">{apiErrorAllInternships}</p>
+          ) : apiErrorAllCounselings ? (
+            <p className="text-start text-xs text-danger-primary">{apiErrorAllCounselings}</p>
           ) : (
-            currentItems.map((item) => <CardMagangAdmin key={item.internship_id} {...item} />)
+            currentItems.map((item) => <CardCounseling key={item.counseling_id} {...item} />)
           )}
         </section>
       ) : (
@@ -876,17 +606,17 @@ export default function PageKonseling() {
               <TableRow key={item.key}>
                 {(columnKey) => {
                   if (columnKey === "actions") {
-                    const internship = item.actions;
+                    const counseling = item.actions;
                     return (
                       <TableCell>
                         <div className="flex justify-center items-center gap-2">
                           <Tooltip content="Lihat detail" placement="top" className="bg-yellow-500 text-white text-xs px-2 py-1 rounded">
-                            <Button as={Link} isIconOnly variant="light" size="sm" href={`/magang/${internship.internship_slug}`}>
+                            <Button as={Link} isIconOnly variant="light" size="sm" href={`/konseling/${counseling.counseling_id}`}>
                               <Eye size={20} className="text-yellow-500" variant="Bold" color="currentColor" />
                             </Button>
                           </Tooltip>
                           <Tooltip content="Edit data" placement="top" className="bg-primary-primary text-white text-xs px-2 py-1 rounded">
-                            <Button as={Link} isIconOnly variant="light" size="sm" href={`/magang/edit/${internship.internship_slug}`}>
+                            <Button as={Link} isIconOnly variant="light" size="sm" href={`/konseling/edit/${counseling.counseling_id}`}>
                               <Edit size={20} className="text-primary-primary" variant="Bold" color="currentColor" />
                             </Button>
                           </Tooltip>
@@ -898,7 +628,7 @@ export default function PageKonseling() {
                               onPress={async () => {
                                 const confirm = await showConfirmationDialog();
                                 if (confirm.isConfirmed) {
-                                  const result = await deleteInternshipById(internship.internship_id);
+                                  const result = await deleteCounselingById(counseling.counseling_id);
                                   if (result.success) {
                                     await showSuccessDialog();
                                     window.location.reload();

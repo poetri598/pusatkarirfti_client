@@ -1,18 +1,21 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import "@/styles/globals.css";
 
 // Iconsax
-import { Notification } from "iconsax-react";
+import { Notification, ReceiptAdd } from "iconsax-react";
 
 // NextJS
 import { usePathname } from "next/navigation";
 
 // Components
-import { Navbar, NavbarContent, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar, User } from "@heroui/react";
+import { Navbar, NavbarContent, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar, Badge, Link, Tooltip } from "@heroui/react";
 
+// Context
 import { useAuth } from "@/context/AuthContext";
 
-// Dummy
+// Services
+import { countUnreadCounselings, countUnapprovedCounselings } from "@/services/counseling";
 
 export const profile = [
   { label: "Profil Saya", href: "/profil-saya" },
@@ -22,6 +25,20 @@ export const profile = [
 export default function NavbarAdmin() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [unapprovedCount, setUnapprovedCount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const unreadRes = await countUnreadCounselings();
+      if (unreadRes.success) setUnreadCount(unreadRes.data ?? 0);
+
+      const unapprovedRes = await countUnapprovedCounselings();
+      if (unapprovedRes.success) setUnapprovedCount(unapprovedRes.data ?? 0);
+    };
+
+    fetchCounts();
+  }, []);
 
   return (
     <Navbar
@@ -50,10 +67,34 @@ export default function NavbarAdmin() {
       }}
     >
       <NavbarContent as="div" justify="end">
-        <div className="flex justify-center items-center p-2 border border-default-200 rounded-full cursor-pointer group text-text-secondary hover:bg-primary-primary hover:text-background-primary ">
-          {" "}
-          <Notification size={20} color="currentColor" />
-        </div>
+        <Tooltip
+          content="Belum Dibaca"
+          placement="bottom-end"
+          classNames={{
+            content: "text-xs text-background-primary bg-primary-primary",
+          }}
+        >
+          <Badge color="default" content={unreadCount} variant="solid" classNames={{ badge: "bg-orange-500 text-white" }}>
+            <Link href="/konseling">
+              <Notification size={28} color="currentColor" variant="Bold" className="text-primary-primary" />
+            </Link>
+          </Badge>
+        </Tooltip>
+
+        <Tooltip
+          content="Belum Disetujui"
+          placement="bottom-end"
+          classNames={{
+            content: "text-xs text-background-primary bg-primary-primary",
+          }}
+        >
+          <Badge color="default" content={unapprovedCount} variant="solid" classNames={{ badge: "bg-orange-500 text-white" }}>
+            <Link href="/konseling">
+              <ReceiptAdd size={28} color="currentColor" variant="Bold" className="text-primary-primary" />
+            </Link>
+          </Badge>
+        </Tooltip>
+
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <div className="flex justify-center items-center gap-2 cursor-pointer px-4 py-2 border border-default-200 hover:bg-default-200 rounded-full">
