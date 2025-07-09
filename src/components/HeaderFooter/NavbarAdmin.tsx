@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import "@/styles/globals.css";
 
 // Iconsax
-import { Notification, ReceiptAdd } from "iconsax-react";
+import { Notification, Timer } from "iconsax-react";
 
 // NextJS
 import { usePathname } from "next/navigation";
@@ -90,7 +90,7 @@ export default function NavbarAdmin() {
         >
           <Badge color="default" content={unapprovedCount} variant="solid" classNames={{ badge: "bg-orange-500 text-white" }}>
             <Link href="/konseling">
-              <ReceiptAdd size={28} color="currentColor" variant="Bold" className="text-primary-primary" />
+              <Timer size={28} color="currentColor" variant="Bold" className="text-primary-primary" />
             </Link>
           </Badge>
         </Tooltip>

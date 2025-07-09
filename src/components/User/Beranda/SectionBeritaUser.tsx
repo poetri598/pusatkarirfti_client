@@ -5,17 +5,19 @@ import { useEffect, useState } from "react";
 import TitleSection from "@/components/Custom/TitleSection";
 import CardBerita from "@/components/Card/CardBerita";
 import CardBerita2 from "@/components/Card/CardBerita2";
+import { Spinner } from "@heroui/react";
 
 // types
-import api from "@/utils/api";
 import type { NewsItem } from "@/types/news";
-import type { ApiResponse } from "@/utils/responseController";
-import { Spinner } from "@heroui/react";
-import { createFetcher } from "@/utils/createFetcher";
+
+// services
 import { getOneMostPopularNews, getThreeLatestNews } from "@/services/news";
 
+// utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
+
 export default function SectionBeritaUser() {
-  const [oneMostPopularNews, setOneMostPopularNews] = useState<NewsItem | null>(null);
+  const [oneMostPopularNews, setOneMostPopularNews] = useState<NewsItem>({} as NewsItem);
   const [isLoadingOneMostPopularNews, setIsLoadingOneMostPopularNews] = useState(true);
   const [apiErrorOneMostPopularNews, setApiErrorOneMostPopularNews] = useState<string | null>(null);
   const [threeLatestNews, setThreeLatestNews] = useState<NewsItem[]>([]);
@@ -25,8 +27,8 @@ export default function SectionBeritaUser() {
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createFetcher<NewsItem[]>("/news/three-latest", setThreeLatestNews, setApiErrorThreeLatestNews, setIsLoadingThreeLatestNews),
-        createFetcher<NewsItem | null>("/news/one-most-popular", setOneMostPopularNews, setApiErrorOneMostPopularNews, setIsLoadingOneMostPopularNews),
+        createServiceFetcher(getOneMostPopularNews, setOneMostPopularNews, setApiErrorOneMostPopularNews, setIsLoadingOneMostPopularNews),
+        createServiceFetcher(getThreeLatestNews, setThreeLatestNews, setApiErrorThreeLatestNews, setIsLoadingThreeLatestNews),
       ];
 
       await Promise.all(fetchers.map((fetch) => fetch()));

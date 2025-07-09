@@ -1,7 +1,7 @@
 "use client";
 
 // Iconsax
-import { Location, PresentionChart, ArrowRight2 } from "iconsax-react";
+import { Location, PresentionChart, ArrowRight2, Clock } from "iconsax-react";
 
 // NextJS
 import Image from "next/image";
@@ -46,11 +46,22 @@ export default function CardMagang(props: InternshipItem) {
         </div>
       </div>
       <div className="flex justify-between items-end gap-1">
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1">
           <span className="text-xs font-bold text-primary-primary w-full">{internship_type_name}</span>
-          <Tooltip content={fullDate} placement="top" classNames={{ content: "text-xs text-background-primary bg-primary-primary" }}>
-            <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
-          </Tooltip>
+          {/* Tanggal */}
+          <div className="flex items-center gap-1">
+            {" "}
+            <Clock size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
+            <Tooltip
+              content={fullDate}
+              placement="top"
+              classNames={{
+                content: "text-xs text-background-primary bg-primary-primary",
+              }}
+            >
+              <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
+            </Tooltip>
+          </div>
         </div>
         {user ? (
           <Link href={`/magang/${internship_slug}`} className="login flex items-center gap-1 transition-colors hover:text-secondary-primary group">

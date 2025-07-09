@@ -7,6 +7,9 @@ import { ArrowRight } from "iconsax-react";
 // NextJS
 import Image from "next/image";
 
+// components
+import { Spinner } from "@heroui/react";
+
 // SwiperJS
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -15,10 +18,13 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 // types
-import { createFetcher } from "@/utils/createFetcher";
 import type { ExpoItem } from "@/types/expo";
 
-import { Spinner } from "@heroui/react";
+// services
+import { getThreeLatestExpos } from "@/services/expo";
+
+// utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function SectionCarouselUser() {
   const [threeLatestExpo, setThreeLatestExpo] = useState<ExpoItem[]>([]);
@@ -27,7 +33,7 @@ export default function SectionCarouselUser() {
 
   useEffect(() => {
     const fetchAll = async () => {
-      const fetchers = [createFetcher<ExpoItem[]>("/expos/three-latest", setThreeLatestExpo, setApiErrorThreeLatestExpo, setIsLoadingThreeLatestExpo)];
+      const fetchers = [createServiceFetcher(getThreeLatestExpos, setThreeLatestExpo, setApiErrorThreeLatestExpo, setIsLoadingThreeLatestExpo)];
       await Promise.all(fetchers.map((fetch) => fetch()));
     };
 

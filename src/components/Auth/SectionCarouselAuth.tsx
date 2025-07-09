@@ -17,11 +17,16 @@ import "swiper/css/pagination";
 
 // Types
 import { JobItem } from "@/types/job";
-import { InternshipItem } from "@/types/internship";
 import { TrainingItem } from "@/types/training";
+import { InternshipItem } from "@/types/internship";
+
+// services
+import { getJobAll } from "@/services/job";
+import { getInternshipAll } from "@/services/internship";
+import { getTrainingAll } from "@/services/training";
 
 // utils
-import { createFetcher } from "@/utils/createFetcher";
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 type Slide = {
   key: string;
@@ -51,9 +56,9 @@ export default function SectionCarouselMasuk() {
   useEffect(() => {
     const fetchAll = async () => {
       const fetchers = [
-        createFetcher<JobItem[]>("/jobs", setJobs, setApiErrorJobs, setIsLoadingJobs),
-        createFetcher<InternshipItem[]>("/internships", setInternships, setApiErrorInternships, setIsLoadingInternships),
-        createFetcher<TrainingItem[]>("/trainings", setTrainings, setApiErrorTrainings, setIsLoadingTrainings),
+        createServiceFetcher(getJobAll, setJobs, setApiErrorJobs, setIsLoadingJobs),
+        createServiceFetcher(getInternshipAll, setInternships, setApiErrorInternships, setIsLoadingInternships),
+        createServiceFetcher(getTrainingAll, setTrainings, setApiErrorTrainings, setIsLoadingTrainings),
       ];
       await Promise.all(fetchers.map((fetch) => fetch()));
     };
@@ -120,10 +125,16 @@ export default function SectionCarouselMasuk() {
                     <TitleAuth key={index} title={title.title} desc={title.desc} />
                   ))}
 
-                <div className="xs:w-full md:w-10/12 grid xs:grid-cols-1 md:gap-4 px-8">
-                  {data.map((item, index) => (
-                    <Card key={index} {...item} />
-                  ))}
+                <div className="xs:w-full md:w-10/12 min-h-[200px] flex justify-center items-center px-8">
+                  {data.length === 0 ? (
+                    <p className="text-center text-xs text-text-secondary">Data belum tersedia</p>
+                  ) : (
+                    <div className="w-full grid xs:grid-cols-1 md:gap-4">
+                      {data.map((item, index) => (
+                        <Card key={index} {...item} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </SwiperSlide>
             ))}

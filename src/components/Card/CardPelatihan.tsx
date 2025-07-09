@@ -1,7 +1,7 @@
 "use client";
 
 // Iconsax
-import { Location } from "iconsax-react";
+import { Location, Clock } from "iconsax-react";
 
 // NextJS
 import Image from "next/image";
@@ -18,7 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 // Types
 import { TrainingItem } from "@/types/training";
 
-export default function CardExpo(props: TrainingItem) {
+export default function CardPelatihanExpo(props: TrainingItem) {
   const { training_slug, training_name, training_img, training_type_names, training_price, training_created_at, mode_names } = props;
 
   const { user } = useAuth();
@@ -41,9 +41,20 @@ export default function CardExpo(props: TrainingItem) {
             </span>
           ))}
         </div>
-        <Tooltip content={fullDate} placement="top" classNames={{ content: "text-xs text-background-primary bg-primary-primary" }}>
-          <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
-        </Tooltip>
+        {/* Tanggal */}
+        <div className="flex items-center gap-1">
+          {" "}
+          <Clock size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
+          <Tooltip
+            content={fullDate}
+            placement="top"
+            classNames={{
+              content: "text-xs text-background-primary bg-primary-primary",
+            }}
+          >
+            <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
+          </Tooltip>
+        </div>
       </div>
       <div className="flex justify-between">
         <div>

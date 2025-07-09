@@ -1,7 +1,7 @@
 "use client";
 
 // Iconsax
-import { Location, PresentionChart, ArrowRight2 } from "iconsax-react";
+import { Location, PresentionChart, ArrowRight2, Clock } from "iconsax-react";
 
 // NextJS
 import Image from "next/image";
@@ -54,10 +54,20 @@ export default function CardLowonganPekerjaan(props: JobItem) {
               {`Rp. ${Number(job_salary_min).toLocaleString("id-ID")}`} - {`Rp. ${Number(job_salary_max).toLocaleString("id-ID")}`}
             </span>
           )}
-
-          <Tooltip content={fullDate} placement="top" classNames={{ content: "text-xs text-background-primary bg-primary-primary" }}>
-            <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
-          </Tooltip>
+          {/* Tanggal */}
+          <div className="flex items-center gap-1">
+            {" "}
+            <Clock size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
+            <Tooltip
+              content={fullDate}
+              placement="top"
+              classNames={{
+                content: "text-xs text-background-primary bg-primary-primary",
+              }}
+            >
+              <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
+            </Tooltip>
+          </div>
         </div>
         {user ? (
           <Link href={`/lowongan-pekerjaan/${job_slug}`} className="login flex items-center gap-2 transition-colors hover:text-secondary-primary group">

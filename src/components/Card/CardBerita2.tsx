@@ -1,7 +1,7 @@
 "use client";
 
 // Iconsax
-import { ArrowRight2, Teacher, Star1 } from "iconsax-react";
+import { ArrowRight2, Teacher, Star1, Clock } from "iconsax-react";
 
 // NextJS
 import Image from "next/image";
@@ -24,7 +24,7 @@ export default function CardBerita2(props: NewsItem) {
   const relativeDate = getRelativeTimeRaw(news_created_at);
   const fullDate = getFullTimeRaw(news_created_at);
 
-  const { user } = useAuth(); // Gantikan useIsAuthenticated
+  const { user } = useAuth();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
@@ -39,15 +39,19 @@ export default function CardBerita2(props: NewsItem) {
             <Teacher size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
             <span className="text-text-secondary text-xs">{news_type_name}</span>
           </div>
-          <Tooltip
-            content={fullDate}
-            placement="top"
-            classNames={{
-              content: "text-xs text-background-primary bg-primary-primary",
-            }}
-          >
-            <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
-          </Tooltip>
+          <div className="flex items-center gap-1">
+            {" "}
+            <Clock size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
+            <Tooltip
+              content={fullDate}
+              placement="top"
+              classNames={{
+                content: "text-xs text-background-primary bg-primary-primary",
+              }}
+            >
+              <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
+            </Tooltip>
+          </div>
         </div>
         <span className="font-bold w-full xs:text-sm md:text-lg">{news_name}</span>
         <RichTextDisplay html={news_desc} className="text-xs line-clamp-3 " />

@@ -1,10 +1,10 @@
 import React from "react";
 
 // Iconsax
-import { More, Calendar, Eye, Trash, Edit } from "iconsax-react";
+import { More, Calendar, Eye, Trash, Edit, Clock } from "iconsax-react";
 
 // Components
-import { Avatar, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Image, Tooltip, Chip } from "@heroui/react";
+import { Avatar, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Tooltip, Chip } from "@heroui/react";
 
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 
@@ -107,20 +107,7 @@ export default function CardCounseling(props: CounselingItem) {
         </div>
 
         {/* Tanggal */}
-        <div className="flex items-center justify-between gap-1 text-xs text-text-secondary">
-          <div className="flex items-center gap-1">
-            {" "}
-            <Calendar size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
-            <Tooltip
-              content={fullDate}
-              placement="top"
-              classNames={{
-                content: "text-xs text-background-primary bg-primary-primary",
-              }}
-            >
-              <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
-            </Tooltip>
-          </div>
+        <div className="flex flex-col items-start gap-1 text-xs text-text-secondary">
           <div className="flex items-center gap-1">
             {" "}
             <Calendar size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
@@ -134,6 +121,19 @@ export default function CardCounseling(props: CounselingItem) {
               <span className="text-xs text-text-secondary cursor-help">{getFullTimeRaw(parsed_counseling_date)}</span>
             </Tooltip>
           </div>
+          <div className="flex items-center gap-1">
+            {" "}
+            <Clock size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
+            <Tooltip
+              content={fullDate}
+              placement="top"
+              classNames={{
+                content: "text-xs text-background-primary bg-primary-primary",
+              }}
+            >
+              <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
+            </Tooltip>
+          </div>
         </div>
 
         <div className="flex items-center gap-1 absolute -top-2 right-0">
@@ -144,7 +144,7 @@ export default function CardCounseling(props: CounselingItem) {
           ) : null}
           {status_id !== 1 ? (
             <Chip className="text-xs font-medium px-3 py-0.5 rounded-full bg-primary-primary text-white" variant="flat" size="sm">
-              Belum Disetujui
+              Menunggu
             </Chip>
           ) : null}
         </div>

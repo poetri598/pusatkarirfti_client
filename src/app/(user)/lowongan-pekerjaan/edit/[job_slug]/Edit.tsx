@@ -56,7 +56,6 @@ import { updateJobById, getJobBySlug } from "@/services/job";
 
 // Utils
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
-import { createFetcher } from "@/utils/createFetcher";
 import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
 
 export default function Edit({ job_slug }: { job_slug: string }) {

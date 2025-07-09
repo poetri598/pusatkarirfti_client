@@ -102,6 +102,7 @@ export default function ModalEditCounseling({ isOpen, onOpenChange, selectedItem
                 <div className="flex flex-col gap-4 ">
                   {/* Jenis Konseling */}
                   <Select
+                    isDisabled={[...status_id][0] === "1"}
                     label="Pilih jenis konseling"
                     isRequired
                     selectedKeys={counseling_type_id}
@@ -136,6 +137,7 @@ export default function ModalEditCounseling({ isOpen, onOpenChange, selectedItem
 
               {/* Tanggal Konseling */}
               <DatePicker
+                isReadOnly={[...status_id][0] === "1"}
                 label="Pilih jadwal konseling"
                 hideTimeZone
                 name="counseling_date"
@@ -156,6 +158,7 @@ export default function ModalEditCounseling({ isOpen, onOpenChange, selectedItem
 
               {/* Counseling Desc */}
               <Textarea
+                isReadOnly={[...status_id][0] === "1"}
                 isRequired
                 label="Beri tahu kami secara singkat mengenai konseling anda"
                 labelPlacement="outside"
@@ -176,7 +179,7 @@ export default function ModalEditCounseling({ isOpen, onOpenChange, selectedItem
               <Button variant="light" onPress={onOpenChange}>
                 Batal
               </Button>
-              <Button type="submit" className="login">
+              <Button type="submit" className="login :disabled" disabled={[...status_id][0] === "1"}>
                 Simpan Perubahan
               </Button>
             </ModalFooter>

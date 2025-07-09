@@ -8,7 +8,7 @@ import Link from "next/link";
 import { NewsItem } from "@/types/news";
 
 export default function CardBerita4(props: NewsItem) {
-  const { news_name, news_img, news_slug, tag_names } = props;
+  const { news_name, news_img, news_slug, news_tags } = props;
   return (
     <>
       <>
@@ -27,7 +27,7 @@ export default function CardBerita4(props: NewsItem) {
             <div className="absolute top-0  w-10/12 h-full flex flex-col justify-center gap-4">
               <div className="bg-background-primary h-2 w-1/4 rounded-full"></div>
               <div className="flex gap-2">
-                {((tag_names as string) || "").split(",").map((tag, index) => (
+                {((news_tags as string) || "").split(",").map((tag, index) => (
                   <span key={index} className="xs:text-xs lg:text-sm p-1 rounded-full w-fit text-background-primary border border-primary-surface">
                     {tag.trim()}
                   </span>

@@ -1,14 +1,14 @@
 import React from "react";
 
 // Iconsax
-import { More, Calendar, Eye, Trash, Edit } from "iconsax-react";
+import { More, Calendar, Eye, Trash, Edit, Clock } from "iconsax-react";
 
 // Components
 import { Avatar, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Image, Tooltip } from "@heroui/react";
 import { getRelativeTimeRaw, getFullTimeRaw } from "@/utils/time";
 import { formatViews } from "@/utils/view";
 
-import { deleteInternshipById } from "@/services/internship";
+import { deleteTrainingById } from "@/services/training";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 
 // Types
@@ -72,7 +72,7 @@ export default function CardLowonganPelatihanAdmin(props: TrainingItem) {
                     onPress={async () => {
                       const confirm = await showConfirmationDialog();
                       if (confirm.isConfirmed) {
-                        const result = await deleteInternshipById(training_id);
+                        const result = await deleteTrainingById(training_id);
                         if (result.success) {
                           await showSuccessDialog();
                           window.location.reload(); // atau trigger re-fetch state
@@ -99,8 +99,9 @@ export default function CardLowonganPelatihanAdmin(props: TrainingItem) {
         {/* Tanggal & View Count */}
         <div className="flex xs:flex-col md:flex-row xs:items-start md:items-center justify-between gap-2">
           {/* Tanggal */}
-          <div className="flex items-center gap-1 text-xs text-text-secondary">
-            <Calendar size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
+          <div className="flex items-center gap-1">
+            {" "}
+            <Clock size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
             <Tooltip
               content={fullDate}
               placement="top"

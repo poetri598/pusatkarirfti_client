@@ -118,7 +118,7 @@ export default function page() {
             ) : apiErrorUsers ? (
               <p className="text-start text-xs text-danger-primary">{apiErrorUsers}</p>
             ) : users.length === 0 ? (
-              <p className="text-start text-xs text-text-secondary">Data perusahaan belum tersedia</p>
+              <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
             ) : (
               <Select
                 isRequired

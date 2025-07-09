@@ -834,6 +834,10 @@ export default function PageLowonganPekerjaan() {
             </div>
           ) : apiErrorAllExpos ? (
             <p className="text-start text-xs text-danger-primary">{apiErrorAllExpos}</p>
+          ) : currentItems.length === 0 ? (
+            <div className="w-full col-span-full text-center py-8">
+              <p className="text-sm text-gray-500">Data belum tersedia.</p>
+            </div>
           ) : (
             currentItems.map((item) => <CardExpoAdmin key={item.expo_id} {...item} />)
           )}
@@ -852,7 +856,7 @@ export default function PageLowonganPekerjaan() {
         >
           <TableHeader columns={columns}>{(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}</TableHeader>
 
-          <TableBody items={tableItems}>
+          <TableBody items={tableItems} emptyContent="Data belum tersedia.">
             {(item) => (
               <TableRow key={item.key}>
                 {(columnKey) => {

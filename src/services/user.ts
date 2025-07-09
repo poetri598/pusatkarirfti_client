@@ -92,6 +92,24 @@ export async function deleteUserById(user_id: number | string) {
   }
 }
 
+// ====================================================================================================================================
+
+// ✅ GET ALL USERS IS EMPLOYED
+export async function getUserAllIsEmployed() {
+  try {
+    const res = await api.get<ApiResponse<UserItem[]>>("/users/employed");
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mengambil semua data user"),
+    };
+  }
+}
+
 // ✅ GET USER BY USERNAME
 export async function getUserByUsername(user_name: string) {
   try {

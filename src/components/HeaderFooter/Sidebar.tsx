@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 
 // Iconsax
-import { Teacher, Courthouse, ClipboardText, Graph, Logout, People, Setting2, SidebarRight, SearchNormal1, Setting } from "iconsax-react";
+import { Teacher, Courthouse, ClipboardText, Graph, Logout, People, SidebarRight, SearchNormal1, Setting, House2, Briefcase, More2 } from "iconsax-react";
 
 // Components
 import { Accordion, AccordionItem, Link, Input, Tooltip } from "@heroui/react";
@@ -30,24 +30,54 @@ const about_us = [
   { label: "Hubungi Kami", href: "/hubungi-kami" },
 ];
 
+const more = [
+  { label: "Umur", href: "/umur" },
+  { label: "Kota", href: "/kota" },
+  { label: "Tipe Konseling", href: "/tipe-konseling" },
+  { label: "Negara", href: "/negara" },
+  { label: "Pendidikan", href: "/pendidikan" },
+  { label: "Pengalaman", href: "/pengalaman" },
+  { label: "Tipe Expo", href: "/tipe-expo" },
+  { label: "Jenis Kelamin", href: "/jenis-kelamin" },
+  { label: "Tinggi Badan", href: "/tinggi-badan" },
+  { label: "Industri", href: "/industri" },
+  { label: "Tipe Magang", href: "/tipe-magang" },
+  { label: "Ipk", href: "/ipk" },
+  { label: "Tipe Pekerjaan", href: "/tipe-pekerjaan" },
+  { label: "Status Perkawinan", href: "/status-perkawinan" },
+  { label: "Mode", href: "/mode" },
+  { label: "Tipe Berita", href: "/tipe-berita" },
+  { label: "Posisi", href: "/posisi" },
+  { label: "Program Studi", href: "/program-studi" },
+  { label: "Provinsi", href: "/provinsi" },
+  { label: "Agama", href: "/agama" },
+  { label: "Peran Pengguna", href: "/peran-pengguna" },
+  { label: "Semester", href: "/semester" },
+  { label: "Skill", href: "/skill" },
+  { label: "Status", href: "/status" },
+  { label: "Tipe Pelatihan", href: "/tipe-pelatihan" },
+  { label: "Berat Badan", href: "/berat-badan" },
+];
+
 export default function Sidebar({ open, setOpen }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const isCareerActive = career.some((item) => pathname.startsWith(item.href));
   const isAboutUsActive = about_us.some((item) => pathname.startsWith(item.href));
+  const isMoreActive = more.some((item) => pathname.startsWith(item.href));
 
   const { logout } = useAuth();
 
   return (
     <>
       <>
-        <nav className={`fixed top-0 left-0 z-[999] bg-background-primary h-full p-4 duration-300 ease-in-out flex flex-col xs:items-start md:justify-between border border-default-200 gap-2 ${open ? "xs:w-48 md:w-72" : "w-20"}`}>
+        <nav className={`fixed top-0 left-0 z-[999] bg-background-primary h-full p-4 duration-300 ease-in-out flex flex-col xs:items-start md:justify-between border border-default-200 gap-2 ${open ? "xs:w-48 md:w-72" : "w-20"} `}>
           {/* Toggle Icon */}
           <SidebarRight
             size={32}
             color="currentColor"
             variant="Linear"
-            className={`absolute cursor-pointer -right-4 top-40 text-primary-primary p-1 border border-default-200 bg-background-primary rounded-md duration-300 hover:bg-default-200 ${open ? "rotate-180" : "rotate-0"}`}
+            className={`absolute cursor-pointer -right-4 top-40 text-primary-primary p-1 z-[999] border border-default-200 bg-background-primary rounded-md duration-300 hover:bg-default-200 ${open ? "rotate-180" : "rotate-0"}`}
             onClick={() => setOpen(!open)}
           />
 
@@ -101,7 +131,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           </div>
 
           {/* Menu */}
-          <div className="flex flex-col gap-2 flex-2 overflow-y-auto p-1  h-full w-full ">
+          <div className="flex flex-col gap-2 overflow-scroll scrollbar-hide  h-full w-full ">
             {/* Beranda */}
             {!open ? (
               <Tooltip content="Beranda" placement="right-end" classNames={{ content: "bg-primary-border text-background-primary" }}>
@@ -305,6 +335,121 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                 <People size={16} color="currentColor" variant="TwoTone" />
                 <span>Pengguna</span>
               </Link>
+            )}
+
+            {/* Student Room */}
+            {!open ? (
+              <Tooltip content="Student Room" placement="right-end" classNames={{ content: "bg-primary-border text-background-primary" }}>
+                <Link
+                  className={`flex items-center gap-2 p-3 rounded-md group text-text-secondary xs:text-xs md:text-sm hover:text-primary-primary hover:bg-default-200 duration-300 ease-in-out  ${!open && "justify-center"} ${
+                    pathname.startsWith("/ruang-mahasiswa") ? "bg-primary-primary text-background-primary" : ""
+                  }`}
+                  type="button"
+                >
+                  <House2 size={16} color="currentColor" variant="TwoTone" className="cursor-pointer" />
+                  <span className={`${!open && "hidden"}`}>Student Room</span>
+                </Link>
+              </Tooltip>
+            ) : (
+              <Link
+                className={`flex items-center gap-2 p-3 rounded-md group cursor-pointer text-text-secondary xs:text-xs md:text-sm hover:text-primary-primary hover:bg-default-200 duration-300 ease-in-out ${
+                  pathname.startsWith("/ruang-mahasiswa") ? "bg-primary-primary text-background-primary" : ""
+                }`}
+                href="/ruang-mahasiswa"
+              >
+                <House2 size={16} color="currentColor" variant="TwoTone" />
+                <span>Student Room</span>
+              </Link>
+            )}
+
+            {/* Perusahaan */}
+            {!open ? (
+              <Tooltip content="Perusahaan" placement="right-end" classNames={{ content: "bg-primary-border text-background-primary" }}>
+                <Link
+                  className={`flex items-center gap-2 p-3 rounded-md group text-text-secondary xs:text-xs md:text-sm hover:text-primary-primary hover:bg-default-200 duration-300 ease-in-out  ${!open && "justify-center"} ${
+                    pathname.startsWith("/perusahaan") ? "bg-primary-primary text-background-primary" : ""
+                  }`}
+                  type="button"
+                >
+                  <Briefcase size={16} color="currentColor" variant="TwoTone" className="cursor-pointer" />
+                  <span className={`${!open && "hidden"}`}>Perusahaan</span>
+                </Link>
+              </Tooltip>
+            ) : (
+              <Link
+                className={`flex items-center gap-2 p-3 rounded-md group cursor-pointer text-text-secondary xs:text-xs md:text-sm hover:text-primary-primary hover:bg-default-200 duration-300 ease-in-out ${
+                  pathname.startsWith("/perusahaan") ? "bg-primary-primary text-background-primary" : ""
+                }`}
+                href="/perusahaan"
+              >
+                <Briefcase size={16} color="currentColor" variant="TwoTone" />
+                <span>Perusahaan</span>
+              </Link>
+            )}
+
+            {/* Lainnya */}
+            {!open ? (
+              <Tooltip content="Lainnya" placement="right-end" classNames={{ content: "bg-primary-border text-background-primary" }}>
+                <div>
+                  <Accordion className="w-full px-0">
+                    <AccordionItem
+                      aria-label="Lainnya"
+                      title="Lainnya"
+                      startContent={<More2 size={16} color="currentColor" variant="TwoTone" />}
+                      classNames={{
+                        trigger: `flex items-center justify-center gap-2 p-3 hover:bg-default-200 hover:text-primary-primary group/lainnya rounded-md ${isMoreActive ? "bg-primary-primary" : ""}`,
+                        titleWrapper: `${!open && "hidden"}`,
+                        title: `xs:text-xs md:text-sm group-hover/lainnya:text-primary-primary  ${isMoreActive ? "text-background-primary" : "text-text-secondary"}`,
+                        startContent: `group-hover/lainnya:text-primary-primary ${isMoreActive ? "text-background-primary" : "text-text-secondary"}`,
+                        indicator: `group-hover/lainnya:text-primary-primary ${isMoreActive ? "text-background-primary" : "text-text-secondary"} ${!open && "hidden"}`,
+                        content: `pl-8 pr-2 ${!open && "hidden"}`,
+                      }}
+                    >
+                      <div className={`flex flex-col gap-2 py-2 `}>
+                        {more.map((item, index) => (
+                          <Link key={index} href={item.href} className={`xs:text-xs md:text-sm flex justify-between hover:text-primary-primary ${pathname.startsWith(item.href) ? "text-primary-primary" : "text-text-secondary"}`}>
+                            <span>{item.label}</span>
+                            {pathname === item.href && (
+                              <div className="border border-primary-primary rounded-full p-1">
+                                <div className="h-2 w-2 bg-primary-primary rounded-full"></div>
+                              </div>
+                            )}
+                          </Link>
+                        ))}
+                      </div>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+              </Tooltip>
+            ) : (
+              <Accordion className="w-full px-0">
+                <AccordionItem
+                  aria-label="Lainnya"
+                  title="Lainnya"
+                  startContent={<More2 size={16} color="currentColor" variant="TwoTone" />}
+                  classNames={{
+                    trigger: `flex items-center justify-center gap-2 p-3 hover:bg-default-200 hover:text-primary-primary group/lainnya rounded-md ${isMoreActive ? "bg-primary-primary" : ""}`,
+                    titleWrapper: `${!open && "hidden"}`,
+                    title: `xs:text-xs md:text-sm group-hover/lainnya:text-primary-primary  ${isMoreActive ? "text-background-primary" : "text-text-secondary"}`,
+                    startContent: `group-hover/lainnya:text-primary-primary ${isMoreActive ? "text-background-primary" : "text-text-secondary"}`,
+                    indicator: `group-hover/lainnya:text-primary-primary ${isMoreActive ? "text-background-primary" : "text-text-secondary"} ${!open && "hidden"}`,
+                    content: `xs:pl-2 md:pl-8 pr-2 ${!open && "hidden"}`,
+                  }}
+                >
+                  <div className={`flex flex-col gap-2 py-2 `}>
+                    {more.map((item, index) => (
+                      <Link key={index} href={item.href} className={`xs:text-xs md:text-sm flex justify-between hover:text-primary-primary ${pathname.startsWith(item.href) ? "text-primary-primary" : "text-text-secondary"}`}>
+                        <span>{item.label}</span>
+                        {pathname.startsWith(item.href) && (
+                          <div className="border border-primary-primary rounded-full p-1">
+                            <div className="xs:h-1 md:h-2 xs:w-1 md:w-2  bg-primary-primary rounded-full"></div>
+                          </div>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                </AccordionItem>
+              </Accordion>
             )}
           </div>
 

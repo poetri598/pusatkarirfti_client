@@ -3,9 +3,13 @@ export interface CompanyItem {
   company_name: string;
   company_img: string;
   company_desc: string;
+  company_link: string;
   company_is_partner: boolean;
   company_created_at: string; // ISO string
+  company_updated_at: string;
+  status_id: number;
+  status_name: string;
 
-  // GROUP_CONCAT results
+  industry_ids: number[];
   industry_names: string;
 }

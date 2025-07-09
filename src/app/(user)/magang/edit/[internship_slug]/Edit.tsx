@@ -15,7 +15,6 @@ import RichTextEditor from "@/components/Custom/RichTextEditor";
 import { useAuth } from "@/context/AuthContext";
 
 // Types
-import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
 import { InternshipTypeItem } from "@/types/internshipType";
 import { IpkItem } from "@/types/ipk";
 import { CompanyItem } from "@/types/company";
@@ -51,6 +50,7 @@ import { getInternshipBySlug, updateInternshipById } from "@/services/internship
 // Utils
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 import { ZonedDateTime, parseAbsoluteToLocal, now, getLocalTimeZone } from "@internationalized/date";
+import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
 
 export default function Edit({ internship_slug }: { internship_slug: string }) {
   const router = useRouter();

@@ -25,6 +25,7 @@ import {
   TableRow,
   TableCell,
   getKeyValue,
+  Chip,
 } from "@heroui/react";
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
 import CardCounseling from "@/components/Card/CardCounseling";
@@ -161,7 +162,7 @@ export default function PagePelatihan() {
     { key: "no", label: "#" },
     { key: "user_fullname", label: "Nama Peserta" },
     { key: "counseling_date", label: "Jadwal Konseling" },
-    { key: "counseling_created_at", label: "Tanggal Dibuat" },
+    { key: "status_id", label: "Status Diterima" },
     { key: "actions", label: "Aksi" },
   ];
 
@@ -176,7 +177,12 @@ export default function PagePelatihan() {
       no: index + 1,
       user_fullname: counseling.user_fullname.length > 30 ? counseling.user_fullname.slice(0, 30) + "..." : counseling.user_fullname,
       counseling_date: getFullTimeRaw(counseling_date),
-      counseling_created_at: getRelativeTimeRaw(counseling.counseling_created_at),
+      status_id:
+        counseling.status_id !== 1 ? (
+          <Chip className="text-xs font-medium px-3 py-0.5 rounded-full bg-primary-primary text-white" variant="flat" size="sm">
+            Belum Disetujui
+          </Chip>
+        ) : null,
       actions: counseling,
     };
   });
@@ -423,7 +429,7 @@ export default function PagePelatihan() {
                     selectedIcon: "text-primary-primary",
                   }}
                 >
-                  {item.status_name}
+                  {item.status_name === "Aktif" ? "Disetujui" : "Menunggu"}
                 </SelectItem>
               ))
             )}
@@ -583,6 +589,10 @@ export default function PagePelatihan() {
             </div>
           ) : apiErrorAllCounselings ? (
             <p className="text-start text-xs text-danger-primary">{apiErrorAllCounselings}</p>
+          ) : currentItems.length === 0 ? (
+            <div className="w-full col-span-full text-center py-8">
+              <p className="text-sm text-gray-500">Data belum tersedia.</p>
+            </div>
           ) : (
             currentItems.map((item) => <CardCounseling key={item.counseling_id} {...item} />)
           )}
@@ -600,8 +610,7 @@ export default function PagePelatihan() {
           }}
         >
           <TableHeader columns={columns}>{(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}</TableHeader>
-
-          <TableBody items={tableItems}>
+          <TableBody items={tableItems} emptyContent="Data belum tersedia.">
             {(item) => (
               <TableRow key={item.key}>
                 {(columnKey) => {

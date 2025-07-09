@@ -4,19 +4,23 @@ import React, { useEffect, useState } from "react";
 // Components
 import TitleSection from "@/components/Custom/TitleSection";
 import CardPelatihan from "@/components/Card/CardPelatihan";
-import { createFetcher } from "@/utils/createFetcher";
+import { Spinner } from "@heroui/react";
 
 // types
 import type { TrainingItem } from "@/types/training";
-import { Spinner } from "@heroui/react";
 
+// services
+import { getThreeLatestTrainings } from "@/services/training";
+
+// utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 export default function SectionPelatihanUser() {
   const [threeLatest, setThreeLatest] = useState<TrainingItem[]>([]);
   const [isLoadingThreeLatest, setIsLoadingThreeLatest] = useState(true);
   const [apiErrorThreeLatest, setApiErrorThreeLatest] = useState<string | null>(null);
   useEffect(() => {
     const fetchAll = async () => {
-      const fetchers = [createFetcher<TrainingItem[]>("/trainings/three-latest", setThreeLatest, setApiErrorThreeLatest, setIsLoadingThreeLatest)];
+      const fetchers = [createServiceFetcher(getThreeLatestTrainings, setThreeLatest, setApiErrorThreeLatest, setIsLoadingThreeLatest)];
       await Promise.all(fetchers.map((fetch) => fetch()));
     };
 

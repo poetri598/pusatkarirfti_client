@@ -9,8 +9,11 @@ import { Spinner } from "@heroui/react";
 // Types
 import { InternshipItem } from "@/types/internship";
 
+// Services
+import { getThreeLatestInternships } from "@/services/internship";
+
 // utils
-import { createFetcher } from "@/utils/createFetcher";
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function SectionMagangUser() {
   const [threeLatestInternship, setThreeLatestInternship] = useState<InternshipItem[]>([]);
@@ -19,7 +22,7 @@ export default function SectionMagangUser() {
 
   useEffect(() => {
     const fetchAll = async () => {
-      const fetchers = [createFetcher<InternshipItem[]>("/internships/three-latest", setThreeLatestInternship, setApiErrorThreeLatestInternship, setIsLoadingThreeLatestInternship)];
+      const fetchers = [createServiceFetcher(getThreeLatestInternships, setThreeLatestInternship, setApiErrorThreeLatestInternship, setIsLoadingThreeLatestInternship)];
       await Promise.all(fetchers.map((fetch) => fetch()));
     };
 

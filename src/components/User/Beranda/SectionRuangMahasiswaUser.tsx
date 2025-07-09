@@ -9,6 +9,7 @@ import Image from "next/image";
 
 // Components
 import TitleSection2 from "@/components/Custom/TitleSection2";
+import { Spinner } from "@heroui/react";
 
 // SwiperJS
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -19,8 +20,12 @@ import "swiper/css/pagination";
 
 // types
 import type { StudentRoomItem } from "@/types/studentRoom";
-import { Spinner } from "@heroui/react";
-import { createFetcher } from "@/utils/createFetcher";
+
+// services
+import { getFourLatestStudentRooms } from "@/services/studentRoom";
+
+// utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function SectionRuangMahasiswaUser() {
   const [fourLatest, setFourLatest] = useState<StudentRoomItem[]>([]);
@@ -29,7 +34,7 @@ export default function SectionRuangMahasiswaUser() {
 
   useEffect(() => {
     const fetchAll = async () => {
-      const fetchers = [createFetcher<StudentRoomItem[]>("/student-rooms/four-latest", setFourLatest, setApiErrorFourLatest, setIsLoadingFourLatest)];
+      const fetchers = [createServiceFetcher(getFourLatestStudentRooms, setFourLatest, setApiErrorFourLatest, setIsLoadingFourLatest)];
       await Promise.all(fetchers.map((fetch) => fetch()));
     };
 

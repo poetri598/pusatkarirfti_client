@@ -6,8 +6,12 @@ import { SearchNormal1 } from "iconsax-react";
 
 // Components
 import { Input, Image } from "@heroui/react";
+interface Props {
+  keyword: string;
+  setKeyword: (value: string) => void;
+}
 
-export default function SectionHeroUser() {
+export default function SectionHeroUser({ keyword, setKeyword }: Props) {
   return (
     <section className="relative h-screen bg-hero-gradient content-center overflow-hidden">
       {/* Vectors & Images */}
@@ -44,6 +48,8 @@ export default function SectionHeroUser() {
 
         {/* Search */}
         <Input
+          value={keyword}
+          onValueChange={setKeyword}
           endContent={<SearchNormal1 size={32} color="currentColor" className="text-primary-primary transition-colors hover:text-background-primary hover:bg-primary-primary rounded-lg p-2" />}
           placeholder="Cari pelatihan sesuai minatmu..."
           type="text"

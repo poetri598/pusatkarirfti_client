@@ -4,13 +4,16 @@ import React, { useEffect, useState } from "react";
 // Components
 import TitleSection from "@/components/Custom/TitleSection";
 import CardLowonganPekerjaan from "@/components/Card/CardLowonganPekerjaan";
+import { Spinner } from "@heroui/react";
 
 // Types
 import { JobItem } from "@/types/job";
-import { Spinner } from "@heroui/react";
+
+// Services
+import { getThreeLatestJobs } from "@/services/job";
 
 // utils
-import { createFetcher } from "@/utils/createFetcher";
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function SectionLowonganPekerjaanUser() {
   const [threeLatestJob, setThreeLatestJob] = useState<JobItem[]>([]);
@@ -19,7 +22,7 @@ export default function SectionLowonganPekerjaanUser() {
 
   useEffect(() => {
     const fetchAll = async () => {
-      const fetchers = [createFetcher<JobItem[]>("/jobs/three-latest", setThreeLatestJob, setApiErrorThreeLatestJob, setIsLoadingThreeLatestJob)];
+      const fetchers = [createServiceFetcher(getThreeLatestJobs, setThreeLatestJob, setApiErrorThreeLatestJob, setIsLoadingThreeLatestJob)];
       await Promise.all(fetchers.map((fetch) => fetch()));
     };
 

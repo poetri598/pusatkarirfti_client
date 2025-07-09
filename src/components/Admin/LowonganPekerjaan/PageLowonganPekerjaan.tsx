@@ -308,7 +308,6 @@ export default function PageLowonganPekerjaan() {
 
   const [viewMode, setViewMode] = useState<"card" | "table">("card");
 
-  // Ambil data dari props atau state
   const columns = [
     { key: "no", label: "#" },
     { key: "job_name", label: "Judul" },
@@ -317,7 +316,6 @@ export default function PageLowonganPekerjaan() {
     { key: "actions", label: "Aksi" },
   ];
 
-  // Format data jadi bentuk table-ready
   const tableItems = currentItems.map((job, index) => ({
     key: job.job_id,
     no: index + 1,
@@ -444,7 +442,7 @@ export default function PageLowonganPekerjaan() {
         </div>
       </section>
 
-      <section className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2  w-full">
+      <section className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2  w-full ">
         {/* age_min_id */}
         {selectedFilters.has("age_min_id") && (
           <Select
@@ -1387,7 +1385,6 @@ export default function PageLowonganPekerjaan() {
           }}
         >
           <TableHeader columns={columns}>{(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}</TableHeader>
-
           <TableBody items={tableItems} emptyContent="Data belum tersedia.">
             {(item) => (
               <TableRow key={item.key}>

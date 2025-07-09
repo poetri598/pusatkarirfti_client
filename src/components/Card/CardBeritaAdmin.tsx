@@ -1,7 +1,7 @@
 import React from "react";
 
 // Iconsax
-import { More, Calendar, Eye, Trash, Edit } from "iconsax-react";
+import { More, Calendar, Eye, Trash, Edit, Clock } from "iconsax-react";
 
 // Components
 import { Avatar, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Image, Tooltip } from "@heroui/react";
@@ -99,8 +99,9 @@ export default function CardLowonganBeritaAdmin(props: NewsItem) {
         {/* Tanggal & View Count */}
         <div className="flex xs:flex-col md:flex-row xs:items-start md:items-center justify-between gap-2">
           {/* Tanggal */}
-          <div className="flex items-center gap-1 text-xs text-text-secondary">
-            <Calendar size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
+          <div className="flex items-center gap-1">
+            {" "}
+            <Clock size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
             <Tooltip
               content={fullDate}
               placement="top"

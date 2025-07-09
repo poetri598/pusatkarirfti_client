@@ -1,7 +1,9 @@
 "use client";
+import { useState } from "react";
 
 // Components
 import SectionHero from "./SectionHeroUser";
+import SectionHasilPencarianUser from "./SectionHasilPencarian";
 import SectionLowonganPekerjaan from "./SectionLowonganPekerjaanUser";
 import SectionMagang from "./SectionMagangUser";
 import SectionCarousel from "./SectionCarouselUser";
@@ -13,11 +15,14 @@ import SectionPartnership from "./SectionPartnershipUser";
 import SectionDaftar from "./SectionDaftarUser";
 
 export default function PageBerandaUser() {
+  const [searchKeyword, setSearchKeyword] = useState("");
+
   return (
     <>
       <main>
         {/* Section Hero */}
-        <SectionHero />
+        <SectionHero keyword={searchKeyword} setKeyword={setSearchKeyword} />
+        <SectionHasilPencarianUser keyword={searchKeyword} />
 
         {/* Section Job */}
         <SectionLowonganPekerjaan />
