@@ -18,7 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 // Types
 import { JobItem } from "@/types/job";
 
-export default function CardLowonganPekerjaan(props: JobItem) {
+export default function page(props: JobItem) {
   const { job_slug, job_img, job_name, province_names, city_names, country_names, job_type_name, job_salary_min, job_salary_max, job_created_at } = props;
 
   const { user } = useAuth();

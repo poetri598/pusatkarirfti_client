@@ -18,7 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 // Types
 import { ExpoItem } from "@/types/expo";
 
-export default function CardExpo(props: ExpoItem) {
+export default function page(props: ExpoItem) {
   const { expo_slug, expo_name, expo_img, expo_created_at, mode_names, expo_price, expo_type_names } = props;
 
   const { user } = useAuth();

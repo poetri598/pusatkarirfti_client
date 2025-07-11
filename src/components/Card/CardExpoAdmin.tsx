@@ -1,7 +1,7 @@
 import React from "react";
 
 // Iconsax
-import { More, Calendar, Eye, Trash, Edit, Clock } from "iconsax-react";
+import { More, Eye, Trash, Edit, Clock } from "iconsax-react";
 
 // Components
 import { Avatar, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Image, Tooltip } from "@heroui/react";
@@ -14,7 +14,7 @@ import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/co
 // Types
 import { ExpoItem } from "@/types/expo";
 
-export default function CardLowonganMagangAdmin(props: ExpoItem) {
+export default function page(props: ExpoItem) {
   const { expo_id, expo_slug, user_img, user_fullname, expo_img, expo_name, expo_created_at, expo_views } = props;
   const relativeDate = getRelativeTimeRaw(expo_created_at);
   const fullDate = getFullTimeRaw(expo_created_at);
@@ -98,19 +98,6 @@ export default function CardLowonganMagangAdmin(props: ExpoItem) {
 
         {/* Tanggal & View Count */}
         <div className="flex xs:flex-col md:flex-row xs:items-start md:items-center justify-between gap-2">
-          {/* Tanggal */}
-          <div className="flex items-center gap-1 text-xs text-text-secondary">
-            <Calendar size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
-            <Tooltip
-              content={fullDate}
-              placement="top"
-              classNames={{
-                content: "text-xs text-background-primary bg-primary-primary",
-              }}
-            >
-              <span className="text-xs text-text-secondary cursor-help">{relativeDate}</span>
-            </Tooltip>
-          </div>{" "}
           {/* Tanggal */}
           <div className="flex items-center gap-1">
             {" "}

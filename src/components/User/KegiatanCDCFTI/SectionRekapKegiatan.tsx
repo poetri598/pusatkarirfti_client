@@ -3,15 +3,19 @@ import React, { useState, useEffect } from "react";
 // Components
 import CardBerita4 from "@/components/Card/CardBerita4";
 import TitleSection2 from "@/components/Custom/TitleSection2";
-import { Button, Pagination } from "@heroui/react";
-import { Spinner } from "@heroui/react";
+import { Button, Pagination, Spinner } from "@heroui/react";
 
 // Iconsax
 import { ArrowRight2 } from "iconsax-react";
 
 // types
 import type { NewsItem } from "@/types/news";
-import { createFetcher } from "@/utils/createFetcher";
+
+// Services
+import { getNewsAllByTypeNameKegiatanPusatKarirFTI } from "@/services/news";
+
+// Utils
+import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function SectionRekapKegiatan() {
   const [allKegiatanPusatKarirFTI, setAllKegiatanPusatKarirFTI] = useState<NewsItem[]>([]);
@@ -20,7 +24,7 @@ export default function SectionRekapKegiatan() {
 
   useEffect(() => {
     const fetchAll = async () => {
-      const fetchers = [createFetcher<NewsItem[]>("/news/kegiatan-pusat-karir-fti", setAllKegiatanPusatKarirFTI, setApiErrorAllKegiatanPusatKarirFTI, setIsLoadingAllKegiatanPusatKarirFTI)];
+      const fetchers = [createServiceFetcher(getNewsAllByTypeNameKegiatanPusatKarirFTI, setAllKegiatanPusatKarirFTI, setApiErrorAllKegiatanPusatKarirFTI, setIsLoadingAllKegiatanPusatKarirFTI)];
       await Promise.all(fetchers.map((fetch) => fetch()));
     };
 

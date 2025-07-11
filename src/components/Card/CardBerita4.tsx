@@ -7,7 +7,7 @@ import Link from "next/link";
 // Types
 import { NewsItem } from "@/types/news";
 
-export default function CardBerita4(props: NewsItem) {
+export default function page(props: NewsItem) {
   const { news_name, news_img, news_slug, news_tags } = props;
   return (
     <>

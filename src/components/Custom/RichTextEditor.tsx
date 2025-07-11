@@ -35,6 +35,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: Props) 
     ],
     content: value,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
+    immediatelyRender: false,
   });
 
   if (!editor) return null;

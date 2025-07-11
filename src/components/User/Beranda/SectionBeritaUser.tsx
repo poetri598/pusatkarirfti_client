@@ -17,34 +17,41 @@ import { getOneMostPopularNews, getThreeLatestNews } from "@/services/news";
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 
 export default function SectionBeritaUser() {
-  const [oneMostPopularNews, setOneMostPopularNews] = useState<NewsItem>({} as NewsItem);
+  const [oneMostPopularNews, setOneMostPopularNews] = useState<NewsItem | null>(null);
   const [isLoadingOneMostPopularNews, setIsLoadingOneMostPopularNews] = useState(true);
   const [apiErrorOneMostPopularNews, setApiErrorOneMostPopularNews] = useState<string | null>(null);
+
   const [threeLatestNews, setThreeLatestNews] = useState<NewsItem[]>([]);
   const [isLoadingThreeLatestNews, setIsLoadingThreeLatestNews] = useState(true);
   const [apiErrorThreeLatestNews, setApiErrorThreeLatestNews] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAll = async () => {
-      const fetchers = [
-        createServiceFetcher(getOneMostPopularNews, setOneMostPopularNews, setApiErrorOneMostPopularNews, setIsLoadingOneMostPopularNews),
-        createServiceFetcher(getThreeLatestNews, setThreeLatestNews, setApiErrorThreeLatestNews, setIsLoadingThreeLatestNews),
-      ];
-
+      // fetch 3 berita terbaru
+      const fetchers = [createServiceFetcher(getThreeLatestNews, setThreeLatestNews, setApiErrorThreeLatestNews, setIsLoadingThreeLatestNews)];
       await Promise.all(fetchers.map((fetch) => fetch()));
+
+      // fetch 1 berita populer
+      const { success, data, error } = await getOneMostPopularNews();
+      if (success && data) {
+        setOneMostPopularNews(data);
+        setApiErrorOneMostPopularNews(null);
+      } else {
+        setApiErrorOneMostPopularNews(error || "Gagal memuat berita populer.");
+      }
+      setIsLoadingOneMostPopularNews(false);
     };
 
     fetchAll();
   }, []);
 
   return (
-    <section className="xs:w-11/12 lg:w-10/12 mx-auto flex flex-col gap-8 py-8 overflow-hidden">
+    <section className="xs:w-11/12 lg:w-10/12   mx-auto flex flex-col gap-8 py-8 overflow-hidden">
       <TitleSection label="Berita" href="/berita" />
 
-      <div className="flex flex-col gap-4">
-        <div className="grid xs:grid-cols-1 xl:grid-cols-2 xs:gap-2 lg:gap-8">
+      <div className="flex flex-col gap-4 min-h-screen">
+        <div className="grid xs:grid-cols-1 xl:grid-cols-2 xs:gap-2 lg:gap-8 ">
           {/* Kolom kiri – berita utama */}
-
           {isLoadingOneMostPopularNews ? (
             <div className="w-full flex justify-center items-center py-8">
               <Spinner
@@ -66,7 +73,7 @@ export default function SectionBeritaUser() {
           )}
 
           {/* Kolom kanan – berita sekunder */}
-          <div className="grid grid-rows-3 xs:gap-2 lg:gap-8">
+          <div className="grid grid-rows-3 xs:gap-2 lg:gap-8 ">
             {isLoadingThreeLatestNews ? (
               <div className="w-full flex justify-center items-center py-8">
                 <Spinner

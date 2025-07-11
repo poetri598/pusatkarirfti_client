@@ -19,7 +19,7 @@ import { NewsItem } from "@/types/news";
 // Authentication Context
 import { useAuth } from "@/context/AuthContext";
 
-export default function CardBerita2(props: NewsItem) {
+export default function page(props: NewsItem) {
   const { news_slug, news_name, news_img, news_desc, news_type_name, news_created_at } = props;
   const relativeDate = getRelativeTimeRaw(news_created_at);
   const fullDate = getFullTimeRaw(news_created_at);
@@ -54,7 +54,7 @@ export default function CardBerita2(props: NewsItem) {
           </div>
         </div>
         <span className="font-bold w-full xs:text-sm md:text-lg">{news_name}</span>
-        <RichTextDisplay html={news_desc} className="text-xs line-clamp-3 " />
+        <RichTextDisplay html={news_desc} className="[&_p]:line-clamp-3 " />
         <div className="flex justify-end">
           {user ? (
             <Link href={`/berita/${news_slug}`} className="login flex items-center gap-1 transition-colors hover:text-secondary-primary group">

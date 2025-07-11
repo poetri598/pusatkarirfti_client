@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Eye } from "iconsax-react";
 import { Avatar, Breadcrumbs, BreadcrumbItem, Image, Tooltip, Chip, Spinner } from "@heroui/react";
-import { getRelativeTime, formatFullDate } from "@/utils/time";
+import { getRelativeTimeRaw, getFullTimeRaw } from "@/utils/time";
 import { NewsItem } from "@/types/news";
 import TitleSection from "@/components/Custom/TitleSection";
 import CardBerita2 from "@/components/Card/CardBerita2";
@@ -62,8 +62,8 @@ export default function SectionBeritaClient({ news_slug }: { news_slug: string }
 
   const NewsCreatedAtDate = news.news_created_at ? new Date(news.news_created_at) : null;
 
-  const relativeDate = NewsCreatedAtDate ? getRelativeTime(NewsCreatedAtDate.toISOString()) : "";
-  const fullDate = NewsCreatedAtDate ? formatFullDate(NewsCreatedAtDate.toISOString()) : "";
+  const relativeDate = NewsCreatedAtDate ? getRelativeTimeRaw(NewsCreatedAtDate.toISOString()) : "";
+  const fullDate = NewsCreatedAtDate ? getFullTimeRaw(NewsCreatedAtDate.toISOString()) : "";
   return (
     <main className="xs:w-11/12 lg:w-10/12 flex flex-col mx-auto bg-background-primary py-8 gap-8">
       <section className="flex flex-col xs:gap-2 md:gap-8">
@@ -105,10 +105,10 @@ export default function SectionBeritaClient({ news_slug }: { news_slug: string }
                   <span className="text-xs text-text-secondary"> {formatViews(news.news_views)} kali dilihat</span>
                 </div>
               </Tooltip>
-              <Tooltip content={formatFullDate(news.news_created_at)} placement="top" classNames={{ content: "text-xs text-background-primary bg-primary-primary" }}>
+              <Tooltip content={getFullTimeRaw(news.news_created_at)} placement="top" classNames={{ content: "text-xs text-background-primary bg-primary-primary" }}>
                 <div className="flex items-center gap-1">
                   <Calendar size="20" color="currentColor" className="text-text-secondary" />
-                  <span className="text-xs text-text-secondary cursor-help">Diposting {getRelativeTime(news.news_created_at)}</span>
+                  <span className="text-xs text-text-secondary cursor-help">Diposting {getRelativeTimeRaw(news.news_created_at)}</span>
                 </div>
               </Tooltip>
             </div>
@@ -122,7 +122,7 @@ export default function SectionBeritaClient({ news_slug }: { news_slug: string }
 
           {/* Detail Informasi */}
           <div className="flex flex-wrap items-start gap-2 ">
-            {((news.tag_names as string) || "").split(",").map((tag, index) => (
+            {((news.news_tags as string) || "").split(",").map((tag, index) => (
               <Chip key={index} className="text-xs text-primary-primary bg-background-primary border border-default-200">
                 {tag.trim()}
               </Chip>

@@ -1,7 +1,7 @@
 import React from "react";
 
 // Iconsax
-import { More, Calendar, Eye, Trash, Edit, Clock } from "iconsax-react";
+import { More, Eye, Trash, Edit, Clock } from "iconsax-react";
 
 // Components
 import { Avatar, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Image, Tooltip } from "@heroui/react";
@@ -14,7 +14,7 @@ import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/co
 // Types
 import { TrainingItem } from "@/types/training";
 
-export default function CardLowonganPelatihanAdmin(props: TrainingItem) {
+export default function page(props: TrainingItem) {
   const { training_id, training_slug, user_img, user_fullname, training_img, training_name, training_created_at, training_views } = props;
   const relativeDate = getRelativeTimeRaw(training_created_at);
   const fullDate = getFullTimeRaw(training_created_at);

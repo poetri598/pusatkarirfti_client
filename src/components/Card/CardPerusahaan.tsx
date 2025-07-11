@@ -13,7 +13,7 @@ import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/co
 // Types
 import { CompanyItem } from "@/types/company";
 
-export default function CardRuangMahasiswa(props: CompanyItem) {
+export default function page(props: CompanyItem) {
   const { company_id, company_name, company_img, company_is_partner, company_updated_at } = props;
   const relativeDate = getRelativeTimeRaw(company_updated_at);
   const fullDate = getFullTimeRaw(company_updated_at);

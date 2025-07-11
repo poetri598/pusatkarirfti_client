@@ -18,7 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 // Types
 import { TrainingItem } from "@/types/training";
 
-export default function CardPelatihanExpo(props: TrainingItem) {
+export default function page(props: TrainingItem) {
   const { training_slug, training_name, training_img, training_type_names, training_price, training_created_at, mode_names } = props;
 
   const { user } = useAuth();

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef, FormEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 // Components
@@ -96,7 +96,6 @@ export default function Edit({ age_id }: { age_id: number }) {
           <TitleSectionAdmin label="Ubah Data Umur" />
 
           <Form onSubmit={handleSubmit} className="w-full flex flex-col items-center gap-4 ">
-            {/* Nama Lengkap  */}
             <NumberInput
               isRequired
               label="Masukkan nomor umur"

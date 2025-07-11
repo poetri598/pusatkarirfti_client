@@ -88,12 +88,12 @@ export default function Edit({ city_id }: { city_id: number }) {
             }}
           >
             <BreadcrumbItem href="/beranda">Beranda</BreadcrumbItem>
-            <BreadcrumbItem href="/umur">Umur</BreadcrumbItem>
-            <BreadcrumbItem href={`/umur/edit/${city_id}`}>Ubah Data Umur</BreadcrumbItem>
+            <BreadcrumbItem href="/kota">Kota</BreadcrumbItem>
+            <BreadcrumbItem href={`/kota/edit/${city_id}`}>Ubah Data Kota</BreadcrumbItem>
           </Breadcrumbs>
 
           {/* Section Title */}
-          <TitleSectionAdmin label="Ubah Data Umur" />
+          <TitleSectionAdmin label="Ubah Data Kota" />
 
           <Form onSubmit={handleSubmit} className="w-full flex flex-col items-center gap-4 ">
             {/* Nama Lengkap  */}

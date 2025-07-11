@@ -19,7 +19,7 @@ import { NewsItem } from "@/types/news";
 // Authentication Context
 import { useAuth } from "@/context/AuthContext";
 
-export default function CardBerita(props: NewsItem) {
+export default function page(props: NewsItem) {
   const { news_slug, news_img, news_name, news_desc, news_views } = props;
   const { user } = useAuth(); // Ambil user dari AuthContext
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -31,7 +31,7 @@ export default function CardBerita(props: NewsItem) {
         <Star1 size={48} color="currentColor" variant="Outline" className="absolute top-2 right-2 bg-background-primary rounded-full p-2 cursor-pointer hover:bg-primary-hover hover:text-background-primary transition-all hover:rotate-180" />
       </div>
       <span className="font-bold xs:text-base md:text-4xl w-full">{news_name}</span>
-      <RichTextDisplay html={news_desc} className="text-xs line-clamp-6" />
+      <RichTextDisplay html={news_desc} className="[&_p]:line-clamp-6" />
       <div className="flex justify-between gap-1">
         <Tooltip
           content={news_views.toLocaleString("id-ID")}

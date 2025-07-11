@@ -1,7 +1,7 @@
 import React from "react";
 
 // Iconsax
-import { More, Calendar, Eye, Trash, Edit, Clock } from "iconsax-react";
+import { More, Eye, Trash, Edit, Clock } from "iconsax-react";
 
 // Components
 import { Avatar, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Image, Tooltip } from "@heroui/react";
@@ -13,7 +13,7 @@ import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/co
 // Types
 import { UserItem } from "@/types/user";
 
-export default function CardPengguna(props: UserItem) {
+export default function page(props: UserItem) {
   const { user_id, user_name, user_img, user_fullname, role_name, user_created_at } = props;
   const relativeDate = getRelativeTimeRaw(user_created_at);
   const fullDate = getFullTimeRaw(user_created_at);

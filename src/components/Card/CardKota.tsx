@@ -1,19 +1,22 @@
 import React from "react";
 
 // Iconsax
-import { More, Calendar, Eye, Trash, Edit, Clock } from "iconsax-react";
+import { More, Eye, Trash, Edit, Clock } from "iconsax-react";
 
 // Components
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Tooltip } from "@heroui/react";
-import { getRelativeTimeRaw, getFullTimeRaw } from "@/utils/time";
-
-import { deleteCityById } from "@/services/city";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 
 // Types
 import { CityItem } from "@/types/city";
 
-export default function CardPengguna(props: CityItem) {
+// Services
+import { deleteCityById } from "@/services/city";
+
+// Utils
+import { getRelativeTimeRaw, getFullTimeRaw } from "@/utils/time";
+
+export default function page(props: CityItem) {
   const { city_id, city_name, city_created_at } = props;
   const relativeDate = getRelativeTimeRaw(city_created_at);
   const fullDate = getFullTimeRaw(city_created_at);

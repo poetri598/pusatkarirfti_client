@@ -72,7 +72,7 @@ export default function page() {
 
   const columns = [
     { key: "no", label: "#" },
-    { key: "city_name", label: "Nomor Kota" },
+    { key: "city_name", label: "Nama Kota" },
     { key: "city_created_at", label: "Tanggal Dibuat" },
     { key: "actions", label: "Aksi" },
   ];
@@ -231,12 +231,12 @@ export default function page() {
                       <TableCell>
                         <div className="flex justify-center items-center gap-2">
                           <Tooltip content="Lihat detail" placement="top" className="bg-yellow-500 text-white text-xs px-2 py-1 rounded">
-                            <Button as={Link} isIconOnly variant="light" size="sm" href={`/perusahaan/${data.city_id}`}>
+                            <Button as={Link} isIconOnly variant="light" size="sm" href={`/kota/${data.city_id}`}>
                               <Eye size={20} className="text-yellow-500" variant="Bold" color="currentColor" />
                             </Button>
                           </Tooltip>
                           <Tooltip content="Edit data" placement="top" className="bg-primary-primary text-white text-xs px-2 py-1 rounded">
-                            <Button as={Link} isIconOnly variant="light" size="sm" href={`/perusahaan/edit/${data.city_id}`}>
+                            <Button as={Link} isIconOnly variant="light" size="sm" href={`/kota/edit/${data.city_id}`}>
                               <Edit size={20} className="text-primary-primary" variant="Bold" color="currentColor" />
                             </Button>
                           </Tooltip>

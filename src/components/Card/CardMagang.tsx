@@ -18,7 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 // Types
 import { InternshipItem } from "@/types/internship";
 
-export default function CardMagang(props: InternshipItem) {
+export default function page(props: InternshipItem) {
   const { internship_slug, internship_img, internship_name, province_names, city_names, country_names, mode_names, internship_type_name, internship_created_at } = props;
 
   const { user } = useAuth();

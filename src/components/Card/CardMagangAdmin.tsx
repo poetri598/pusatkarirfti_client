@@ -1,7 +1,7 @@
 import React from "react";
 
 // Iconsax
-import { More, Calendar, Eye, Trash, Edit, Clock } from "iconsax-react";
+import { More, Eye, Trash, Edit, Clock } from "iconsax-react";
 
 // Components
 import { Avatar, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Image, Tooltip } from "@heroui/react";
@@ -14,7 +14,7 @@ import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/co
 // Types
 import { InternshipItem } from "@/types/internship";
 
-export default function CardLowonganMagangAdmin(props: InternshipItem) {
+export default function page(props: InternshipItem) {
   const { internship_id, internship_slug, user_img, user_fullname, internship_img, internship_name, internship_created_at, internship_views } = props;
   const relativeDate = getRelativeTimeRaw(internship_created_at);
   const fullDate = getFullTimeRaw(internship_created_at);

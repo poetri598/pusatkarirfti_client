@@ -6,7 +6,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 // Iconsax
-import { More, Calendar, Eye, Trash, Edit, Clock } from "iconsax-react";
+import { More, Eye, Trash, Edit, Clock } from "iconsax-react";
 
 // Components
 import { Avatar, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Image, Tooltip } from "@heroui/react";
@@ -19,7 +19,7 @@ import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/co
 // Types
 import { JobItem } from "@/types/job";
 
-export default function CardLowonganPekerjaanAdmin(props: JobItem) {
+export default function page(props: JobItem) {
   const { job_id, job_slug, user_img, user_fullname, job_img, job_name, job_created_at, job_views } = props;
 
   const relativeDate = getRelativeTimeRaw(job_created_at);

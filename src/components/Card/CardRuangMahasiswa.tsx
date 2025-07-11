@@ -13,7 +13,7 @@ import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/co
 // Types
 import { StudentRoomItem } from "@/types/studentRoom";
 
-export default function CardRuangMahasiswa(props: StudentRoomItem) {
+export default function page(props: StudentRoomItem) {
   const { student_room_id, student_room_img, user_img, user_fullname, student_room_updated_at } = props;
   const relativeDate = getRelativeTimeRaw(student_room_updated_at);
   const fullDate = getFullTimeRaw(student_room_updated_at);

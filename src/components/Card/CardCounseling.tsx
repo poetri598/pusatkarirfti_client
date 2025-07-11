@@ -18,7 +18,7 @@ import { deleteCounselingById } from "@/services/counseling";
 import { getRelativeTimeRaw, getFullTimeRaw } from "@/utils/time";
 import { parseAbsoluteToLocal, ZonedDateTime } from "@internationalized/date";
 
-export default function CardCounseling(props: CounselingItem) {
+export default function page(props: CounselingItem) {
   const { counseling_id, user_img, user_fullname, user_phone, user_nim, program_study_name, counseling_date, counseling_is_read, status_id, counseling_created_at } = props;
   const relativeDate = getRelativeTimeRaw(counseling_created_at);
   const fullDate = getFullTimeRaw(counseling_created_at);
