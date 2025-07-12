@@ -30,6 +30,7 @@ import {
 import TitleSectionAdmin from "@/components/Custom/TitleSectionAdmin";
 import CardProfilCdcFti from "@/components/Card/CardProfilCDCFTI";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
+import RichTextDisplay from "@/components/Custom/RichTextDisplay";
 
 // Types
 import { ProfilCdcFtiItem } from "@/types/profilCdcFti";
@@ -114,8 +115,8 @@ export default function PageBerita() {
   const tableItems = currentItems.map((data, index) => ({
     key: data.profil_cdc_fti_id,
     no: index + 1,
-    news_name: data.profil_cdc_fti_firstname.length > 30 ? data.profil_cdc_fti_firstname.slice(0, 30) + "..." : data.profil_cdc_fti_firstname,
-    news_created_at: getRelativeTimeRaw(data.profil_cdc_fti_created_at),
+    profil_cdc_fti_firstname: <RichTextDisplay className="text-text-primary" html={data.profil_cdc_fti_firstname.length > 30 ? data.profil_cdc_fti_firstname.slice(0, 30) + "..." : data.profil_cdc_fti_firstname} />,
+    profil_cdc_fti_created_at: getRelativeTimeRaw(data.profil_cdc_fti_created_at),
     actions: data, // kirim full job object untuk keperluan aksi
   }));
 

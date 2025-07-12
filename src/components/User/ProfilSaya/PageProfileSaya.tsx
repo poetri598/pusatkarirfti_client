@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { User, Sms } from "iconsax-react";
 
 // Components
-import { Form, Breadcrumbs, BreadcrumbItem, Avatar, Link, Input, DatePicker, Switch, avatar } from "@heroui/react";
+import { Form, Breadcrumbs, BreadcrumbItem, Avatar, Link, Input, DatePicker, Switch, Textarea } from "@heroui/react";
 
 // Context
 import { useAuth } from "@/context/AuthContext";
@@ -67,7 +67,7 @@ export default function ProfilSaya() {
                 <div className="absolute top-1/2 w-5/6 h-1/4 bg-secondary-primary"></div>
               </div>
               <Link href={`/profil-saya/${user?.user_name}`} className="login">
-                Ubah
+                Ubah Profil Saya
               </Link>
             </div>
 
@@ -91,7 +91,7 @@ export default function ProfilSaya() {
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-4 md:gap-8 w-full">
               {/* Nama Lengkap  */}
               <Input isReadOnly label="Nama Lengkap" labelPlacement="outside" type="text" value={user?.user_fullname} classNames={{ label: "text-xs", input: "placeholder:!text-text-secondary text-xs focus:border-primary-primary" }} />
-              {/* Jenis Kemalin & Religion */}
+              {/* Jenis Kelamin & Religion */}
               <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2 md:gap-8">
                 {/* Jenis Kelamin  */}
                 <Input isReadOnly label="Jenis Kelamin" labelPlacement="outside" type="text" value={user?.gender_name} classNames={{ label: "text-xs", input: "placeholder:!text-text-secondary text-xs  focus:border-primary-primary" }} />
@@ -101,8 +101,6 @@ export default function ProfilSaya() {
 
               {/* Tempat dan Tanggal Lahir */}
               <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2 md:gap-8">
-                {/* Tempat Kelahiran  */}
-                <Input isReadOnly label="Tempat Kelahiran" labelPlacement="outside" type="text" value={user?.city_name} classNames={{ label: "text-xs", input: "placeholder:!text-text-secondary text-xs  focus:border-primary-primary" }} />
                 {/* Tanggal Lahir */}
                 <DatePicker
                   isReadOnly
@@ -123,6 +121,30 @@ export default function ProfilSaya() {
                     calendarContent: "bg-primary-primary text-xs text-white",
                     segment: "text-xs ",
                   }}
+                />
+                {/* Tempat Kelahiran  */}
+                <Input isReadOnly label="Kota Tempat Tinggal" labelPlacement="outside" type="text" value={user?.city_name} classNames={{ label: "text-xs", input: "placeholder:!text-text-secondary text-xs  focus:border-primary-primary" }} />
+              </div>
+
+              {/* Provinsi dan Negara Tempat tinggal */}
+              <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2 md:gap-8">
+                {/* Provinsi  */}
+                <Input
+                  isReadOnly
+                  label="Provinsi Tempat Tinggal"
+                  labelPlacement="outside"
+                  type="text"
+                  value={user?.province_name}
+                  classNames={{ label: "text-xs", input: "placeholder:!text-text-secondary text-xs  focus:border-primary-primary" }}
+                />
+                {/* Negara  */}
+                <Input
+                  isReadOnly
+                  label="Negara Tempat Tinggal"
+                  labelPlacement="outside"
+                  type="text"
+                  value={user?.country_name}
+                  classNames={{ label: "text-xs", input: "placeholder:!text-text-secondary text-xs  focus:border-primary-primary" }}
                 />
               </div>
 
@@ -254,28 +276,26 @@ export default function ProfilSaya() {
                 />
               </div>
 
-              {/* Posisi impian dan perusahaaan impian */}
-              <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2 md:gap-8">
-                {/* Posisi Impian  */}
-                <Input
-                  isReadOnly
-                  label="Pekerjaan Impian"
-                  labelPlacement="outside"
-                  type="text"
-                  value={user?.dream_position_name}
-                  classNames={{ label: "text-xs", input: "placeholder:!text-text-secondary text-xs  focus:border-primary-primary" }}
-                />
-                {/* Perusahaan Impian  */}
-                <Input
-                  isReadOnly
-                  label="Perusahaan Impian"
-                  labelPlacement="outside"
-                  type="text"
-                  startContent={user?.dream_company_img ? <img src={user?.dream_company_img} alt="Company Icon" className="w-8 h-8 object-contain" /> : null}
-                  value={user?.dream_company_name}
-                  classNames={{ label: "text-xs", input: "placeholder:!text-text-secondary text-xs  focus:border-primary-primary" }}
-                />
-              </div>
+              {/* Posisi Impian  */}
+              <Input
+                isReadOnly
+                label="Pekerjaan Impian"
+                labelPlacement="outside"
+                type="text"
+                value={user?.dream_position_name}
+                classNames={{ label: "text-xs", input: "placeholder:!text-text-secondary text-xs  focus:border-primary-primary" }}
+              />
+
+              {/* Perusahaan Impian  */}
+              <Input
+                isReadOnly
+                label="Perusahaan Impian"
+                labelPlacement="outside"
+                type="text"
+                startContent={user?.dream_company_img ? <img src={user?.dream_company_img} alt="Company Icon" className="w-8 h-8 object-contain" /> : null}
+                value={user?.dream_company_name}
+                classNames={{ label: "text-xs", input: "placeholder:!text-text-secondary text-xs  focus:border-primary-primary" }}
+              />
             </div>
 
             <Switch isReadOnly isSelected={user_is_employed} onValueChange={setUserIsEmployed} classNames={{ thumb: "bg-primary-primary", label: "text-xs" }}>
@@ -302,6 +322,22 @@ export default function ProfilSaya() {
                 />
               </div>
             ) : null}
+
+            {/* User Desc */}
+            <Textarea
+              isReadOnly
+              label="Ceritakan diri anda"
+              labelPlacement="outside"
+              value={user?.user_desc}
+              type="text"
+              variant="bordered"
+              classNames={{
+                label: "after:text-danger-primary text-xs text-text-secondary",
+                input: "focus:!border-primary-primary text-xs ",
+                inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                errorMessage: "text-danger-primary text-xs",
+              }}
+            />
           </Form>
         </section>
       </>

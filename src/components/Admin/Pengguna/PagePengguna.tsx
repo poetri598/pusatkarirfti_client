@@ -40,6 +40,8 @@ import { ProgramStudyItem } from "@/types/programStudy";
 import { SemesterItem } from "@/types/semester";
 import { IpkItem } from "@/types/ipk";
 import { CityItem } from "@/types/city";
+import { ProvinceItem } from "@/types/province";
+import { CountryItem } from "@/types/country";
 import { GenderItem } from "@/types/gender";
 import { ReligionItem } from "@/types/religion";
 import { MaritalStatusItem } from "@/types/maritalStatus";
@@ -57,6 +59,8 @@ import { getProgramStudyAll } from "@/services/programStudy";
 import { getSemesterAll } from "@/services/semester";
 import { getIpkAll } from "@/services/ipk";
 import { getCityAll } from "@/services/city";
+import { getProvinceAll } from "@/services/province";
+import { getCountryAll } from "@/services/country";
 import { getGenderAll } from "@/services/gender";
 import { getReligionAll } from "@/services/religion";
 import { getMaritalStatusAll } from "@/services/maritalStatus";
@@ -81,6 +85,16 @@ export default function PagePengguna() {
   const [city_id, setCityId] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
+  // Province
+  const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_id, setProvinceId] = useState<Selection>(new Set([]));
+  const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
+  const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
+  // Country
+  const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_id, setCountryId] = useState<Selection>(new Set([]));
+  const [isLoadingCountries, setIsLoadingCountries] = useState(true);
+  const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
   // Company (dream + current)
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
   const [dream_company_id, setDreamCompanyId] = useState<Selection>(new Set([]));
@@ -172,6 +186,8 @@ export default function PagePengguna() {
       const fetchers = [
         createServiceFetcher(getAgeAll, setAges, setApiErrorAges, setIsLoadingAges),
         createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
         createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
         createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
         createServiceFetcher(getGenderAll, setGenders, setApiErrorGenders, setIsLoadingGenders),
@@ -226,7 +242,9 @@ export default function PagePengguna() {
     { key: "education_id", label: "Jenjang Pendidikan" },
     { key: "program_study_id", label: "Program Studi" },
     { key: "ipk_id", label: "IPK" },
-    { key: "city_id", label: "Kota Kelahiran" },
+    { key: "city_id", label: "Kota Tempat Tinggal" },
+    { key: "province_id", label: "Provinsi Tempat Tinggal" },
+    { key: "country_id", label: "Negara Tempat Tinggal" },
     { key: "gender_id", label: "Jenis Kelamin" },
     { key: "religion_id", label: "Agama" },
     { key: "marital_status_id", label: "Status Perkawinan" },
@@ -702,6 +720,84 @@ export default function PagePengguna() {
                   }}
                 >
                   {item.city_name}
+                </SelectItem>
+              ))
+            )}
+          </Select>
+        )}
+
+        {/* province_id */}
+        {selectedFilters.has("province_id") && (
+          <Select
+            label="Pilih provinsi tempat tinggal"
+            labelPlacement="outside"
+            variant="bordered"
+            name="province_id"
+            selectedKeys={new Set([filters.province_id || ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, province_id: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs text-text-secondary",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary text-xs",
+            }}
+          >
+            {provinces.length === 0 ? (
+              <SelectItem key="nodata" isDisabled>
+                Data belum tersedia
+              </SelectItem>
+            ) : (
+              provinces.map((item) => (
+                <SelectItem
+                  key={item.province_id}
+                  classNames={{
+                    title: "text-xs hover:!text-primary-primary",
+                    selectedIcon: "text-primary-primary",
+                  }}
+                >
+                  {item.province_name}
+                </SelectItem>
+              ))
+            )}
+          </Select>
+        )}
+
+        {/* country_id */}
+        {selectedFilters.has("country_id") && (
+          <Select
+            label="Pilih negara tempat tinggal"
+            labelPlacement="outside"
+            variant="bordered"
+            name="country_id"
+            selectedKeys={new Set([filters.country_id || ""])}
+            onSelectionChange={(key) => {
+              const value = Array.from(key)[0];
+              setFilters((prev) => ({ ...prev, country_id: value }));
+            }}
+            classNames={{
+              label: "after:text-danger-primary text-xs text-text-secondary",
+              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+              value: "text-xs",
+              errorMessage: "text-danger-primary text-xs",
+            }}
+          >
+            {countries.length === 0 ? (
+              <SelectItem key="nodata" isDisabled>
+                Data belum tersedia
+              </SelectItem>
+            ) : (
+              countries.map((item) => (
+                <SelectItem
+                  key={item.country_id}
+                  classNames={{
+                    title: "text-xs hover:!text-primary-primary",
+                    selectedIcon: "text-primary-primary",
+                  }}
+                >
+                  {item.country_name}
                 </SelectItem>
               ))
             )}

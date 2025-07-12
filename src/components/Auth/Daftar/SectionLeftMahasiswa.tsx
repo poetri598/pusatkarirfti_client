@@ -18,6 +18,8 @@ import { ProgramStudyItem } from "@/types/programStudy";
 import { SemesterItem } from "@/types/semester";
 import { IpkItem } from "@/types/ipk";
 import { CityItem } from "@/types/city";
+import { ProvinceItem } from "@/types/province";
+import { CountryItem } from "@/types/country";
 import { GenderItem } from "@/types/gender";
 import { ReligionItem } from "@/types/religion";
 import { MaritalStatusItem } from "@/types/maritalStatus";
@@ -35,6 +37,8 @@ import { getProgramStudyAll } from "@/services/programStudy";
 import { getSemesterAll } from "@/services/semester";
 import { getIpkAll } from "@/services/ipk";
 import { getCityAll } from "@/services/city";
+import { getProvinceAll } from "@/services/province";
+import { getCountryAll } from "@/services/country";
 import { getGenderAll } from "@/services/gender";
 import { getReligionAll } from "@/services/religion";
 import { getMaritalStatusAll } from "@/services/maritalStatus";
@@ -65,6 +69,16 @@ export default function SectionLeft(props: Props) {
   const [city_id, setCityId] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
+  // Province
+  const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_id, setProvinceId] = useState<Selection>(new Set([]));
+  const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
+  const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
+  // Country
+  const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_id, setCountryId] = useState<Selection>(new Set([]));
+  const [isLoadingCountries, setIsLoadingCountries] = useState(true);
+  const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
   // Company (dream + current)
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
   const [dream_company_id, setDreamCompanyId] = useState<Selection>(new Set([]));
@@ -138,6 +152,8 @@ export default function SectionLeft(props: Props) {
       const fetchers = [
         createServiceFetcher(getAgeAll, setAges, setApiErrorAges, setIsLoadingAges),
         createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
         createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
         createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
         createServiceFetcher(getGenderAll, setGenders, setApiErrorGenders, setIsLoadingGenders),
@@ -199,6 +215,8 @@ export default function SectionLeft(props: Props) {
     appendSingle(formData, "semester_id", semester_id);
     appendSingle(formData, "ipk_id", ipk_id);
     appendSingle(formData, "city_id", city_id);
+    appendSingle(formData, "province_id", province_id);
+    appendSingle(formData, "country_id", country_id);
     appendSingle(formData, "gender_id", gender_id);
     appendSingle(formData, "religion_id", religion_id);
     appendSingle(formData, "marital_status_id", marital_status_id);
@@ -364,8 +382,29 @@ export default function SectionLeft(props: Props) {
               )}
             </div>
 
-            {/* Kota Kelahiran dan Tanggal Lahir */}
+            {/* Kota Tinggal dan Tanggal Lahir */}
             <div className="grid xs:grid-cols-1 md:grid-cols-2 items-center xs:gap-2 md:gap-8">
+              {/* Tanggal Lahir */}
+              <DatePicker
+                isRequired
+                hideTimeZone
+                showMonthAndYearPickers
+                granularity="minute"
+                value={user_birthdate}
+                onChange={setUserBirthDate}
+                label="Tanggal Lahir"
+                name="user_birthdate"
+                labelPlacement="outside"
+                variant="bordered"
+                classNames={{
+                  label: "after:text-danger-primary text-xs",
+                  selectorIcon: "text-primary-primary",
+                  inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary focus:!border-primary-primary",
+                  errorMessage: "text-danger-primary",
+                  calendarContent: "bg-primary-primary text-xs text-white",
+                  segment: "text-xs ",
+                }}
+              />
               {/* City */}
               {isLoadingCities ? (
                 <div className="w-full flex justify-center items-center py-8">
@@ -384,7 +423,7 @@ export default function SectionLeft(props: Props) {
               ) : (
                 <Select
                   isRequired
-                  label="Pilih kota kelahiran anda"
+                  label="Pilih kota tempat tinggal"
                   labelPlacement="outside"
                   variant="bordered"
                   name="city_id"
@@ -416,27 +455,111 @@ export default function SectionLeft(props: Props) {
                   )}
                 </Select>
               )}
-              {/* Tanggal Lahir */}
-              <DatePicker
-                isRequired
-                hideTimeZone
-                showMonthAndYearPickers
-                granularity="minute"
-                value={user_birthdate}
-                onChange={setUserBirthDate}
-                label="Tanggal Lahir"
-                name="user_birthdate"
-                labelPlacement="outside"
-                variant="bordered"
-                classNames={{
-                  label: "after:text-danger-primary text-xs",
-                  selectorIcon: "text-primary-primary",
-                  inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary focus:!border-primary-primary",
-                  errorMessage: "text-danger-primary",
-                  calendarContent: "bg-primary-primary text-xs text-white",
-                  segment: "text-xs ",
-                }}
-              />
+            </div>
+
+            {/* Provinsi dan Negara Tinggal */}
+            <div className="grid xs:grid-cols-1 md:grid-cols-2 items-center xs:gap-2 md:gap-8">
+              {/* Provinsi */}
+              {isLoadingProvinces ? (
+                <div className="w-full flex justify-center items-center py-8">
+                  <Spinner
+                    label="Sedang memuat data..."
+                    labelColor="primary"
+                    variant="dots"
+                    classNames={{
+                      label: "text-primary-primary mt-4",
+                      dots: "border-5 border-primary-primary",
+                    }}
+                  />
+                </div>
+              ) : apiErrorProvinces ? (
+                <p className="text-start text-xs text-danger-primary">{apiErrorProvinces}</p>
+              ) : (
+                <Select
+                  isRequired
+                  label="Pilih provinsi tempat tinggal"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="province_id"
+                  selectedKeys={province_id}
+                  onSelectionChange={setProvinceId}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {provinces.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    provinces.map((item) => (
+                      <SelectItem
+                        key={item.province_id}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.province_name}
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
+
+              {/* Negara */}
+              {isLoadingCountries ? (
+                <div className="w-full flex justify-center items-center py-8">
+                  <Spinner
+                    label="Sedang memuat data..."
+                    labelColor="primary"
+                    variant="dots"
+                    classNames={{
+                      label: "text-primary-primary mt-4",
+                      dots: "border-5 border-primary-primary",
+                    }}
+                  />
+                </div>
+              ) : apiErrorCountries ? (
+                <p className="text-start text-xs text-danger-primary">{apiErrorCountries}</p>
+              ) : (
+                <Select
+                  isRequired
+                  label="Pilih negara tempat tinggal"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  name="country_id"
+                  selectedKeys={country_id}
+                  onSelectionChange={setCountryId}
+                  classNames={{
+                    label: "after:text-danger-primary text-xs text-text-secondary",
+                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                    value: "text-xs",
+                    errorMessage: "text-danger-primary text-xs",
+                  }}
+                >
+                  {countries.length === 0 ? (
+                    <SelectItem key="nodata" isDisabled>
+                      Data belum tersedia
+                    </SelectItem>
+                  ) : (
+                    countries.map((item) => (
+                      <SelectItem
+                        key={item.country_id}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {item.country_name}
+                      </SelectItem>
+                    ))
+                  )}
+                </Select>
+              )}
             </div>
 
             {/* Umur & Berat Badan */}

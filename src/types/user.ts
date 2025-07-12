@@ -11,6 +11,7 @@ export interface UserItem {
   user_birthdate: string;
   user_admission_date: string;
   user_graduation_date: string;
+  user_desc: string;
   user_created_at: string;
   user_updated_at: string;
   age_id: number;
@@ -29,6 +30,10 @@ export interface UserItem {
   ipk_no: string;
   city_id: number;
   city_name: string;
+  province_id: number;
+  province_name: string;
+  country_id: number;
+  country_name: string;
   gender_id: number;
   gender_name: string;
   religion_id: number;

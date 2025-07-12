@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, FormEvent } from "react";
-import { createFetcher } from "@/utils/createFetcher";
 import { useRouter } from "next/navigation";
 
 // Iconsax

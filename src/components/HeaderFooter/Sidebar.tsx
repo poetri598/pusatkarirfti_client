@@ -72,7 +72,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       { label: "Berita", href: "/berita" },
       { label: "Profil CDC FTI", href: "/profil-cdc-fti" },
       { label: "Pengguna", href: "/pengguna" },
-      { label: "Student Room", href: "/ruang-mahasiswa" },
+      { label: "Ruang Mahasiswa", href: "/ruang-mahasiswa" },
       { label: "Perusahaan", href: "/perusahaan" },
       { label: "Pengaturan", href: "/pengaturan" },
       ...career,
@@ -337,9 +337,9 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                   </Link>
                 )}
 
-                {/* Student Room */}
+                {/* Ruang Mahasiswa */}
                 {!open ? (
-                  <Tooltip content="Student Room" placement="right-end" classNames={{ content: "bg-primary-border text-background-primary" }}>
+                  <Tooltip content="Ruang Mahasiswa" placement="right-end" classNames={{ content: "bg-primary-border text-background-primary" }}>
                     <Link
                       className={`flex items-center gap-2 p-3 rounded-md group text-text-secondary xs:text-xs md:text-sm hover:text-primary-primary hover:bg-default-200 duration-300 ease-in-out  ${!open && "justify-center"} ${
                         pathname.startsWith("/ruang-mahasiswa") ? "bg-primary-primary text-background-primary" : ""
@@ -347,7 +347,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                       type="button"
                     >
                       <House2 size={16} color="currentColor" variant="TwoTone" className="cursor-pointer" />
-                      <span className={`${!open && "hidden"}`}>Student Room</span>
+                      <span className={`${!open && "hidden"}`}>Ruang Mahasiswa</span>
                     </Link>
                   </Tooltip>
                 ) : (
@@ -358,7 +358,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                     href="/ruang-mahasiswa"
                   >
                     <House2 size={16} color="currentColor" variant="TwoTone" />
-                    <span>Student Room</span>
+                    <span>Ruang Mahasiswa</span>
                   </Link>
                 )}
 

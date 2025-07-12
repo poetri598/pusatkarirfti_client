@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { User, Sms, Camera } from "iconsax-react";
 
 // Components
-import { Form, Breadcrumbs, BreadcrumbItem, Avatar, Button, Input, DatePicker, Select, SelectItem, Selection, Switch, Spinner } from "@heroui/react";
+import { Form, Breadcrumbs, BreadcrumbItem, Avatar, Button, Input, DatePicker, Select, SelectItem, Selection, Switch, Spinner, Textarea } from "@heroui/react";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 
 // Context
@@ -20,6 +20,8 @@ import { ProgramStudyItem } from "@/types/programStudy";
 import { SemesterItem } from "@/types/semester";
 import { IpkItem } from "@/types/ipk";
 import { CityItem } from "@/types/city";
+import { ProvinceItem } from "@/types/province";
+import { CountryItem } from "@/types/country";
 import { GenderItem } from "@/types/gender";
 import { ReligionItem } from "@/types/religion";
 import { MaritalStatusItem } from "@/types/maritalStatus";
@@ -37,6 +39,8 @@ import { getProgramStudyAll } from "@/services/programStudy";
 import { getSemesterAll } from "@/services/semester";
 import { getIpkAll } from "@/services/ipk";
 import { getCityAll } from "@/services/city";
+import { getProvinceAll } from "@/services/province";
+import { getCountryAll } from "@/services/country";
 import { getGenderAll } from "@/services/gender";
 import { getReligionAll } from "@/services/religion";
 import { getMaritalStatusAll } from "@/services/maritalStatus";
@@ -63,6 +67,16 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
   const [city_id, setCityId] = useState<Selection>(new Set([]));
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [apiErrorCities, setApiErrorCities] = useState<string | null>(null);
+  // Province
+  const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
+  const [province_id, setProvinceId] = useState<Selection>(new Set([]));
+  const [isLoadingProvinces, setIsLoadingProvinces] = useState(true);
+  const [apiErrorProvinces, setApiErrorProvinces] = useState<string | null>(null);
+  // Country
+  const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [country_id, setCountryId] = useState<Selection>(new Set([]));
+  const [isLoadingCountries, setIsLoadingCountries] = useState(true);
+  const [apiErrorCountries, setApiErrorCountries] = useState<string | null>(null);
   // Company (dream + current)
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
   const [dream_company_id, setDreamCompanyId] = useState<Selection>(new Set([]));
@@ -140,6 +154,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
   const [user_birthdate, setUserBirthDate] = useState<ZonedDateTime | null>(null);
   const [user_admission_date, setUserAdmissionDate] = useState<ZonedDateTime | null>(null);
   const [user_graduation_date, setUserGraduationDate] = useState<ZonedDateTime | null>(null);
+  const [user_desc, setUserDesc] = useState("");
   const [user_is_employed, setUserIsEmployed] = useState(false);
 
   const [loading, setLoading] = useState(true);
@@ -151,6 +166,8 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
       const fetchers = [
         createServiceFetcher(getAgeAll, setAges, setApiErrorAges, setIsLoadingAges),
         createServiceFetcher(getCityAll, setCities, setApiErrorCities, setIsLoadingCities),
+        createServiceFetcher(getProvinceAll, setProvinces, setApiErrorProvinces, setIsLoadingProvinces),
+        createServiceFetcher(getCountryAll, setCountries, setApiErrorCountries, setIsLoadingCountries),
         createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
         createServiceFetcher(getEducationAll, setEducations, setApiErrorEducations, setIsLoadingEducations),
         createServiceFetcher(getGenderAll, setGenders, setApiErrorGenders, setIsLoadingGenders),
@@ -180,6 +197,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
       if (data.user_birthdate) setUserBirthDate(parseAbsoluteToLocal(data.user_birthdate));
       if (data.user_admission_date) setUserAdmissionDate(parseAbsoluteToLocal(data.user_admission_date));
       if (data.user_graduation_date) setUserGraduationDate(parseAbsoluteToLocal(data.user_graduation_date));
+      setUserDesc(data.user_desc);
       setAgeId(new Set([String(data.age_id)]));
       setWeightId(new Set([String(data.weight_id)]));
       setHeightId(new Set([String(data.height_id)]));
@@ -188,6 +206,8 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
       setSemesterId(new Set([String(data.semester_id)]));
       setIpkId(new Set([String(data.ipk_id)]));
       setCityId(new Set([String(data.city_id)]));
+      setProvinceId(new Set([String(data.province_id)]));
+      setCountryId(new Set([String(data.country_id)]));
       setGenderId(new Set([String(data.gender_id)]));
       setReligionId(new Set([String(data.religion_id)]));
       setMaritalStatusId(new Set([String(data.marital_status_id)]));
@@ -249,6 +269,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
     if (user_birthdate) formData.append("user_birthdate", user_birthdate.toAbsoluteString());
     if (user_admission_date) formData.append("user_admission_date", user_admission_date.toAbsoluteString());
     if (user_graduation_date) formData.append("user_graduation_date", user_graduation_date.toAbsoluteString());
+    formData.append("user_desc", user_desc);
     appendSingle(formData, "age_id", age_id);
     appendSingle(formData, "weight_id", weight_id);
     appendSingle(formData, "height_id", height_id);
@@ -257,6 +278,8 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
     appendSingle(formData, "semester_id", semester_id);
     appendSingle(formData, "ipk_id", ipk_id);
     appendSingle(formData, "city_id", city_id);
+    appendSingle(formData, "province_id", province_id);
+    appendSingle(formData, "country_id", country_id);
     appendSingle(formData, "gender_id", gender_id);
     appendSingle(formData, "religion_id", religion_id);
     appendSingle(formData, "marital_status_id", marital_status_id);
@@ -495,8 +518,29 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                   )}
                 </div>
 
-                {/* Kota Kelahiran dan Tanggal Lahir */}
+                {/* Kota tempat tinggal & Tanggal Lahir */}
                 <div className="grid xs:grid-cols-1 md:grid-cols-2 items-center xs:gap-2 md:gap-8">
+                  {/* Tanggal Lahir */}
+                  <DatePicker
+                    isRequired
+                    hideTimeZone
+                    granularity="minute"
+                    showMonthAndYearPickers
+                    value={user_birthdate}
+                    onChange={setUserBirthDate}
+                    label="Tanggal Lahir"
+                    name="user_birthdate"
+                    labelPlacement="outside"
+                    variant="bordered"
+                    classNames={{
+                      label: "after:text-danger-primary text-xs",
+                      selectorIcon: "text-primary-primary",
+                      inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary focus:!border-primary-primary",
+                      errorMessage: "text-danger-primary",
+                      calendarContent: "bg-primary-primary text-xs text-white",
+                      segment: "text-xs ",
+                    }}
+                  />
                   {/* City */}
                   {isLoadingCities ? (
                     <div className="w-full flex justify-center items-center py-8">
@@ -515,7 +559,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                   ) : (
                     <Select
                       isRequired
-                      label="Pilih kota kelahiran anda"
+                      label="Pilih kota tempat tinggal"
                       labelPlacement="outside"
                       variant="bordered"
                       name="city_id"
@@ -546,27 +590,111 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                       )}
                     </Select>
                   )}
-                  {/* Tanggal Lahir */}
-                  <DatePicker
-                    isRequired
-                    hideTimeZone
-                    granularity="minute"
-                    showMonthAndYearPickers
-                    value={user_birthdate}
-                    onChange={setUserBirthDate}
-                    label="Tanggal Lahir"
-                    name="user_birthdate"
-                    labelPlacement="outside"
-                    variant="bordered"
-                    classNames={{
-                      label: "after:text-danger-primary text-xs",
-                      selectorIcon: "text-primary-primary",
-                      inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary focus:!border-primary-primary",
-                      errorMessage: "text-danger-primary",
-                      calendarContent: "bg-primary-primary text-xs text-white",
-                      segment: "text-xs ",
-                    }}
-                  />
+                </div>
+
+                {/* Provinsi dan Negara tempat tinggal */}
+                <div className="grid xs:grid-cols-1 md:grid-cols-2 items-center xs:gap-2 md:gap-8">
+                  {/* Provinsi */}
+                  {isLoadingProvinces ? (
+                    <div className="w-full flex justify-center items-center py-8">
+                      <Spinner
+                        label="Sedang memuat data..."
+                        labelColor="primary"
+                        variant="dots"
+                        classNames={{
+                          label: "text-primary-primary mt-4",
+                          dots: "border-5 border-primary-primary",
+                        }}
+                      />
+                    </div>
+                  ) : apiErrorProvinces ? (
+                    <p className="text-start text-xs text-danger-primary">{apiErrorProvinces}</p>
+                  ) : (
+                    <Select
+                      isRequired
+                      label="Pilih provinsi tempat tinggal"
+                      labelPlacement="outside"
+                      variant="bordered"
+                      name="province_id"
+                      selectedKeys={province_id}
+                      onSelectionChange={setProvinceId}
+                      classNames={{
+                        label: "after:text-danger-primary text-xs text-text-secondary",
+                        trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                        value: "text-xs",
+                        errorMessage: "text-danger-primary text-xs",
+                      }}
+                    >
+                      {provinces.length === 0 ? (
+                        <SelectItem key="nodata" isDisabled>
+                          Data belum tersedia
+                        </SelectItem>
+                      ) : (
+                        provinces.map((item) => (
+                          <SelectItem
+                            key={item.province_id}
+                            classNames={{
+                              title: "text-xs hover:!text-primary-primary",
+                              selectedIcon: "text-primary-primary",
+                            }}
+                          >
+                            {item.province_name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </Select>
+                  )}
+
+                  {/* Negara */}
+                  {isLoadingCountries ? (
+                    <div className="w-full flex justify-center items-center py-8">
+                      <Spinner
+                        label="Sedang memuat data..."
+                        labelColor="primary"
+                        variant="dots"
+                        classNames={{
+                          label: "text-primary-primary mt-4",
+                          dots: "border-5 border-primary-primary",
+                        }}
+                      />
+                    </div>
+                  ) : apiErrorCountries ? (
+                    <p className="text-start text-xs text-danger-primary">{apiErrorCountries}</p>
+                  ) : (
+                    <Select
+                      isRequired
+                      label="Pilih negara tempat tinggal"
+                      labelPlacement="outside"
+                      variant="bordered"
+                      name="country_id"
+                      selectedKeys={country_id}
+                      onSelectionChange={setCountryId}
+                      classNames={{
+                        label: "after:text-danger-primary text-xs text-text-secondary",
+                        trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                        value: "text-xs",
+                        errorMessage: "text-danger-primary text-xs",
+                      }}
+                    >
+                      {countries.length === 0 ? (
+                        <SelectItem key="nodata" isDisabled>
+                          Data belum tersedia
+                        </SelectItem>
+                      ) : (
+                        countries.map((item) => (
+                          <SelectItem
+                            key={item.country_id}
+                            classNames={{
+                              title: "text-xs hover:!text-primary-primary",
+                              selectedIcon: "text-primary-primary",
+                            }}
+                          >
+                            {item.country_name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </Select>
+                  )}
                 </div>
 
                 {/* Umur & Berat Badan */}
@@ -1070,119 +1198,116 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                   />
                 </div>
 
-                {/* Dream Position & Dream Company */}
-                <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2 md:gap-8">
-                  {/* Dream Position */}
-                  {isLoadingPositions ? (
-                    <div className="w-full flex justify-center items-center py-8">
-                      <Spinner
-                        label="Sedang memuat data..."
-                        labelColor="primary"
-                        variant="dots"
-                        classNames={{
-                          label: "text-primary-primary mt-4",
-                          dots: "border-5 border-primary-primary",
-                        }}
-                      />
-                    </div>
-                  ) : apiErrorPositions ? (
-                    <p className="text-start text-xs text-danger-primary">{apiErrorPositions}</p>
-                  ) : (
-                    <Select
-                      isRequired
-                      label="Pilih pekerjaan impain anda"
-                      labelPlacement="outside"
-                      variant="bordered"
-                      name="dream_postion_id"
-                      selectedKeys={dream_position_id}
-                      onSelectionChange={setDreamPositionId}
+                {/* Dream Position */}
+                {isLoadingPositions ? (
+                  <div className="w-full flex justify-center items-center py-8">
+                    <Spinner
+                      label="Sedang memuat data..."
+                      labelColor="primary"
+                      variant="dots"
                       classNames={{
-                        label: "after:text-danger-primary text-xs text-text-secondary",
-                        trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                        value: "text-xs",
+                        label: "text-primary-primary mt-4",
+                        dots: "border-5 border-primary-primary",
                       }}
-                    >
-                      {positions.length === 0 ? (
-                        <SelectItem key="nodata" isDisabled>
-                          Data belum tersedia
-                        </SelectItem>
-                      ) : (
-                        positions.map((item) => (
-                          <SelectItem
-                            key={item.position_id}
-                            classNames={{
-                              title: "text-xs hover:!text-primary-primary",
-                              selectedIcon: "text-primary-primary",
-                            }}
-                          >
-                            {item.position_name}
-                          </SelectItem>
-                        ))
-                      )}
-                    </Select>
-                  )}
-
-                  {/* Dream Company */}
-                  {isLoadingCompanies ? (
-                    <div className="w-full flex justify-center items-center py-8">
-                      <Spinner
-                        label="Sedang memuat data..."
-                        labelColor="primary"
-                        variant="dots"
-                        classNames={{
-                          label: "text-primary-primary mt-4",
-                          dots: "border-5 border-primary-primary",
-                        }}
-                      />
-                    </div>
-                  ) : apiErrorCompanies ? (
-                    <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
-                  ) : companies.length === 0 ? (
-                    <p className="text-start text-xs text-text-secondary">Data perusahaan belum tersedia</p>
-                  ) : (
-                    <Select
-                      isRequired
-                      isMultiline={true}
-                      items={companies}
-                      label="Pilih perusahaan impian anda"
-                      labelPlacement="outside"
-                      variant="bordered"
-                      name="dream_company_id"
-                      renderValue={(items) => (
-                        <div className="flex flex-wrap gap-2">
-                          {items.map((item) => (
-                            <div key={item.data?.company_id} className="flex items-center gap-2">
-                              <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
-                              <span className="text-xs">{item.data?.company_name}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      selectedKeys={dream_company_id}
-                      onSelectionChange={setDreamCompanyId}
-                      classNames={{
-                        label: "after:text-danger-primary text-xs",
-                        trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                        value: "text-xs",
-                        errorMessage: "text-danger-primary",
-                      }}
-                    >
-                      {(company) => (
+                    />
+                  </div>
+                ) : apiErrorPositions ? (
+                  <p className="text-start text-xs text-danger-primary">{apiErrorPositions}</p>
+                ) : (
+                  <Select
+                    isRequired
+                    label="Pilih pekerjaan impain anda"
+                    labelPlacement="outside"
+                    variant="bordered"
+                    name="dream_postion_id"
+                    selectedKeys={dream_position_id}
+                    onSelectionChange={setDreamPositionId}
+                    classNames={{
+                      label: "after:text-danger-primary text-xs text-text-secondary",
+                      trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                      value: "text-xs",
+                    }}
+                  >
+                    {positions.length === 0 ? (
+                      <SelectItem key="nodata" isDisabled>
+                        Data belum tersedia
+                      </SelectItem>
+                    ) : (
+                      positions.map((item) => (
                         <SelectItem
-                          key={company.company_id}
-                          textValue={company.company_name}
-                          startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                          key={item.position_id}
                           classNames={{
                             title: "text-xs hover:!text-primary-primary",
                             selectedIcon: "text-primary-primary",
                           }}
                         >
-                          {company.company_name}
+                          {item.position_name}
                         </SelectItem>
-                      )}
-                    </Select>
-                  )}
-                </div>
+                      ))
+                    )}
+                  </Select>
+                )}
+
+                {/* Dream Company */}
+                {isLoadingCompanies ? (
+                  <div className="w-full flex justify-center items-center py-8">
+                    <Spinner
+                      label="Sedang memuat data..."
+                      labelColor="primary"
+                      variant="dots"
+                      classNames={{
+                        label: "text-primary-primary mt-4",
+                        dots: "border-5 border-primary-primary",
+                      }}
+                    />
+                  </div>
+                ) : apiErrorCompanies ? (
+                  <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
+                ) : companies.length === 0 ? (
+                  <p className="text-start text-xs text-text-secondary">Data perusahaan belum tersedia</p>
+                ) : (
+                  <Select
+                    isRequired
+                    isMultiline={true}
+                    items={companies}
+                    label="Pilih perusahaan impian anda"
+                    labelPlacement="outside"
+                    variant="bordered"
+                    name="dream_company_id"
+                    renderValue={(items) => (
+                      <div className="flex flex-wrap gap-2">
+                        {items.map((item) => (
+                          <div key={item.data?.company_id} className="flex items-center gap-2">
+                            <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                            <span className="text-xs">{item.data?.company_name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    selectedKeys={dream_company_id}
+                    onSelectionChange={setDreamCompanyId}
+                    classNames={{
+                      label: "after:text-danger-primary text-xs",
+                      trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                      value: "text-xs",
+                      errorMessage: "text-danger-primary",
+                    }}
+                  >
+                    {(company) => (
+                      <SelectItem
+                        key={company.company_id}
+                        textValue={company.company_name}
+                        startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {company.company_name}
+                      </SelectItem>
+                    )}
+                  </Select>
+                )}
               </div>
 
               <Switch isSelected={user_is_employed} onValueChange={setUserIsEmployed} classNames={{ thumb: "bg-primary-primary", label: "text-xs" }}>
@@ -1287,6 +1412,23 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                   </Select>
                 </div>
               ) : null}
+
+              {/* User Desc */}
+              <Textarea
+                isRequired
+                label="Ceritakan diri anda"
+                labelPlacement="outside"
+                value={user_desc}
+                onValueChange={setUserDesc}
+                type="text"
+                variant="bordered"
+                classNames={{
+                  label: "after:text-danger-primary text-xs text-text-secondary",
+                  input: "focus:!border-primary-primary text-xs ",
+                  inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                  errorMessage: "text-danger-primary text-xs",
+                }}
+              />
             </div>
 
             {/* Role */}
