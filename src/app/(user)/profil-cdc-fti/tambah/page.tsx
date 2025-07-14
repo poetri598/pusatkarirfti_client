@@ -161,7 +161,12 @@ export default function page() {
         </div>
       )}
 
-      <Breadcrumbs className="text-xs text-text-secondary">
+      <Breadcrumbs
+        className="text-xs text-text-secondary"
+        itemClasses={{
+          item: "data-[current=true]:text-primary-primary cursor-pointer text-xs",
+        }}
+      >
         <BreadcrumbItem href="/beranda">Beranda</BreadcrumbItem>
         <BreadcrumbItem href="/profil-cdc-fti">Profil CDC FTI</BreadcrumbItem>
         <BreadcrumbItem>Tambah Profil</BreadcrumbItem>

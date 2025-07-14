@@ -96,7 +96,6 @@ export default function Edit({ city_id }: { city_id: number }) {
           <TitleSectionAdmin label="Ubah Data Kota" />
 
           <Form onSubmit={handleSubmit} className="w-full flex flex-col items-center gap-4 ">
-            {/* Nama Lengkap  */}
             <Input
               isRequired
               label="Masukkan nama kota"

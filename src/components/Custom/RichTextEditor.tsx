@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -11,7 +11,6 @@ import CharacterCount from "@tiptap/extension-character-count";
 import Link from "@tiptap/extension-link";
 
 import { TextBold, TextItalic, TextUnderline, TextalignLeft, TextalignCenter, TextalignRight } from "iconsax-react";
-
 import { Button } from "@heroui/react";
 
 type Props = {
@@ -34,9 +33,18 @@ export default function RichTextEditor({ value, onChange, placeholder }: Props) 
       CharacterCount.configure({ limit: 10000 }),
     ],
     content: value,
-    onUpdate: ({ editor }) => onChange(editor.getHTML()),
-    immediatelyRender: false,
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML();
+      onChange(html);
+    },
   });
+
+  // Ini mencegah editor di-reset tiap kali `value` berubah (kecuali saat pertama kali)
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value, false); // false artinya tanpa history step (biar undo tetap jalan)
+    }
+  }, [value, editor]);
 
   if (!editor) return null;
 
@@ -124,36 +132,31 @@ export default function RichTextEditor({ value, onChange, placeholder }: Props) 
 
   return (
     <div className="w-full max-w-full border rounded-xl px-4 py-4 space-y-4 bg-white shadow-sm">
-      {/* Toolbar */}
       <div className="flex flex-wrap gap-2">
         {toolbarItems.map((item) => (
           <ToolbarButton key={item.label} icon={item.icon} label={item.label} active={item.isActive?.()} onClick={item.command} />
         ))}
       </div>
 
-      {/* Editor Area */}
       <EditorContent
         editor={editor}
         className="
           prose w-full max-w-none
           text-xs
           leading-normal
-
+          min-h-[200px] border-2 border-default-200 rounded-medium focus:outline-none
           [&_h1]:text-lg sm:[&_h1]:text-xl md:[&_h1]:text-2xl lg:[&_h1]:text-3xl
           [&_h2]:text-base sm:[&_h2]:text-lg md:[&_h2]:text-xl lg:[&_h2]:text-2xl
           [&_h3]:text-sm sm:[&_h3]:text-base md:[&_h3]:text-lg lg:[&_h3]:text-xl
-
           [&_h1]:leading-snug [&_h2]:leading-snug [&_h3]:leading-snug
           [&_p]:my-0.5 [&_ul]:my-0 [&_ol]:my-0
           [&_ul]:pl-4 [&_ol]:pl-4
           [&_ul]:leading-tight [&_ol]:leading-tight
           [&_li]:my-0 [&_p]:tracking-normal [&_p]:leading-5 [&_p]:text-justify
           [&_ul]:list-disc [&_ol]:list-decimal
-          min-h-[200px] border-2 border-default-200 rounded-medium focus:outline-none
         "
       />
 
-      {/* Footer */}
       <p className="text-[10px] sm:text-xs md:text-sm text-gray-400 text-right">{editor.storage.characterCount?.characters()} karakter</p>
     </div>
   );

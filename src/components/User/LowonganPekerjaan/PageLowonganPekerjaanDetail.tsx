@@ -134,7 +134,7 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
                 <span className="text-xs font-bold text-primary-primary">Usia</span>
                 <span className="text-xs ttext-text-secondary">
-                  {job?.job_age_min} tahun - {job?.job_age_max} tahun
+                  {job?.age_min_id} tahun - {job?.age_max_id} tahun
                 </span>
               </div>
 
@@ -142,7 +142,7 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
                 <span className="text-xs font-bold text-primary-primary">Tinggi Badan</span>
                 <span className="text-xs text-text-secondary">
-                  {job?.job_height_min} cm - {job?.job_height_max} cm
+                  {job?.height_min_id} cm - {job?.height_max_id} cm
                 </span>
               </div>
 
@@ -150,7 +150,7 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
                 <span className="text-xs font-bold text-primary-primary">Berat Badan</span>
                 <span className="text-xs text-text-secondary">
-                  {job?.job_weight_min} kg - {job?.job_weight_max} kg
+                  {job?.weight_min_id} kg - {job?.weight_max_id} kg
                 </span>
               </div>
 
@@ -371,7 +371,7 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
       </section>
       {/* Lainnya*/}
       <section className="flex flex-col gap-8 bg-background-primary ">
-        <TitleSection label="Lainnya" href="/job" />
+        <TitleSection label="Lainnya" href="/lowongan-pekerjaan" />
         {/* Card */}
         <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xs:gap-2 lg:gap-8">
           {relatedJobs.length === 0 ? <p className="text-start text-xs text-text-secondary">Data belum tersedia</p> : relatedJobs.map((item) => <CardLowonganPekerjaan key={item.job_id} {...item} />)}

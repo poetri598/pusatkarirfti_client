@@ -215,13 +215,18 @@ export default function page({ profil_cdc_fti_id }: { profil_cdc_fti_id: number 
         </div>
       )}
 
-      <Breadcrumbs className="text-xs text-text-secondary">
+      <Breadcrumbs
+        className="text-xs text-text-secondary"
+        itemClasses={{
+          item: "data-[current=true]:text-primary-primary cursor-pointer text-xs",
+        }}
+      >
         <BreadcrumbItem href="/beranda">Beranda</BreadcrumbItem>
         <BreadcrumbItem href="/profil-cdc-fti">Profil CDC FTI</BreadcrumbItem>
-        <BreadcrumbItem>Tambah Profil</BreadcrumbItem>
+        <BreadcrumbItem href={`/profil-cdc-fti/edit/${profil_cdc_fti_id}`}>Ubah Profil CDC FTI</BreadcrumbItem>
       </Breadcrumbs>
 
-      <TitleSectionAdmin label="Tambah Profil CDC FTI" />
+      <TitleSectionAdmin label="Ubah Profil CDC FTI" />
 
       <Form className="flex flex-col items-end gap-4" onSubmit={handleSubmit}>
         <div className="grid xs:grid-cols-1 md:grid-cols-5 gap-4 w-full">

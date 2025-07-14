@@ -1547,6 +1547,7 @@ export default function Edit({ user_name }: { user_name: string }) {
 
               {/* Email */}
               <Input
+                isRequired
                 startContent={<Sms size={20} variant="Bold" color="currentColor" className="text-primary-primary" />}
                 label="Masukkan email anda"
                 labelPlacement="outside"

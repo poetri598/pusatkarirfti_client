@@ -350,7 +350,7 @@ export default function page() {
             />
 
             {/* job_desc  */}
-            <RichTextEditor key={job_desc} value={job_desc} onChange={setJobDesc} placeholder="Masukkan deskripsi pekerjaan" />
+            <RichTextEditor value={job_desc} onChange={setJobDesc} placeholder="Masukkan deskripsi pekerjaan" />
 
             {/* Number Information */}
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-4 w-full">

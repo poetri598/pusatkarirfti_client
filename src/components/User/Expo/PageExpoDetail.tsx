@@ -313,7 +313,7 @@ export default function PagePelatihanDetail({ expo_slug }: { expo_slug: string }
 
       {/* Lainnya*/}
       <section className="flex flex-col gap-8 bg-background-primary ">
-        <TitleSection label="Lainnya" href="/pelatihan" />
+        <TitleSection label="Lainnya" href="/expo" />
         {/* Section Card */}
         <section className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xs:gap-2 lg:gap-8">
           {relatedExpos.length === 0 ? <p className="text-start text-xs text-text-secondary">Data belum tersedia</p> : relatedExpos.map((item) => <CardExpo key={item.expo_id} {...item} />)}

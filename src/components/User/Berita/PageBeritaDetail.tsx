@@ -132,7 +132,7 @@ export default function SectionBeritaClient({ news_slug }: { news_slug: string }
 
       {/* Lainnya*/}
       <section className="flex flex-col gap-8 bg-background-primary ">
-        <TitleSection label="Lainnya" href="/news" />
+        <TitleSection label="Lainnya" href="/berita" />
         {/* Card */}
         <div className="grid xs:grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 xs:gap-2 lg:gap-8">
           {relatedNews.length === 0 ? <p className="text-start text-xs text-text-secondary">Data belum tersedia</p> : relatedNews.map((item) => <CardBerita2 key={item.news_id} {...item} />)}

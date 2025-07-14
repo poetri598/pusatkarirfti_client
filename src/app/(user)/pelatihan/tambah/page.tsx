@@ -280,7 +280,7 @@ export default function page() {
             />
 
             {/* training_desc  */}
-            <RichTextEditor key={training_desc} value={training_desc} onChange={setTrainingDesc} placeholder="Masukkan deskripsi magang" />
+            <RichTextEditor value={training_desc} onChange={setTrainingDesc} placeholder="Masukkan deskripsi magang" />
 
             {/* Cost Information */}
             <div className="grid xs:grid-cols-1   gap-4 w-full">

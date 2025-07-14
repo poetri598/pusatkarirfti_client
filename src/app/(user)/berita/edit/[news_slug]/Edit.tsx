@@ -212,7 +212,7 @@ export default function page({ news_slug }: { news_slug: string }) {
             />
 
             {/* news_desc  */}
-            <RichTextEditor key={news_desc} value={news_desc} onChange={setNewsDesc} placeholder="Tulis berita" />
+            <RichTextEditor value={news_desc} onChange={setNewsDesc} placeholder="Tulis berita" />
 
             {/* news_tags  */}
             <Input

@@ -28,7 +28,7 @@ export default function page(props: NewsItem) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
-    <div className="w-full h-full p-4 grid grid-cols-3 xs:gap-2 md:gap-4 border border-default-200 bg-background-primary shadow shadow-cyan-200 text-xs rounded-medium overflow-hidden">
+    <div className="w-full h-full p-4 grid grid-cols-3 xs:gap-2 md:gap-4 border border-default-200 bg-background-primary shadow shadow-cyan-200 text-xs rounded-medium overflow-hidden ">
       <div className="relative">
         <Image src={news_img} alt={news_img} width={720} height={1280} className="w-full h-full rounded-medium object-cover" />
         <Star1 size={32} color="currentColor" variant="Outline" className="absolute top-2 right-2 bg-background-primary rounded-full p-2 cursor-pointer hover:bg-primary-hover hover:text-background-primary transition-all hover:rotate-180" />

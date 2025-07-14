@@ -76,7 +76,7 @@ export default function NavbarAdmin() {
         >
           <Badge color="default" content={unreadCount} variant="solid" classNames={{ badge: "bg-orange-500 text-white" }}>
             <Link href="/konseling">
-              <Notification size={28} color="currentColor" variant="Bold" className="text-primary-primary" />
+              <Notification size={28} color="currentColor" variant="Linear" className="text-primary-primary" />
             </Link>
           </Badge>
         </Tooltip>
@@ -90,7 +90,7 @@ export default function NavbarAdmin() {
         >
           <Badge color="default" content={unapprovedCount} variant="solid" classNames={{ badge: "bg-orange-500 text-white" }}>
             <Link href="/konseling">
-              <Timer size={28} color="currentColor" variant="Bold" className="text-primary-primary" />
+              <Timer size={28} color="currentColor" variant="Linear" className="text-primary-primary" />
             </Link>
           </Badge>
         </Tooltip>

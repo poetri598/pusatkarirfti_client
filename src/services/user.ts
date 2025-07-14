@@ -242,3 +242,26 @@ export async function searchUsers(filters: Record<string, any>) {
     };
   }
 }
+
+// ✅ UPDATE USER FOR CV AND PLATFORMS
+export async function updateUserForCVAndPlatforms(user_id: number, payload: any) {
+  try {
+    const res = await api.put<ApiResponse<null>>("/users/cv-platform", {
+      user_id,
+      ...payload,
+    });
+    if (res.data.status === "success") {
+      const userRes = await api.get<ApiResponse<UserItem>>(`/users/${user_id}`);
+      if (userRes.data.status === "success") {
+        updateStoredUser(userRes.data.data);
+      }
+      return { success: true };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mengubah data dan platform user"),
+    };
+  }
+}

@@ -181,7 +181,7 @@ export default function page() {
             />
 
             {/* news_desc  */}
-            <RichTextEditor key={news_desc} value={news_desc} onChange={setNewsDesc} placeholder="Masukkan deskripsi berita" />
+            <RichTextEditor value={news_desc} onChange={setNewsDesc} placeholder="Masukkan deskripsi berita" />
 
             {/* news_tags  */}
             <Input
