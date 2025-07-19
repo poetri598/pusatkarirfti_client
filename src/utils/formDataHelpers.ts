@@ -16,3 +16,12 @@ export function appendMultiple(formData: FormData, key: string, values: Selectio
     formData.append(key, array.join(","));
   }
 }
+
+export function appendJson(formData: FormData, key: string, data: any) {
+  try {
+    const jsonString = JSON.stringify(data);
+    formData.append(key, jsonString);
+  } catch (error) {
+    console.error(`Gagal mengubah ${key} menjadi JSON`, error);
+  }
+}

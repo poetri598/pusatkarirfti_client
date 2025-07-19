@@ -5,7 +5,7 @@ import { Spinner } from "@heroui/react";
 
 // Components
 import PageBerandaUser from "@/components/User/Beranda/PageBerandaUser";
-import PageBerandaAdmin from "@/components/Admin/Beranda/PageBerandaAdmin";
+import PageBerandaAdmin from "@/components/Admin/Beranda/Page";
 
 // Utils
 import { useAuth } from "@/context/AuthContext";

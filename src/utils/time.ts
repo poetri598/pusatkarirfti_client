@@ -95,3 +95,8 @@ function calculateDuration(start: dayjs.Dayjs, end: dayjs.Dayjs): string {
 
   return `${days} hari`;
 }
+
+export function getDateOnly(dateString: string, useUKFormat: boolean = false): string {
+  const format = useUKFormat ? "D MMMM YYYY" : "MMMM D, YYYY";
+  return dayjs.utc(dateString).locale("en").format(format);
+}

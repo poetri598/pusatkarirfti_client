@@ -173,3 +173,19 @@ export async function searchJobsActive(filters: Record<string, any>) {
     };
   }
 }
+
+// ✅ GET JOB SUMMARY
+export async function getJobSummary() {
+  try {
+    const res = await api.get<ApiResponse<{ total_all: number; total_status_1: number; total_status_2: number }>>("/jobs/summary");
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mengambil ringkasan data job"),
+    };
+  }
+}

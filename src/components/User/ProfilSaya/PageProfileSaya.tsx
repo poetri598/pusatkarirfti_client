@@ -330,12 +330,9 @@ export default function ProfilSaya() {
               labelPlacement="outside"
               value={user?.user_desc}
               type="text"
-              variant="bordered"
               classNames={{
-                label: "after:text-danger-primary text-xs text-text-secondary",
-                input: "focus:!border-primary-primary text-xs ",
-                inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
-                errorMessage: "text-danger-primary text-xs",
+                label: "text-xs",
+                input: "placeholder:!text-text-secondary text-xs  focus:border-primary-primary",
               }}
             />
           </Form>

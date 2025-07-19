@@ -121,11 +121,6 @@ export default function SectionLeft({ className }: { className: string }) {
             Masuk
           </Button>
 
-          {/* Google Login */}
-          <Button type="button" className="signup w-full">
-            Masuk dengan akun Google <Google size={16} color="currentColor" className="text-primary-primary" />
-          </Button>
-
           {/* Modal Daftar */}
           <div className="w-full flex justify-center gap-2">
             <span className="text-xs text-text-secondary">Belum punya akun?</span>

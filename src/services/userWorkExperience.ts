@@ -1,14 +1,15 @@
 import api from "@/utils/api";
 import { extractErrorMessage } from "@/utils/helpers";
-import type { UserWorkExperienceItem } from "@/types/userWorkExperience";
 import type { ApiResponse } from "@/utils/responseController";
+import type { UserWorkExperienceItem } from "@/types/userWorkExperience";
 
 // ✅ CREATE
-export async function createUserWorkExperience(payload: FormData) {
+export async function createWorkExperiences(formData: FormData) {
   try {
-    const res = await api.post<ApiResponse<UserWorkExperienceItem>>("/user-work-experiences", payload, {
+    const res = await api.post<ApiResponse<{ insertedCount: number }>>("/work-experiences", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+
     if (res.data.status === "success") {
       return { success: true, data: res.data.data };
     }
@@ -16,15 +17,15 @@ export async function createUserWorkExperience(payload: FormData) {
   } catch (err) {
     return {
       success: false,
-      error: extractErrorMessage(err, "Gagal menambahkan pengalaman kerja"),
+      error: extractErrorMessage(err, "Gagal membuat pengalaman kerja"),
     };
   }
 }
 
 // ✅ GET ALL
-export async function getAllUserWorkExperiences() {
+export async function getWorkExperiencesAll() {
   try {
-    const res = await api.get<ApiResponse<UserWorkExperienceItem[]>>("/user-work-experiences");
+    const res = await api.get<ApiResponse<UserWorkExperienceItem[]>>("/work-experiences");
     if (res.data.status === "success") {
       return { success: true, data: res.data.data };
     }
@@ -32,15 +33,15 @@ export async function getAllUserWorkExperiences() {
   } catch (err) {
     return {
       success: false,
-      error: extractErrorMessage(err, "Gagal mengambil semua data pengalaman kerja"),
+      error: extractErrorMessage(err, "Gagal mengambil pengalaman kerja"),
     };
   }
 }
 
 // ✅ GET BY ID
-export async function getUserWorkExperienceById(user_work_experience_id: number) {
+export async function getWorkExperienceById(user_work_experience_id: number) {
   try {
-    const res = await api.get<ApiResponse<UserWorkExperienceItem>>(`/user-work-experiences/${user_work_experience_id}`);
+    const res = await api.get<ApiResponse<UserWorkExperienceItem>>(`/work-experiences/${user_work_experience_id}`);
     if (res.data.status === "success") {
       return { success: true, data: res.data.data };
     }
@@ -48,17 +49,18 @@ export async function getUserWorkExperienceById(user_work_experience_id: number)
   } catch (err) {
     return {
       success: false,
-      error: extractErrorMessage(err, "Gagal mengambil data pengalaman kerja berdasarkan ID"),
+      error: extractErrorMessage(err, "Gagal mengambil detail pengalaman kerja"),
     };
   }
 }
 
 // ✅ UPDATE BY ID
-export async function updateUserWorkExperienceById(user_work_experience_id: number, payload: FormData) {
+export async function updateWorkExperienceById(user_work_experience_id: number, formData: FormData) {
   try {
-    const res = await api.put<ApiResponse<null>>(`/user-work-experiences/${user_work_experience_id}`, payload, {
+    const res = await api.put<ApiResponse<null>>(`/work-experiences/${user_work_experience_id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+
     if (res.data.status === "success") {
       return { success: true };
     }
@@ -66,15 +68,15 @@ export async function updateUserWorkExperienceById(user_work_experience_id: numb
   } catch (err) {
     return {
       success: false,
-      error: extractErrorMessage(err, "Gagal mengubah pengalaman kerja"),
+      error: extractErrorMessage(err, "Gagal memperbarui pengalaman kerja"),
     };
   }
 }
 
 // ✅ DELETE BY ID
-export async function deleteUserWorkExperienceById(user_work_experience_id: number) {
+export async function deleteWorkExperienceById(user_work_experience_id: number) {
   try {
-    const res = await api.delete<ApiResponse<null>>(`/user-work-experiences/${user_work_experience_id}`);
+    const res = await api.delete<ApiResponse<null>>(`/work-experiences/${user_work_experience_id}`);
     if (res.data.status === "success") {
       return { success: true };
     }
@@ -82,7 +84,58 @@ export async function deleteUserWorkExperienceById(user_work_experience_id: numb
   } catch (err) {
     return {
       success: false,
-      error: extractErrorMessage(err, "Gagal menghapus data pengalaman kerja"),
+      error: extractErrorMessage(err, "Gagal menghapus pengalaman kerja"),
+    };
+  }
+}
+
+// ✅ GET BY USERNAME
+export async function getWorkExperiencesByUsername(username: string) {
+  try {
+    const res = await api.get<ApiResponse<UserWorkExperienceItem[]>>(`/work-experiences/username/${username}`);
+
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mengambil pengalaman kerja berdasarkan username"),
+    };
+  }
+}
+
+// ✅ DELETE BY USERNAME
+export async function deleteWorkExperiencesByUsername(username: string) {
+  try {
+    const res = await api.delete<ApiResponse<null>>(`/work-experiences/username/${username}`);
+    if (res.data.status === "success") {
+      return { success: true };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal menghapus pengalaman organisasi berdasarkan username"),
+    };
+  }
+}
+
+// ✅ UPDATE BY USERNAME (FormData dibuat di luar service)
+export async function updateWorkExperiencesByUsername(username: string, formData: FormData) {
+  try {
+    const res = await api.put<ApiResponse<{ insertedCount: number }>>(`/work-experiences/username/${username}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal memperbarui pengalaman kerja berdasarkan username"),
     };
   }
 }

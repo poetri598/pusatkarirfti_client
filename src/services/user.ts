@@ -243,25 +243,40 @@ export async function searchUsers(filters: Record<string, any>) {
   }
 }
 
-// ✅ UPDATE USER FOR CV AND PLATFORMS
-export async function updateUserForCVAndPlatforms(user_id: number, payload: any) {
+// ✅ UPDATE PROFILE WITH SOCIALS (FormData sudah disiapkan di komponen)
+export async function updateUserProfileWithSocials(formData: FormData) {
   try {
-    const res = await api.put<ApiResponse<null>>("/users/cv-platform", {
-      user_id,
-      ...payload,
+    const res = await api.put<ApiResponse<UserItem>>("/users/profile/socials", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     if (res.data.status === "success") {
-      const userRes = await api.get<ApiResponse<UserItem>>(`/users/${user_id}`);
-      if (userRes.data.status === "success") {
-        updateStoredUser(userRes.data.data);
-      }
-      return { success: true };
+      updateStoredUser(res.data.data);
+      return { success: true, data: res.data.data };
     }
     return { success: false, error: res.data.message };
   } catch (err) {
     return {
       success: false,
-      error: extractErrorMessage(err, "Gagal mengubah data dan platform user"),
+      error: extractErrorMessage(err, "Gagal memperbarui profil dan sosial media"),
+    };
+  }
+}
+
+// ✅ UPDATE USER FOR CV
+export async function updateUserForCV(user_name: string, formData: FormData) {
+  try {
+    const res = await api.patch<ApiResponse<UserItem>>(`/users/cv/${user_name}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (res.data.status === "success") {
+      updateStoredUser(res.data.data);
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal memperbarui data CV"),
     };
   }
 }

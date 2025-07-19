@@ -36,3 +36,39 @@
     focus:outline-none focus:ring-2 focus:ring-primary-border focus:bg-secondary-primary focus:text-primary-primary 
     transition duration-150 ease-in-out;
 }
+
+.delete {
+  @apply text-sm font-medium flex justify-center items-center
+    px-4 py-2 rounded-medium 
+    bg-danger-primary text-background-primary 
+    hover:bg-danger-hover hover:text-background-primary 
+    active:bg-danger-pressed active:text-background-primary 
+    focus:outline-none focus:ring-2 focus:ring-danger-border focus:bg-danger-primary focus:text-background-primary 
+    transition duration-150 ease-in-out;
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  #cv-preview {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

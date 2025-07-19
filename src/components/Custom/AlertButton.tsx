@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 export const showConfirmationDialog = async () => {
   return await Swal.fire({
     html: `
-     <div class="flex flex-col justify-center gap-2">
+     <div class="flex flex-col justify-center items-center gap-2">
         <img src="/confirm.png" alt="Warning Image" class="!w-40 !h-40 object-contain" />
          <span class="text-primary-primary font-bold text-2xl">Peringatan !</span>
       <p class="text-sm">Apakah anda yakin?</p>
@@ -28,7 +28,7 @@ export const showConfirmationDialog = async () => {
 export const showConfirmationLogoutDialog = async () => {
   return await Swal.fire({
     html: `
-     <div class="flex flex-col justify-center gap-2">
+     <div class="flex flex-col justify-center items-center gap-2">
         <img src="/logout.png" alt="Warning Image" class="!w-40 !h-40 object-contain" />
          <span class="text-primary-primary font-bold text-2xl">Peringatan !</span>
       <p class="text-sm">Apakah anda yakin untuk keluar?</p>
@@ -56,9 +56,9 @@ export const showConfirmationLogoutDialog = async () => {
 export const showSuccessDialog = async () => {
   return await Swal.fire({
     html: `
-     <div class="flex flex-col justify-center gap-2">
+     <div class="flex flex-col justify-center items-center gap-2">
         <img src="/success.png" alt="Warning Image" class="!w-40 !h-40 object-contain" />
-         <span class="text-background-primary font-bold text-2xl">Berhasil!!!</span>
+         <span class="text-background-primary font-bold text-sm">Berhasil!!!</span>
       </div>
      
     `,
@@ -77,9 +77,9 @@ export const showSuccessDialog = async () => {
 export const showSuccessLoginDialog = async () => {
   return await Swal.fire({
     html: `
-     <div class="flex flex-col justify-center gap-2">
+     <div class="flex flex-col justify-center items-center gap-2">
         <img src="/welcome.png" alt="Success" class="!w-40 !h-40 object-contain" />
-         <span class="text-background-primary font-bold text-2xl">Selamat datang!!!</span>
+         <span class="text-background-primary font-bold text-sm">Selamat datang!!!</span>
       </div>
     `,
     showConfirmButton: true,
@@ -97,9 +97,9 @@ export const showSuccessLoginDialog = async () => {
 export const showSuccessLogoutDialog = async () => {
   return await Swal.fire({
     html: `
-     <div class="flex flex-col justify-center gap-2">
+     <div class="flex flex-col justify-center items-center gap-2">
         <img src="/welcome.png" alt="Warning Image" class="!w-40 !h-40 object-contain" />
-         <span class="text-background-primary font-bold text-2xl">Sampai Jumpa!!!</span>
+         <span class="text-background-primary font-bold text-sm">Sampai Jumpa!!!</span>
       </div>
      
     `,

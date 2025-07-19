@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`font-jakarta ${process.env.NODE_ENV === "development" ? "debug-screens" : ""}   
+        className={`font-jakarta }   
         `}
       >
         <Providers>{children}</Providers>
