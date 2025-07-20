@@ -9,12 +9,12 @@ interface Props {
 
 export default function CVPreview({ data }: Props) {
   return (
-    <div id="cv-preview" className="bg-white text-black w-[794px] h-[1123px] mx-auto  rounded-lg font-sans">
+    <div id="cv-preview" className="bg-white text-black md:w-[794px] md:h-[1123px] xs:w-full xs:min-h-screen xs:p-2 md:p-0 mx-auto  rounded-lg font-sans ">
       <h1 className="text-2xl font-bold text-center">{data.user?.user_fullname?.toUpperCase()}</h1>
       <p className="flex flex-col text-sm text-center">
         <span>
           {" "}
-          {data.user?.user_email} · {data.platforms.map((item) => item.user_platform_name).join(", ")} · {data.user?.user_phone}
+          {data.user?.user_email} · {data.user?.user_phone} · {data.platforms.map((item) => item.user_platform_name).join(", ")}
         </span>
         <span>
           {" "}

@@ -280,3 +280,19 @@ export async function updateUserForCV(user_name: string, formData: FormData) {
     };
   }
 }
+
+// ✅ GET SUMMARY
+export async function getSummary() {
+  try {
+    const res = await api.get<ApiResponse<{ total_all: number; total_status_1: number; total_status_2: number; total_admin: number; total_mahasiswa: number; total_alumni: number }>>("/users/summary");
+    if (res.data.status === "success") {
+      return { success: true, data: res.data.data };
+    }
+    return { success: false, error: res.data.message };
+  } catch (err) {
+    return {
+      success: false,
+      error: extractErrorMessage(err, "Gagal mengambil ringkasan data job"),
+    };
+  }
+}

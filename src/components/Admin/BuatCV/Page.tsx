@@ -52,14 +52,14 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="w-full flex  xs:justify-between md:justify-end items-center gap-2">
+              <div className="w-full flex justify-end">
                 <Button
                   endContent={<Discover size={16} variant="Bulk" color="currentColor" className="text-background-primary" />}
                   color="default"
                   variant="solid"
                   className="login"
                   onPress={() => {
-                    window.open(`/cv-preview/${user?.user_name}`, "_blank");
+                    window.location.href = `/cv-preview/${user?.user_name}`;
                   }}
                 >
                   Preview
