@@ -67,7 +67,7 @@ export default function Footer(props: Props) {
   return (
     <>
       <section className={className}>
-        <div className="xs:w-11/12 lg:w-10/12 h-full  mx-auto flex flex-col justify-center items-center xs:gap-8 md:gap-8 py-8 ">
+        <div className="xs:w-11/12 lg:w-10/12 min-h-screen  mx-auto flex flex-col justify-center items-center xs:gap-8 md:gap-8 py-8 ">
           <div className="flex flex-col xs:gap-2 xl:gap-6">
             <Logo />
             <span className="text-base text-text-primary">Hubungi Kami</span>

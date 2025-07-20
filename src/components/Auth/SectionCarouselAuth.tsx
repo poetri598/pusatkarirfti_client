@@ -115,7 +115,7 @@ export default function SectionCarouselMasuk() {
               el: ".custom-pagination-carousel",
             }}
             autoplay={{ delay: 3000, disableOnInteraction: false }}
-            className="w-full mx-auto relative "
+            className="w-full  mx-auto relative "
           >
             {slides.map(({ key, Card, data }) => (
               <SwiperSlide key={key} className="!flex flex-col justify-center items-center xs:gap-8 md:gap-16 ">
