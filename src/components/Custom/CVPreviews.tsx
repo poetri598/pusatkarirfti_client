@@ -14,7 +14,7 @@ export default function CVPreview({ data }: Props) {
       <p className="flex flex-col text-sm text-center">
         <span>
           {" "}
-          {data.user?.user_email} · {data.user?.user_phone} · {data.platforms.map((item) => item.user_platform_name).join(", ")}
+          {data.user?.user_email} · {data.user?.user_phone} · {data.platforms.map((item) => item.user_platform_name).join(" · ")}
         </span>
         <span>
           {" "}
