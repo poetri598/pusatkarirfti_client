@@ -242,7 +242,7 @@ export default function Berita() {
                   </span>
                 </span>
                 <span className="text-xs text-text-secondary">
-                  Kami menemukan <span className="font-bold text-primary-primary">{news.length}</span> Berita
+                  Kami menemukan <span className="font-bold text-primary-primary">{news.length}</span> berita
                 </span>
               </div>
             )}

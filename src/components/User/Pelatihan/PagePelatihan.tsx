@@ -692,7 +692,7 @@ export default function Pelatihan() {
                     </span>
                   </span>
                   <span className="text-xs text-text-secondary">
-                    Kami menemukan <span className="font-bold text-primary-primary">{trainings.length}</span> tempat magang
+                    Kami menemukan <span className="font-bold text-primary-primary">{trainings.length}</span> terkait pelatihan
                   </span>
                 </div>
               )}

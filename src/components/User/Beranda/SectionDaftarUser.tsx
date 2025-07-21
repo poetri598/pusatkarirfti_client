@@ -5,9 +5,9 @@ import React from "react";
 import { Button, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Image } from "@heroui/react";
 
 const signup = [
-  { label: "Mahasiswa", href: "/register-mahasiswa" },
-  { label: "Alumni", href: "/register-alumni" },
-  { label: "Perusahaan", href: "/register-perusahaan" },
+  { label: "Mahasiswa", href: "/daftar-mahasiswa" },
+  { label: "Alumni", href: "/daftar-alumni" },
+  { label: "Perusahaan", href: "/daftar-perusahaan" },
 ];
 
 export default function SectionDaftarUser() {

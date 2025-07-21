@@ -836,7 +836,7 @@ export default function PageMagang() {
                     </span>
                   </span>
                   <span className="text-xs text-text-secondary">
-                    Kami menemukan <span className="font-bold text-primary-primary">{internships.length}</span> tempat magang
+                    Kami menemukan <span className="font-bold text-primary-primary">{internships.length}</span> terkait magang
                   </span>
                 </div>
               )}

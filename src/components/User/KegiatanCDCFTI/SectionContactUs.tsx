@@ -4,12 +4,6 @@ import React from "react";
 // Components
 import { Image, Link } from "@heroui/react";
 
-const signup = [
-  { label: "Mahasiswa", href: "/register-mahasiswa" },
-  { label: "Alumni", href: "/register-alumni" },
-  { label: "Perusahaan", href: "/register-perusahaan" },
-];
-
 export default function SectionDaftar() {
   return (
     <>
@@ -18,7 +12,7 @@ export default function SectionDaftar() {
           <div className="xs:w-11/12 lg:w-10/12 z-10  mx-auto flex flex-col justify-center items-center gap-4 py-32 ">
             <span className=" text-sm text-text-secondary">Ayooo berkolaborasi dengan kami !</span>
             <span className=" xs:text-base md:text-4xl text-center font-bold text-primary-primary">Tim kami akan segera menghubungi anda</span>
-            <Link href={"/register-perusahaan"} className="signup">
+            <Link href={"/daftar-perusahaan"} className="signup">
               Contact Us
             </Link>{" "}
           </div>
