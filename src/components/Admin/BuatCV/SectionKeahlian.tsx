@@ -150,9 +150,9 @@ export default function Page() {
               ) : (
                 <Select
                   isDisabled
-                  label="Pilih keahlian"
+                  label="Keahlian"
+                  placeholder="Keahlian"
                   labelPlacement="outside"
-                  variant="bordered"
                   name="skill_id"
                   selectedKeys={sk.skill_id && skill.some((p) => p.skill_id === sk.skill_id) ? new Set([String(sk.skill_id)]) : new Set()}
                   onSelectionChange={(keys) => {
@@ -204,9 +204,9 @@ export default function Page() {
               ) : (
                 <Select
                   isDisabled
-                  label="Pilih level keahlian"
+                  label="Level Keahlian"
+                  placeholder="Level Keahlian"
                   labelPlacement="outside"
-                  variant="bordered"
                   name="skill_level_id"
                   selectedKeys={sk.skill_level_id && skillLevel.some((p) => p.skill_level_id === sk.skill_level_id) ? new Set([String(sk.skill_level_id)]) : new Set()}
                   onSelectionChange={(keys) => {

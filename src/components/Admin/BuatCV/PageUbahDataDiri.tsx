@@ -154,7 +154,7 @@ export default function Page({ user_name }: { user_name: string }) {
     <>
       <>
         <section className="w-full  bg-background-primary py-8">
-          <div className="w-full mx-auto flex flex-col gap-4 xs:p-0 md:p-8 bg-background-primary overflow-hidden">
+          <div className="w-full min-h-screen mx-auto flex flex-col gap-4 xs:p-0 md:p-8 bg-background-primary overflow-hidden">
             {loading && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
                 <Spinner
@@ -413,7 +413,7 @@ export default function Page({ user_name }: { user_name: string }) {
                     {/* User Desc */}
                     <Textarea
                       isRequired
-                      label="Ceritakan diri anda"
+                      label="Ceritakan tentang diri anda"
                       labelPlacement="outside"
                       value={user_desc}
                       onValueChange={setUserDesc}

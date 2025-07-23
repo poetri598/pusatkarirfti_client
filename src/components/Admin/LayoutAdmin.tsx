@@ -9,7 +9,7 @@ export default function LayoutAdmin({ children }: { children: React.ReactNode })
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex w-screen overflow-hidden">
+    <div className="flex w-full overflow-hidden">
       {/* Sidebar tetap fixed */}
       <Sidebar open={open} setOpen={setOpen} />
 

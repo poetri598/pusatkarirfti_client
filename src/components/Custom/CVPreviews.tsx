@@ -105,7 +105,7 @@ export default function CVPreview({ data }: Props) {
           <span key={idx}>
             <span className="flex justify-between">
               {/* Posisi & Perusahaan */}
-              <span className="font-semibold text-sm">{item.user_education_name}</span>
+              <span className="font-semibold text-sm">{item.company_name}</span>
 
               {/* Tanggal */}
               <span className="text-sm italic">
@@ -114,7 +114,7 @@ export default function CVPreview({ data }: Props) {
             </span>
 
             <span className="flex flex-col  items-start text-sm ">
-              {item.user_education_subject && <span>• {item.user_education_subject}</span>}
+              {item.program_study_name !== "Umum" && <span>• {item.program_study_name}</span>}
               <span>• {item.user_education_final_score}</span>
             </span>
           </span>

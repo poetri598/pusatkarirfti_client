@@ -10,6 +10,12 @@ export function appendSingle(formData: FormData, field: string, value: Selection
   }
 }
 
+export function appendSingleImmediate(formData: FormData, field: string, value: string | number | null | undefined) {
+  if (value !== null && value !== undefined && value !== "") {
+    formData.append(field, String(value));
+  }
+}
+
 export function appendMultiple(formData: FormData, key: string, values: Selection) {
   if (values instanceof Set && values.size > 0) {
     const array = Array.from(values);

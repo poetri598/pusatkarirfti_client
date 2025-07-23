@@ -46,8 +46,8 @@ import { getCountryAll } from "@/services/country";
 import { getGenderAll } from "@/services/gender";
 import { getReligionAll } from "@/services/religion";
 import { getMaritalStatusAll } from "@/services/maritalStatus";
-import { getPositionAll } from "@/services/position";
-import { getCompanyAll } from "@/services/company";
+import { getPositionAll, createPosition } from "@/services/position";
+import { getCompanyAll, createCompany } from "@/services/company";
 import { getRoleAll } from "@/services/role";
 import { getStatusAll } from "@/services/status";
 import { updateUserProfile, getUserByUsername } from "@/services/user";
@@ -160,6 +160,18 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
   const [user_desc, setUserDesc] = useState("");
   const [user_is_employed, setUserIsEmployed] = useState(false);
 
+  const [isAddingNewDreamCompany, setIsAddingNewDreamCompany] = useState(false);
+  const [newDreamCompanyName, setNewDreamCompanyName] = useState("");
+
+  const [isAddingNewCurrentCompany, setIsAddingNewCurrentCompany] = useState(false);
+  const [newCurrentCompanyName, setNewCurrentCompanyName] = useState("");
+
+  const [isAddingNewDreamPosition, setIsAddingNewDreamPosition] = useState(false);
+  const [newDreamPositionName, setNewDreamPositionName] = useState("");
+
+  const [isAddingNewCurrentPosition, setIsAddingNewCurrentPosition] = useState(false);
+  const [newCurrentPositionName, setNewCurrentPositionName] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [updateLoading, setUpdateLoading] = useState(false);
 
@@ -263,6 +275,86 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
     setUpdateLoading(true);
+
+    let finalDreamPositionId = "";
+    let finalCurrentPositionId = "";
+    let finalDreamCompanyId = "";
+    let finalCurrentCompanyId = "";
+
+    if (isAddingNewDreamPosition && newDreamPositionName) {
+      const formData = new FormData();
+      formData.append("position_name", newDreamPositionName);
+      const { success, data, error } = await createPosition(formData);
+      if (success && data) {
+        finalDreamPositionId = String(data.position_id);
+        setDreamPositionId(new Set([String(data.position_id)]));
+        setIsAddingNewDreamPosition(false);
+        setNewDreamPositionName("");
+        const refreshed = await getPositionAll();
+        if (refreshed.success) setPositions(refreshed.data || []);
+      } else {
+        showErrorDialog(error || "Gagal menambahkan data");
+      }
+    }
+
+    if (isAddingNewDreamCompany && newDreamCompanyName) {
+      const formData = new FormData();
+      formData.append("company_name", newDreamCompanyName);
+      formData.append("company_desc", "-");
+      formData.append("company_link", "-");
+      formData.append("company_is_partner", "0");
+      formData.append("status_id", "1");
+
+      const { success, data, error } = await createCompany(formData);
+      if (success && data) {
+        finalDreamCompanyId = String(data.company_id);
+        setDreamCompanyId(new Set([String(data.company_id)]));
+        setIsAddingNewDreamCompany(false);
+        setNewDreamCompanyName("");
+        const refreshed = await getCompanyAll();
+        if (refreshed.success) setCompanies(refreshed.data || []);
+      } else {
+        showErrorDialog(error || "Gagal menambahkan data");
+      }
+    }
+
+    if (isAddingNewCurrentPosition && newCurrentPositionName) {
+      const formData = new FormData();
+      formData.append("position_name", newCurrentPositionName);
+      const { success, data, error } = await createPosition(formData);
+      if (success && data) {
+        finalCurrentPositionId = String(data.position_id);
+        setCurrentPositionId(new Set([String(data.position_id)]));
+        setIsAddingNewCurrentPosition(false);
+        setNewCurrentPositionName("");
+        const refreshed = await getPositionAll();
+        if (refreshed.success) setPositions(refreshed.data || []);
+      } else {
+        showErrorDialog(error || "Gagal menambahkan data");
+      }
+    }
+
+    if (isAddingNewCurrentCompany && newCurrentCompanyName) {
+      const formData = new FormData();
+      formData.append("company_name", newCurrentCompanyName);
+      formData.append("company_desc", "-");
+      formData.append("company_link", "-");
+      formData.append("company_is_partner", "0");
+      formData.append("status_id", "1");
+
+      const { success, data, error } = await createCompany(formData);
+      if (success && data) {
+        finalCurrentCompanyId = String(data.company_id);
+        setCurrentCompanyId(new Set([String(data.company_id)]));
+        setIsAddingNewCurrentCompany(false);
+        setNewCurrentCompanyName("");
+        const refreshed = await getCompanyAll();
+        if (refreshed.success) setCompanies(refreshed.data || []);
+      } else {
+        showErrorDialog(error || "Gagal menambahkan data");
+      }
+    }
+
     const formData = new FormData();
     if (user_img_file) formData.append("user_img", user_img_file);
     formData.append("user_fullname", user_fullname);
@@ -285,11 +377,27 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
     appendSingle(formData, "gender_id", gender_id);
     appendSingle(formData, "religion_id", religion_id);
     appendSingle(formData, "marital_status_id", marital_status_id);
-    appendSingle(formData, "dream_position_id", dream_position_id);
-    appendSingle(formData, "dream_company_id", dream_company_id);
+    if (finalDreamPositionId) {
+      formData.append("dream_position_id", finalDreamPositionId);
+    } else {
+      appendSingle(formData, "dream_position_id", dream_position_id);
+    }
+    if (finalDreamCompanyId) {
+      formData.append("dream_company_id", finalDreamCompanyId);
+    } else {
+      appendSingle(formData, "dream_company_id", dream_company_id);
+    }
     formData.append("user_is_employed", user_is_employed ? "1" : "0");
-    appendSingle(formData, "current_company_id", current_company_id);
-    appendSingle(formData, "current_position_id", current_position_id);
+    if (finalCurrentPositionId) {
+      formData.append("current_position_id", finalCurrentPositionId);
+    } else {
+      appendSingle(formData, "current_position_id", current_position_id);
+    }
+    if (finalCurrentCompanyId) {
+      formData.append("current_company_id", finalCurrentCompanyId);
+    } else {
+      appendSingle(formData, "current_company_id", current_company_id);
+    }
     appendSingle(formData, "role_id", role_id);
     appendSingle(formData, "status_id", status_id);
     const { success, error } = await updateUserProfile(user?.user_name, formData);
@@ -396,6 +504,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     input: "focus:!border-primary-primary text-xs ",
                     inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                    errorMessage: "text-xs text-danger-primary",
                   }}
                 />
                 {/* Jenis Kelamin & Religion */}
@@ -428,6 +537,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {genders.length === 0 ? (
@@ -478,6 +588,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {religions.length === 0 ? (
@@ -519,7 +630,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                       label: "after:text-danger-primary text-xs",
                       selectorIcon: "text-primary-primary",
                       inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary focus:!border-primary-primary",
-                      errorMessage: "text-danger-primary",
+                      errorMessage: "text-xs text-danger-primary",
                       calendarContent: "bg-primary-primary text-xs text-white",
                       segment: "text-xs ",
                     }}
@@ -552,6 +663,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {cities.length === 0 ? (
@@ -605,7 +717,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
-                        errorMessage: "text-danger-primary text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {provinces.length === 0 ? (
@@ -656,7 +768,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
-                        errorMessage: "text-danger-primary text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {countries.length === 0 ? (
@@ -710,7 +822,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
-                        errorMessage: "text-danger-primary text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {ages.length === 0 ? (
@@ -762,7 +874,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
-                        errorMessage: "text-danger-primary text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {weights.length === 0 ? (
@@ -817,7 +929,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
-                        errorMessage: "text-danger-primary text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {heights.length === 0 ? (
@@ -869,7 +981,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
-                        errorMessage: "text-danger-primary text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {maritalStatuses.length === 0 ? (
@@ -909,6 +1021,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                       label: "after:text-danger-primary text-xs text-text-secondary",
                       input: "focus:!border-primary-primary text-xs ",
                       inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                      errorMessage: "text-xs text-danger-primary",
                     }}
                   />
                   {/* Nim  */}
@@ -925,6 +1038,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                       label: "after:text-danger-primary text-xs text-text-secondary",
                       input: "focus:!border-primary-primary text-xs uppercase",
                       inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                      errorMessage: "text-xs text-danger-primary",
                     }}
                   />
                 </div>
@@ -959,6 +1073,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {educations.length === 0 ? (
@@ -1009,6 +1124,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {programStudies.length === 0 ? (
@@ -1062,6 +1178,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {semesters.length === 0 ? (
@@ -1112,7 +1229,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                         value: "text-xs",
-                        errorMessage: "text-danger-primary text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {ipks.length === 0 ? (
@@ -1153,7 +1270,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                       label: "after:text-danger-primary text-xs",
                       selectorIcon: "text-primary-primary",
                       inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary focus:!border-primary-primary",
-                      errorMessage: "text-danger-primary",
+                      errorMessage: "text-xs text-danger-primary",
                       calendarContent: "bg-primary-primary text-xs text-white",
                       segment: "text-xs ",
                     }}
@@ -1174,132 +1291,14 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                       label: "after:text-danger-primary text-xs",
                       selectorIcon: "text-primary-primary",
                       inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary focus:!border-primary-primary",
-                      errorMessage: "text-danger-primary",
+                      errorMessage: "text-xs text-danger-primary",
                       calendarContent: "bg-primary-primary text-xs text-white",
                       segment: "text-xs ",
                     }}
                   />
                 </div>
 
-                {/* Dream Position */}
-                {isLoadingPositions ? (
-                  <div className="w-full flex justify-center items-center py-8">
-                    <Spinner
-                      label="Sedang memuat data..."
-                      labelColor="primary"
-                      variant="dots"
-                      classNames={{
-                        label: "text-primary-primary mt-4",
-                        dots: "border-5 border-primary-primary",
-                      }}
-                    />
-                  </div>
-                ) : apiErrorPositions ? (
-                  <p className="text-start text-xs text-danger-primary">{apiErrorPositions}</p>
-                ) : (
-                  <Select
-                    isRequired
-                    label="Pilih pekerjaan impain anda"
-                    labelPlacement="outside"
-                    variant="bordered"
-                    name="dream_postion_id"
-                    selectedKeys={dream_position_id}
-                    onSelectionChange={setDreamPositionId}
-                    classNames={{
-                      label: "after:text-danger-primary text-xs text-text-secondary",
-                      trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                      value: "text-xs",
-                    }}
-                  >
-                    {positions.length === 0 ? (
-                      <SelectItem key="nodata" isDisabled>
-                        Data belum tersedia
-                      </SelectItem>
-                    ) : (
-                      positions.map((item) => (
-                        <SelectItem
-                          key={item.position_id}
-                          classNames={{
-                            title: "text-xs hover:!text-primary-primary",
-                            selectedIcon: "text-primary-primary",
-                          }}
-                        >
-                          {item.position_name}
-                        </SelectItem>
-                      ))
-                    )}
-                  </Select>
-                )}
-
-                {/* Dream Company */}
-                {isLoadingCompanies ? (
-                  <div className="w-full flex justify-center items-center py-8">
-                    <Spinner
-                      label="Sedang memuat data..."
-                      labelColor="primary"
-                      variant="dots"
-                      classNames={{
-                        label: "text-primary-primary mt-4",
-                        dots: "border-5 border-primary-primary",
-                      }}
-                    />
-                  </div>
-                ) : apiErrorCompanies ? (
-                  <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
-                ) : companies.length === 0 ? (
-                  <p className="text-start text-xs text-text-secondary">Data perusahaan belum tersedia</p>
-                ) : (
-                  <Select
-                    isRequired
-                    isMultiline={true}
-                    items={companies}
-                    label="Pilih perusahaan impian anda"
-                    labelPlacement="outside"
-                    variant="bordered"
-                    name="dream_company_id"
-                    renderValue={(items) => (
-                      <div className="flex flex-wrap gap-2">
-                        {items.map((item) => (
-                          <div key={item.data?.company_id} className="flex items-center gap-2">
-                            <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
-                            <span className="text-xs">{item.data?.company_name}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    selectedKeys={dream_company_id}
-                    onSelectionChange={setDreamCompanyId}
-                    classNames={{
-                      label: "after:text-danger-primary text-xs",
-                      trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                      value: "text-xs",
-                      errorMessage: "text-danger-primary",
-                    }}
-                  >
-                    {(company) => (
-                      <SelectItem
-                        key={company.company_id}
-                        textValue={company.company_name}
-                        startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
-                        classNames={{
-                          title: "text-xs hover:!text-primary-primary",
-                          selectedIcon: "text-primary-primary",
-                        }}
-                      >
-                        {company.company_name}
-                      </SelectItem>
-                    )}
-                  </Select>
-                )}
-              </div>
-
-              <Switch isSelected={user_is_employed} onValueChange={setUserIsEmployed} classNames={{ thumb: "bg-primary-primary", label: "text-xs" }}>
-                {user_is_employed ? "Bekerja" : "Belum Bekerja"}
-              </Switch>
-
-              {user_is_employed === true ? (
-                <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2 md:gap-8 w-full">
-                  {/* Current Position */}
+                <div className="flex flex-col">
                   {isLoadingPositions ? (
                     <div className="w-full flex justify-center items-center py-8">
                       <Spinner
@@ -1316,17 +1315,27 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                     <p className="text-start text-xs text-danger-primary">{apiErrorPositions}</p>
                   ) : (
                     <Select
-                      isRequired
-                      label="Pilih pekerjaan anda"
+                      label="Pilih posisi/jabatan impian anda"
+                      placeholder="Pilih posisi/jabatan impian anda"
                       labelPlacement="outside"
                       variant="bordered"
-                      name="current_position_id"
-                      selectedKeys={current_position_id}
-                      onSelectionChange={setCurrentPositionId}
+                      name="dream_position_id"
+                      selectedKeys={dream_position_id}
+                      onSelectionChange={(keys) => {
+                        const selected = Array.from(keys)[0];
+                        if (selected === "-1") {
+                          setIsAddingNewDreamPosition(true);
+                          setDreamPositionId(new Set());
+                        } else {
+                          setIsAddingNewDreamPosition(false);
+                          setDreamPositionId(new Set([selected]));
+                        }
+                      }}
                       classNames={{
                         label: "after:text-danger-primary text-xs text-text-secondary",
-                        trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                        trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary",
                         value: "text-xs",
+                        errorMessage: "text-xs text-danger-primary",
                       }}
                     >
                       {positions.length === 0 ? (
@@ -1334,9 +1343,16 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                           Data belum tersedia
                         </SelectItem>
                       ) : (
-                        positions.map((item) => (
+                        [
+                          {
+                            position_id: -1,
+                            position_name: "+ Tambah Posisi Baru",
+                          },
+                          ...positions,
+                        ].map((item) => (
                           <SelectItem
                             key={item.position_id}
+                            textValue={item.position_name}
                             classNames={{
                               title: "text-xs hover:!text-primary-primary",
                               selectedIcon: "text-primary-primary",
@@ -1348,18 +1364,66 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                       )}
                     </Select>
                   )}
+                  {isAddingNewDreamPosition && (
+                    <div className="flex flex-col gap-4 mt-2">
+                      <Input
+                        label="Masukkan nama posisi/jabatan"
+                        placeholder="Masukkan nama posisi/jabatan"
+                        labelPlacement="outside"
+                        value={newDreamPositionName}
+                        onValueChange={setNewDreamPositionName}
+                        variant="bordered"
+                        classNames={{
+                          label: "after:text-danger-primary text-xs text-text-secondary",
+                          input: "focus:!border-primary-primary text-xs",
+                          inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                          errorMessage: "text-xs text-danger-primary",
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
 
-                  {/*current Perusahaan */}
-                  <Select
-                    isRequired
-                    isMultiline={true}
-                    items={companies}
-                    label="Pilih perusahaan anda bekerja"
-                    labelPlacement="outside"
-                    variant="bordered"
-                    name="current_company_id"
-                    renderValue={(items) => {
-                      return (
+                <div className="flex flex-col">
+                  {/* company_id */}
+                  {isLoadingCompanies ? (
+                    <div className="w-full flex justify-center items-center py-8">
+                      <Spinner
+                        label="Sedang memuat data..."
+                        labelColor="primary"
+                        variant="dots"
+                        classNames={{
+                          label: "text-primary-primary mt-4",
+                          dots: "border-5 border-primary-primary",
+                        }}
+                      />
+                    </div>
+                  ) : apiErrorCompanies ? (
+                    <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
+                  ) : companies.length === 0 ? (
+                    <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
+                  ) : (
+                    <Select
+                      isMultiline={true}
+                      items={[
+                        {
+                          company_id: -1,
+                          company_name: "+ Tambah perusahaan/instansi",
+                          company_img: "",
+                          company_desc: "",
+                          company_link: "",
+                          company_is_partner: false,
+                          status_id: 1,
+                          industry_ids: [],
+                        },
+                        ...companies,
+                      ]}
+                      label="Pilih perusahaan/instansi impian"
+                      placeholder="Pilih perusahaan/instansi impian"
+                      labelPlacement="outside"
+                      variant="bordered"
+                      name="dream_company_id"
+                      renderValue={(items) => (
                         <div className="flex flex-wrap gap-2">
                           {items.map((item) => (
                             <div key={item.data?.company_id} className="flex items-center gap-2">
@@ -1368,31 +1432,257 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                             </div>
                           ))}
                         </div>
-                      );
-                    }}
-                    selectedKeys={current_company_id}
-                    onSelectionChange={setCurrentCompanyId}
-                    classNames={{
-                      label: "after:text-danger-primary text-xs",
-                      trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                      value: "text-xs",
-                      errorMessage: "text-danger-primary",
-                    }}
-                  >
-                    {(company) => (
-                      <SelectItem
-                        key={company.company_id}
-                        textValue={company.company_name}
-                        startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                      )}
+                      selectedKeys={dream_company_id}
+                      onSelectionChange={(keys) => {
+                        const selected = Array.from(keys)[0];
+                        if (selected === "-1") {
+                          setIsAddingNewDreamCompany(true);
+                          setDreamCompanyId(new Set());
+                        } else {
+                          setIsAddingNewDreamCompany(false);
+                          setDreamCompanyId(new Set([selected]));
+                        }
+                      }}
+                      classNames={{
+                        label: "after:text-danger-primary text-xs",
+                        trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                        value: "text-xs",
+                        errorMessage: "text-xs text-danger-primary",
+                      }}
+                    >
+                      {(company) => (
+                        <SelectItem
+                          key={company.company_id}
+                          textValue={company.company_name}
+                          startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                          classNames={{
+                            title: "text-xs hover:!text-primary-primary",
+                            selectedIcon: "text-primary-primary",
+                          }}
+                        >
+                          {company.company_name}
+                        </SelectItem>
+                      )}
+                    </Select>
+                  )}
+
+                  {isAddingNewDreamCompany && (
+                    <div className="flex flex-col gap-4 mt-2">
+                      <Input
+                        isRequired
+                        label="Masukkan nama perusahaan/instansi"
+                        placeholder="Masukkan nama perusahaan/instansi"
+                        labelPlacement="outside"
+                        value={newDreamCompanyName}
+                        onValueChange={setNewDreamCompanyName}
+                        variant="bordered"
                         classNames={{
-                          title: `text-xs hover:!text-primary-primary`,
-                          selectedIcon: "text-primary-primary",
+                          label: "after:text-danger-primary text-xs text-text-secondary",
+                          input: "focus:!border-primary-primary text-xs",
+                          inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                          errorMessage: "text-xs text-danger-primary",
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Switch isSelected={user_is_employed} onValueChange={setUserIsEmployed} classNames={{ thumb: "bg-primary-primary", label: "text-xs" }}>
+                {user_is_employed ? "Bekerja" : "Belum Bekerja"}
+              </Switch>
+
+              {user_is_employed === true ? (
+                <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2 md:gap-8 w-full">
+                  <div className="flex flex-col">
+                    {isLoadingPositions ? (
+                      <div className="w-full flex justify-center items-center py-8">
+                        <Spinner
+                          label="Sedang memuat data..."
+                          labelColor="primary"
+                          variant="dots"
+                          classNames={{
+                            label: "text-primary-primary mt-4",
+                            dots: "border-5 border-primary-primary",
+                          }}
+                        />
+                      </div>
+                    ) : apiErrorPositions ? (
+                      <p className="text-start text-xs text-danger-primary">{apiErrorPositions}</p>
+                    ) : (
+                      <Select
+                        label="Pilih posisi/jabatan anda sekarang"
+                        placeholder="Pilih posisi/jabatan anda sekarang"
+                        labelPlacement="outside"
+                        variant="bordered"
+                        name="current_position_id"
+                        selectedKeys={current_position_id}
+                        onSelectionChange={(keys) => {
+                          const selected = Array.from(keys)[0];
+                          if (selected === "-1") {
+                            setIsAddingNewCurrentPosition(true);
+                            setCurrentPositionId(new Set());
+                          } else {
+                            setIsAddingNewCurrentPosition(false);
+                            setCurrentPositionId(new Set([selected]));
+                          }
+                        }}
+                        classNames={{
+                          label: "after:text-danger-primary text-xs text-text-secondary",
+                          trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary",
+                          value: "text-xs",
+                          errorMessage: "text-xs text-danger-primary",
                         }}
                       >
-                        {company.company_name}
-                      </SelectItem>
+                        {positions.length === 0 ? (
+                          <SelectItem key="nodata" isDisabled>
+                            Data belum tersedia
+                          </SelectItem>
+                        ) : (
+                          [
+                            {
+                              position_id: -1,
+                              position_name: "+ Tambah Posisi Baru",
+                            },
+                            ...positions,
+                          ].map((item) => (
+                            <SelectItem
+                              key={item.position_id}
+                              textValue={item.position_name}
+                              classNames={{
+                                title: "text-xs hover:!text-primary-primary",
+                                selectedIcon: "text-primary-primary",
+                              }}
+                            >
+                              {item.position_name}
+                            </SelectItem>
+                          ))
+                        )}
+                      </Select>
                     )}
-                  </Select>
+                    {isAddingNewCurrentPosition && (
+                      <div className="flex flex-col gap-4 mt-2">
+                        <Input
+                          label="Masukkan nama posisi/jabatan"
+                          placeholder="Masukkan nama posisi/jabatan"
+                          labelPlacement="outside"
+                          value={newCurrentPositionName}
+                          onValueChange={setNewCurrentPositionName}
+                          variant="bordered"
+                          classNames={{
+                            label: "after:text-danger-primary text-xs text-text-secondary",
+                            input: "focus:!border-primary-primary text-xs",
+                            inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                            errorMessage: "text-xs text-danger-primary",
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col">
+                    {isLoadingCompanies ? (
+                      <div className="w-full flex justify-center items-center py-8">
+                        <Spinner
+                          label="Sedang memuat data..."
+                          labelColor="primary"
+                          variant="dots"
+                          classNames={{
+                            label: "text-primary-primary mt-4",
+                            dots: "border-5 border-primary-primary",
+                          }}
+                        />
+                      </div>
+                    ) : apiErrorCompanies ? (
+                      <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
+                    ) : companies.length === 0 ? (
+                      <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
+                    ) : (
+                      <Select
+                        isMultiline={true}
+                        items={[
+                          {
+                            company_id: -1,
+                            company_name: "+ Tambah perusahaan/instansi",
+                            company_img: "",
+                            company_desc: "",
+                            company_link: "",
+                            company_is_partner: false,
+                            status_id: 1,
+                            industry_ids: [],
+                          },
+                          ...companies,
+                        ]}
+                        label="Pilih perusahaan/instansi anda"
+                        placeholder="Pilih perusahaan/instansi anda"
+                        labelPlacement="outside"
+                        variant="bordered"
+                        name="current_company_id"
+                        renderValue={(items) => (
+                          <div className="flex flex-wrap gap-2">
+                            {items.map((item) => (
+                              <div key={item.data?.company_id} className="flex items-center gap-2">
+                                <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                                <span className="text-xs">{item.data?.company_name}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        selectedKeys={current_company_id}
+                        onSelectionChange={(keys) => {
+                          const selected = Array.from(keys)[0];
+                          if (selected === "-1") {
+                            setIsAddingNewCurrentCompany(true);
+                            setCurrentCompanyId(new Set());
+                          } else {
+                            setIsAddingNewCurrentCompany(false);
+                            setCurrentCompanyId(new Set([selected]));
+                          }
+                        }}
+                        classNames={{
+                          label: "after:text-danger-primary text-xs",
+                          trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                          value: "text-xs",
+                          errorMessage: "text-xs text-danger-primary",
+                        }}
+                      >
+                        {(company) => (
+                          <SelectItem
+                            key={company.company_id}
+                            textValue={company.company_name}
+                            startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                            classNames={{
+                              title: "text-xs hover:!text-primary-primary",
+                              selectedIcon: "text-primary-primary",
+                            }}
+                          >
+                            {company.company_name}
+                          </SelectItem>
+                        )}
+                      </Select>
+                    )}
+
+                    {isAddingNewCurrentCompany && (
+                      <div className="flex flex-col gap-4 mt-2">
+                        <Input
+                          isRequired
+                          label="Masukkan nama perusahaan/instansi"
+                          placeholder="Masukkan nama perusahaan/instansi"
+                          labelPlacement="outside"
+                          value={newCurrentCompanyName}
+                          onValueChange={setNewCurrentCompanyName}
+                          variant="bordered"
+                          classNames={{
+                            label: "after:text-danger-primary text-xs text-text-secondary",
+                            input: "focus:!border-primary-primary text-xs",
+                            inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                            errorMessage: "text-xs text-danger-primary",
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               ) : null}
 
@@ -1409,7 +1699,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                   label: "after:text-danger-primary text-xs text-text-secondary",
                   input: "focus:!border-primary-primary text-xs ",
                   inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
-                  errorMessage: "text-danger-primary text-xs",
+                  errorMessage: "text-xs text-danger-primary",
                 }}
               />
             </div>
@@ -1443,7 +1733,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                   label: "after:text-danger-primary text-xs text-text-secondary",
                   trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                   value: "text-xs",
-                  errorMessage: "text-danger-primary text-xs",
+                  errorMessage: "text-xs text-danger-primary",
                 }}
               >
                 {roles.length === 0 ? (
@@ -1495,7 +1785,7 @@ export default function ProfilSayaUbah({ user_name }: { user_name: string }) {
                   label: "after:text-danger-primary text-xs text-text-secondary",
                   trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                   value: "text-xs",
-                  errorMessage: "text-danger-primary text-xs",
+                  errorMessage: "text-xs text-danger-primary",
                 }}
               >
                 {statuses.length === 0 ? (

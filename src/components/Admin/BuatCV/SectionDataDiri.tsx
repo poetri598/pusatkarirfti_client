@@ -139,13 +139,12 @@ export default function Page() {
                 {/* Nama Lengkap  */}
                 <Input
                   isReadOnly
-                  label="Masukkan nama lengkap anda"
+                  label="Nama lengkap"
                   labelPlacement="outside"
                   name="user_fullname"
                   value={user_fullname}
                   onValueChange={setUserFullname}
                   type="text"
-                  variant="bordered"
                   classNames={{
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     input: "focus:!border-primary-primary text-xs ",
@@ -171,9 +170,8 @@ export default function Page() {
                 ) : (
                   <Select
                     isDisabled
-                    label="Pilih kota tempat tinggal"
+                    label="Kota tempat tinggal"
                     labelPlacement="outside"
-                    variant="bordered"
                     name="city_id"
                     selectedKeys={city_id}
                     onSelectionChange={setCityId}
@@ -221,9 +219,8 @@ export default function Page() {
                 ) : (
                   <Select
                     isDisabled
-                    label="Pilih provinsi tempat tinggal"
+                    label="Provinsi tempat tinggal"
                     labelPlacement="outside"
-                    variant="bordered"
                     name="province_id"
                     selectedKeys={province_id}
                     onSelectionChange={setProvinceId}
@@ -272,9 +269,8 @@ export default function Page() {
                 ) : (
                   <Select
                     isDisabled
-                    label="Pilih negara tempat tinggal"
+                    label="Negara tempat tinggal"
                     labelPlacement="outside"
-                    variant="bordered"
                     name="country_id"
                     selectedKeys={country_id}
                     onSelectionChange={setCountryId}
@@ -308,13 +304,12 @@ export default function Page() {
                 {/* Nomor HP  */}
                 <Input
                   isReadOnly
-                  label="Masukkan nomor hp anda"
+                  label="Nomor hp"
                   labelPlacement="outside"
                   type="text"
                   name="user_phone"
                   value={user_phone}
                   onValueChange={setUserPhone}
-                  variant="bordered"
                   classNames={{
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     input: "focus:!border-primary-primary text-xs ",
@@ -327,12 +322,11 @@ export default function Page() {
                 <Input
                   isReadOnly
                   startContent={<Sms size={20} variant="Bold" color="currentColor" className="text-primary-primary" />}
-                  label="Masukkan email anda"
+                  label="Email"
                   labelPlacement="outside"
                   value={user_email}
                   onValueChange={setUserEmail}
                   name="user_email"
-                  variant="bordered"
                   type="email"
                   classNames={{
                     label: "after:text-danger-primary text-xs text-text-secondary",
@@ -350,12 +344,11 @@ export default function Page() {
             {/* User Desc */}
             <Textarea
               isReadOnly
-              label="Ceritakan diri anda"
+              label="Tentang diri"
               labelPlacement="outside"
               value={user_desc}
               onValueChange={setUserDesc}
               type="text"
-              variant="bordered"
               classNames={{
                 label: "after:text-danger-primary text-xs text-text-secondary",
                 input: "focus:!border-primary-primary text-xs ",
@@ -387,11 +380,10 @@ export default function Page() {
                   isMultiline={true}
                   items={platforms}
                   selectionMode="multiple"
-                  label="Tambah sosial media anda"
+                  label="Sosial media"
+                  placeholder="Sosial media"
                   labelPlacement="outside"
-                  variant="bordered"
                   name="platform_id"
-                  placeholder="Pilih sosial media"
                   renderValue={(items) => (
                     <div className="flex flex-wrap gap-2">
                       {items.map((item) => (
@@ -436,11 +428,10 @@ export default function Page() {
                   <Input
                     key={id}
                     isReadOnly
-                    label={`Masukkan ${platform.platform_name === "Website" ? "link website" : "username"} ${platform.platform_name} anda `}
+                    label={`${platform.platform_name} `}
                     labelPlacement="outside"
                     value={user_platform_name[id]}
                     onValueChange={(value) => setUserPlatformName((prev) => ({ ...prev, [id]: value }))}
-                    variant="bordered"
                     classNames={{
                       base: "max-w-xs",
                       label: "after:text-danger-primary text-xs text-text-secondary",

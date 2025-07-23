@@ -3,31 +3,11 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 // Components
-import { Sms, Eye, EyeSlash, Google } from "iconsax-react";
+import { Sms, Eye, EyeSlash } from "iconsax-react";
 import Logo from "@/components/HeaderFooter/Logo";
 import { Form, Link, Avatar, Button, Input, DatePicker, Select, SelectItem, Selection, Switch, Spinner } from "@heroui/react";
 import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
-
-// Services
-import { getAgeAll } from "@/services/age";
-import { getWeightAll } from "@/services/weight";
-import { getHeightAll } from "@/services/height";
-import { getEducationAll } from "@/services/education";
-import { getProgramStudyAll } from "@/services/programStudy";
-import { getSemesterAll } from "@/services/semester";
-import { getIpkAll } from "@/services/ipk";
-import { getCityAll } from "@/services/city";
-import { ProvinceItem } from "@/types/province";
-import { CountryItem } from "@/types/country";
-import { getGenderAll } from "@/services/gender";
-import { getReligionAll } from "@/services/religion";
-import { getMaritalStatusAll } from "@/services/maritalStatus";
-import { getPositionAll } from "@/services/position";
-import { getCompanyAll } from "@/services/company";
-import { getRoleAll } from "@/services/role";
-import { getStatusAll } from "@/services/status";
-import { createUser } from "@/services/user";
 
 // Types
 import { AgeItem } from "@/types/age";
@@ -38,8 +18,8 @@ import { ProgramStudyItem } from "@/types/programStudy";
 import { SemesterItem } from "@/types/semester";
 import { IpkItem } from "@/types/ipk";
 import { CityItem } from "@/types/city";
-import { getProvinceAll } from "@/services/province";
-import { getCountryAll } from "@/services/country";
+import { ProvinceItem } from "@/types/province";
+import { CountryItem } from "@/types/country";
 import { GenderItem } from "@/types/gender";
 import { ReligionItem } from "@/types/religion";
 import { MaritalStatusItem } from "@/types/maritalStatus";
@@ -47,6 +27,26 @@ import { PositionItem } from "@/types/position";
 import { CompanyItem } from "@/types/company";
 import { RoleItem } from "@/types/role";
 import { StatusItem } from "@/types/status";
+
+// Services
+import { getAgeAll } from "@/services/age";
+import { getWeightAll } from "@/services/weight";
+import { getHeightAll } from "@/services/height";
+import { getEducationAll } from "@/services/education";
+import { getProgramStudyAll } from "@/services/programStudy";
+import { getSemesterAll } from "@/services/semester";
+import { getIpkAll } from "@/services/ipk";
+import { getCityAll } from "@/services/city";
+import { getProvinceAll } from "@/services/province";
+import { getCountryAll } from "@/services/country";
+import { getGenderAll } from "@/services/gender";
+import { getReligionAll } from "@/services/religion";
+import { getMaritalStatusAll } from "@/services/maritalStatus";
+import { getPositionAll, createPosition } from "@/services/position";
+import { getCompanyAll, createCompany } from "@/services/company";
+import { getRoleAll } from "@/services/role";
+import { getStatusAll } from "@/services/status";
+import { createUser } from "@/services/user";
 
 // Utils
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
@@ -189,6 +189,18 @@ export default function SectionLeft(props: Props) {
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [user_password_confirm, setUserPasswordConfirm] = useState("");
 
+  const [isAddingNewDreamCompany, setIsAddingNewDreamCompany] = useState(false);
+  const [newDreamCompanyName, setNewDreamCompanyName] = useState("");
+
+  const [isAddingNewCurrentCompany, setIsAddingNewCurrentCompany] = useState(false);
+  const [newCurrentCompanyName, setNewCurrentCompanyName] = useState("");
+
+  const [isAddingNewDreamPosition, setIsAddingNewDreamPosition] = useState(false);
+  const [newDreamPositionName, setNewDreamPositionName] = useState("");
+
+  const [isAddingNewCurrentPosition, setIsAddingNewCurrentPosition] = useState(false);
+  const [newCurrentPositionName, setNewCurrentPositionName] = useState("");
+
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -196,6 +208,86 @@ export default function SectionLeft(props: Props) {
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
     setLoading(true);
+
+    let finalDreamPositionId = "";
+    let finalCurrentPositionId = "";
+    let finalDreamCompanyId = "";
+    let finalCurrentCompanyId = "";
+
+    if (isAddingNewDreamPosition && newDreamPositionName) {
+      const formData = new FormData();
+      formData.append("position_name", newDreamPositionName);
+      const { success, data, error } = await createPosition(formData);
+      if (success && data) {
+        finalDreamPositionId = String(data.position_id);
+        setDreamPositionId(new Set([String(data.position_id)]));
+        setIsAddingNewDreamPosition(false);
+        setNewDreamPositionName("");
+        const refreshed = await getPositionAll();
+        if (refreshed.success) setPositions(refreshed.data || []);
+      } else {
+        showErrorDialog(error || "Gagal menambahkan data");
+      }
+    }
+
+    if (isAddingNewDreamCompany && newDreamCompanyName) {
+      const formData = new FormData();
+      formData.append("company_name", newDreamCompanyName);
+      formData.append("company_desc", "-");
+      formData.append("company_link", "-");
+      formData.append("company_is_partner", "0");
+      formData.append("status_id", "1");
+
+      const { success, data, error } = await createCompany(formData);
+      if (success && data) {
+        finalDreamCompanyId = String(data.company_id);
+        setDreamCompanyId(new Set([String(data.company_id)]));
+        setIsAddingNewDreamCompany(false);
+        setNewDreamCompanyName("");
+        const refreshed = await getCompanyAll();
+        if (refreshed.success) setCompanies(refreshed.data || []);
+      } else {
+        showErrorDialog(error || "Gagal menambahkan data");
+      }
+    }
+
+    if (isAddingNewCurrentPosition && newCurrentPositionName) {
+      const formData = new FormData();
+      formData.append("position_name", newCurrentPositionName);
+      const { success, data, error } = await createPosition(formData);
+      if (success && data) {
+        finalCurrentPositionId = String(data.position_id);
+        setCurrentPositionId(new Set([String(data.position_id)]));
+        setIsAddingNewCurrentPosition(false);
+        setNewCurrentPositionName("");
+        const refreshed = await getPositionAll();
+        if (refreshed.success) setPositions(refreshed.data || []);
+      } else {
+        showErrorDialog(error || "Gagal menambahkan data");
+      }
+    }
+
+    if (isAddingNewCurrentCompany && newCurrentCompanyName) {
+      const formData = new FormData();
+      formData.append("company_name", newCurrentCompanyName);
+      formData.append("company_desc", "-");
+      formData.append("company_link", "-");
+      formData.append("company_is_partner", "0");
+      formData.append("status_id", "1");
+
+      const { success, data, error } = await createCompany(formData);
+      if (success && data) {
+        finalCurrentCompanyId = String(data.company_id);
+        setCurrentCompanyId(new Set([String(data.company_id)]));
+        setIsAddingNewCurrentCompany(false);
+        setNewCurrentCompanyName("");
+        const refreshed = await getCompanyAll();
+        if (refreshed.success) setCompanies(refreshed.data || []);
+      } else {
+        showErrorDialog(error || "Gagal menambahkan data");
+      }
+    }
+
     const formData = new FormData();
     formData.append("user_fullname", user_fullname);
     formData.append("user_name", user_name);
@@ -220,11 +312,27 @@ export default function SectionLeft(props: Props) {
     appendSingle(formData, "gender_id", gender_id);
     appendSingle(formData, "religion_id", religion_id);
     appendSingle(formData, "marital_status_id", marital_status_id);
-    appendSingle(formData, "dream_position_id", dream_position_id);
-    appendSingle(formData, "dream_company_id", dream_company_id);
+    if (finalDreamPositionId) {
+      formData.append("dream_position_id", finalDreamPositionId);
+    } else {
+      appendSingle(formData, "dream_position_id", dream_position_id);
+    }
+    if (finalDreamCompanyId) {
+      formData.append("dream_company_id", finalDreamCompanyId);
+    } else {
+      appendSingle(formData, "dream_company_id", dream_company_id);
+    }
     formData.append("user_is_employed", user_is_employed ? "1" : "0");
-    appendSingle(formData, "current_company_id", current_company_id);
-    appendSingle(formData, "current_position_id", current_position_id);
+    if (finalCurrentPositionId) {
+      formData.append("current_position_id", finalCurrentPositionId);
+    } else {
+      appendSingle(formData, "current_position_id", current_position_id);
+    }
+    if (finalCurrentCompanyId) {
+      formData.append("current_company_id", finalCurrentCompanyId);
+    } else {
+      appendSingle(formData, "current_company_id", current_company_id);
+    }
     appendSingle(formData, "role_id", role_id);
     appendSingle(formData, "status_id", status_id);
 
@@ -244,7 +352,7 @@ export default function SectionLeft(props: Props) {
         {loading && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
             <Spinner
-              label="Registering..."
+              label="Pendaptaran diproses..."
               variant="wave"
               classNames={{
                 label: "text-primary-primary mt-4",
@@ -382,7 +490,7 @@ export default function SectionLeft(props: Props) {
               )}
             </div>
 
-            {/* Kota Kelahiran dan Tanggal Lahir */}
+            {/* Kota Tinggal dan Tanggal Lahir */}
             <div className="grid xs:grid-cols-1 md:grid-cols-2 items-center xs:gap-2 md:gap-8">
               {/* Tanggal Lahir */}
               <DatePicker
@@ -405,7 +513,6 @@ export default function SectionLeft(props: Props) {
                   segment: "text-xs ",
                 }}
               />
-
               {/* City */}
               {isLoadingCities ? (
                 <div className="w-full flex justify-center items-center py-8">
@@ -424,7 +531,7 @@ export default function SectionLeft(props: Props) {
               ) : (
                 <Select
                   isRequired
-                  label="Pilih kota kelahiran anda"
+                  label="Pilih kota tempat tinggal"
                   labelPlacement="outside"
                   variant="bordered"
                   name="city_id"
@@ -1062,128 +1169,9 @@ export default function SectionLeft(props: Props) {
               />
             </div>
 
-            {/* Dream Position */}
-            {isLoadingPositions ? (
-              <div className="w-full flex justify-center items-center py-8">
-                <Spinner
-                  label="Sedang memuat data..."
-                  labelColor="primary"
-                  variant="dots"
-                  classNames={{
-                    label: "text-primary-primary mt-4",
-                    dots: "border-5 border-primary-primary",
-                  }}
-                />
-              </div>
-            ) : apiErrorPositions ? (
-              <p className="text-start text-xs text-danger-primary">{apiErrorPositions}</p>
-            ) : (
-              <Select
-                isRequired
-                label="Pilih pekerjaan impian anda"
-                labelPlacement="outside"
-                variant="bordered"
-                name="postion_id"
-                selectedKeys={dream_position_id}
-                onSelectionChange={setDreamPositionId}
-                classNames={{
-                  label: "after:text-danger-primary text-xs text-text-secondary",
-                  trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                  value: "text-xs",
-                  errorMessage: "text-danger-primary text-xs",
-                }}
-              >
-                {positions.length === 0 ? (
-                  <SelectItem key="nodata" isDisabled>
-                    Data belum tersedia
-                  </SelectItem>
-                ) : (
-                  positions.map((item) => (
-                    <SelectItem
-                      key={item.position_id}
-                      classNames={{
-                        title: "text-xs hover:!text-primary-primary",
-                        selectedIcon: "text-primary-primary",
-                      }}
-                    >
-                      {item.position_name}
-                    </SelectItem>
-                  ))
-                )}
-              </Select>
-            )}
-
-            {/* Dream Company */}
-            {isLoadingCompanies ? (
-              <div className="w-full flex justify-center items-center py-8">
-                <Spinner
-                  label="Sedang memuat data..."
-                  labelColor="primary"
-                  variant="dots"
-                  classNames={{
-                    label: "text-primary-primary mt-4",
-                    dots: "border-5 border-primary-primary",
-                  }}
-                />
-              </div>
-            ) : apiErrorCompanies ? (
-              <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
-            ) : companies.length === 0 ? (
-              <p className="text-start text-xs text-text-secondary">Data perusahaan belum tersedia</p>
-            ) : (
-              <Select
-                isRequired
-                isMultiline={true}
-                items={companies}
-                label="Pilih perusahaan impian anda"
-                labelPlacement="outside"
-                variant="bordered"
-                name="dream_company_id"
-                renderValue={(items) => (
-                  <div className="flex flex-wrap gap-2">
-                    {items.map((item) => (
-                      <div key={item.data?.company_id} className="flex items-center gap-2">
-                        <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
-                        <span className="text-xs">{item.data?.company_name}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                selectedKeys={dream_company_id}
-                onSelectionChange={setDreamCompanyId}
-                classNames={{
-                  label: "after:text-danger-primary text-xs",
-                  trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                  value: "text-xs",
-                  errorMessage: "text-danger-primary",
-                }}
-              >
-                {(company) => (
-                  <SelectItem
-                    key={company.company_id}
-                    textValue={company.company_name}
-                    startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
-                    classNames={{
-                      title: "text-xs hover:!text-primary-primary",
-                      selectedIcon: "text-primary-primary",
-                    }}
-                  >
-                    {company.company_name}
-                  </SelectItem>
-                )}
-              </Select>
-            )}
-          </div>
-
-          {/* Is Employed */}
-          <div className="grid grid-cols-1 xs:gap-2 md:gap-8 w-full">
-            <Switch isSelected={user_is_employed} onValueChange={setUserIsEmployed} classNames={{ thumb: "bg-primary-primary", label: "text-xs" }}>
-              {user_is_employed ? "Bekerja" : "Belum Bekerja"}
-            </Switch>
-
-            {user_is_employed === true ? (
-              <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2 md:gap-8 w-full">
-                {/* Current Position */}
+            {/* Posisi & Perusahaan Impian */}
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 justify-center items-start xs:gap-2">
+              <div className="flex flex-col">
                 {isLoadingPositions ? (
                   <div className="w-full flex justify-center items-center py-8">
                     <Spinner
@@ -1200,16 +1188,25 @@ export default function SectionLeft(props: Props) {
                   <p className="text-start text-xs text-danger-primary">{apiErrorPositions}</p>
                 ) : (
                   <Select
-                    isRequired
-                    label="Pilih pekerjaan anda sekarang"
+                    label="Pilih posisi/jabatan impian anda"
+                    placeholder="Pilih posisi/jabatan impian anda"
                     labelPlacement="outside"
                     variant="bordered"
-                    name="current_postion_id"
-                    selectedKeys={current_position_id}
-                    onSelectionChange={setCurrentPositionId}
+                    name="dream_position_id"
+                    selectedKeys={dream_position_id}
+                    onSelectionChange={(keys) => {
+                      const selected = Array.from(keys)[0];
+                      if (selected === "-1") {
+                        setIsAddingNewDreamPosition(true);
+                        setDreamPositionId(new Set());
+                      } else {
+                        setIsAddingNewDreamPosition(false);
+                        setDreamPositionId(new Set([selected]));
+                      }
+                    }}
                     classNames={{
                       label: "after:text-danger-primary text-xs text-text-secondary",
-                      trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                      trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary",
                       value: "text-xs",
                       errorMessage: "text-danger-primary text-xs",
                     }}
@@ -1219,9 +1216,16 @@ export default function SectionLeft(props: Props) {
                         Data belum tersedia
                       </SelectItem>
                     ) : (
-                      positions.map((item) => (
+                      [
+                        {
+                          position_id: -1,
+                          position_name: "+ Tambah Posisi Baru",
+                        },
+                        ...positions,
+                      ].map((item) => (
                         <SelectItem
                           key={item.position_id}
+                          textValue={item.position_name}
                           classNames={{
                             title: "text-xs hover:!text-primary-primary",
                             selectedIcon: "text-primary-primary",
@@ -1233,18 +1237,65 @@ export default function SectionLeft(props: Props) {
                     )}
                   </Select>
                 )}
+                {isAddingNewDreamPosition && (
+                  <div className="flex flex-col gap-4 mt-2">
+                    <Input
+                      label="Masukkan nama posisi/jabatan"
+                      placeholder="Masukkan nama posisi/jabatan"
+                      labelPlacement="outside"
+                      value={newDreamPositionName}
+                      onValueChange={setNewDreamPositionName}
+                      variant="bordered"
+                      classNames={{
+                        label: "after:text-danger-primary text-xs text-text-secondary",
+                        input: "focus:!border-primary-primary text-xs",
+                        inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
 
-                {/*current Perusahaan */}
-                <Select
-                  isRequired
-                  isMultiline={true}
-                  items={companies}
-                  label="Pilih perusahaan tempat anda bekerja"
-                  labelPlacement="outside"
-                  variant="bordered"
-                  name="current_company_id"
-                  renderValue={(items) => {
-                    return (
+              <div className="flex flex-col">
+                {/* company_id */}
+                {isLoadingCompanies ? (
+                  <div className="w-full flex justify-center items-center py-8">
+                    <Spinner
+                      label="Sedang memuat data..."
+                      labelColor="primary"
+                      variant="dots"
+                      classNames={{
+                        label: "text-primary-primary mt-4",
+                        dots: "border-5 border-primary-primary",
+                      }}
+                    />
+                  </div>
+                ) : apiErrorCompanies ? (
+                  <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
+                ) : companies.length === 0 ? (
+                  <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
+                ) : (
+                  <Select
+                    isMultiline={true}
+                    items={[
+                      {
+                        company_id: -1,
+                        company_name: "+ Tambah perusahaan/instansi",
+                        company_img: "",
+                        company_desc: "",
+                        company_link: "",
+                        company_is_partner: false,
+                        status_id: 1,
+                        industry_ids: [],
+                      },
+                      ...companies,
+                    ]}
+                    label="Pilih perusahaan/instansi impian"
+                    placeholder="Pilih perusahaan/instansi impian"
+                    labelPlacement="outside"
+                    variant="bordered"
+                    name="dream_company_id"
+                    renderValue={(items) => (
                       <div className="flex flex-wrap gap-2">
                         {items.map((item) => (
                           <div key={item.data?.company_id} className="flex items-center gap-2">
@@ -1253,31 +1304,257 @@ export default function SectionLeft(props: Props) {
                           </div>
                         ))}
                       </div>
-                    );
-                  }}
-                  selectedKeys={current_company_id}
-                  onSelectionChange={setCurrentCompanyId}
-                  classNames={{
-                    label: "after:text-danger-primary text-xs",
-                    trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                    value: "text-xs",
-                    errorMessage: "text-danger-primary",
-                  }}
-                >
-                  {(company) => (
-                    <SelectItem
-                      key={company.company_id}
-                      textValue={company.company_name}
-                      startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                    )}
+                    selectedKeys={dream_company_id}
+                    onSelectionChange={(keys) => {
+                      const selected = Array.from(keys)[0];
+                      if (selected === "-1") {
+                        setIsAddingNewDreamCompany(true);
+                        setDreamCompanyId(new Set());
+                      } else {
+                        setIsAddingNewDreamCompany(false);
+                        setDreamCompanyId(new Set([selected]));
+                      }
+                    }}
+                    classNames={{
+                      label: "after:text-danger-primary text-xs",
+                      trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                      value: "text-xs",
+                      errorMessage: "text-danger-primary",
+                    }}
+                  >
+                    {(company) => (
+                      <SelectItem
+                        key={company.company_id}
+                        textValue={company.company_name}
+                        startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {company.company_name}
+                      </SelectItem>
+                    )}
+                  </Select>
+                )}
+
+                {isAddingNewDreamCompany && (
+                  <div className="flex flex-col gap-4 mt-2">
+                    <Input
+                      isRequired
+                      label="Masukkan nama perusahaan/instansi"
+                      placeholder="Masukkan nama perusahaan/instansi"
+                      labelPlacement="outside"
+                      value={newDreamCompanyName}
+                      onValueChange={setNewDreamCompanyName}
+                      variant="bordered"
                       classNames={{
-                        title: `text-xs hover:!text-primary-primary`,
-                        selectedIcon: "text-primary-primary",
+                        label: "after:text-danger-primary text-xs text-text-secondary",
+                        input: "focus:!border-primary-primary text-xs",
+                        inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Is Employed */}
+          <div className="grid grid-cols-1 xs:gap-2 md:gap-8 w-full">
+            <Switch isSelected={user_is_employed} onValueChange={setUserIsEmployed} classNames={{ thumb: "bg-primary-primary", label: "text-xs" }}>
+              {user_is_employed ? "Bekerja" : "Belum Bekerja"}
+            </Switch>
+
+            {user_is_employed === true ? (
+              <div className="grid xs:grid-cols-1 sm:grid-cols-2 justify-center items-start xs:gap-2">
+                <div className="flex flex-col">
+                  {isLoadingPositions ? (
+                    <div className="w-full flex justify-center items-center py-8">
+                      <Spinner
+                        label="Sedang memuat data..."
+                        labelColor="primary"
+                        variant="dots"
+                        classNames={{
+                          label: "text-primary-primary mt-4",
+                          dots: "border-5 border-primary-primary",
+                        }}
+                      />
+                    </div>
+                  ) : apiErrorPositions ? (
+                    <p className="text-start text-xs text-danger-primary">{apiErrorPositions}</p>
+                  ) : (
+                    <Select
+                      label="Pilih posisi/jabatan anda sekarang"
+                      placeholder="Pilih posisi/jabatan anda sekarang"
+                      labelPlacement="outside"
+                      variant="bordered"
+                      name="current_position_id"
+                      selectedKeys={current_position_id}
+                      onSelectionChange={(keys) => {
+                        const selected = Array.from(keys)[0];
+                        if (selected === "-1") {
+                          setIsAddingNewCurrentPosition(true);
+                          setCurrentPositionId(new Set());
+                        } else {
+                          setIsAddingNewCurrentPosition(false);
+                          setCurrentPositionId(new Set([selected]));
+                        }
+                      }}
+                      classNames={{
+                        label: "after:text-danger-primary text-xs text-text-secondary",
+                        trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary",
+                        value: "text-xs",
+                        errorMessage: "text-danger-primary text-xs",
                       }}
                     >
-                      {company.company_name}
-                    </SelectItem>
+                      {positions.length === 0 ? (
+                        <SelectItem key="nodata" isDisabled>
+                          Data belum tersedia
+                        </SelectItem>
+                      ) : (
+                        [
+                          {
+                            position_id: -1,
+                            position_name: "+ Tambah Posisi Baru",
+                          },
+                          ...positions,
+                        ].map((item) => (
+                          <SelectItem
+                            key={item.position_id}
+                            textValue={item.position_name}
+                            classNames={{
+                              title: "text-xs hover:!text-primary-primary",
+                              selectedIcon: "text-primary-primary",
+                            }}
+                          >
+                            {item.position_name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </Select>
                   )}
-                </Select>
+                  {isAddingNewCurrentPosition && (
+                    <div className="flex flex-col gap-4 mt-2">
+                      <Input
+                        label="Masukkan nama posisi/jabatan"
+                        placeholder="Masukkan nama posisi/jabatan"
+                        labelPlacement="outside"
+                        value={newCurrentPositionName}
+                        onValueChange={setNewCurrentPositionName}
+                        variant="bordered"
+                        classNames={{
+                          label: "after:text-danger-primary text-xs text-text-secondary",
+                          input: "focus:!border-primary-primary text-xs",
+                          inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-col">
+                  {isLoadingCompanies ? (
+                    <div className="w-full flex justify-center items-center py-8">
+                      <Spinner
+                        label="Sedang memuat data..."
+                        labelColor="primary"
+                        variant="dots"
+                        classNames={{
+                          label: "text-primary-primary mt-4",
+                          dots: "border-5 border-primary-primary",
+                        }}
+                      />
+                    </div>
+                  ) : apiErrorCompanies ? (
+                    <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
+                  ) : companies.length === 0 ? (
+                    <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
+                  ) : (
+                    <Select
+                      isMultiline={true}
+                      items={[
+                        {
+                          company_id: -1,
+                          company_name: "+ Tambah perusahaan/instansi",
+                          company_img: "",
+                          company_desc: "",
+                          company_link: "",
+                          company_is_partner: false,
+                          status_id: 1,
+                          industry_ids: [],
+                        },
+                        ...companies,
+                      ]}
+                      label="Pilih perusahaan/instansi anda"
+                      placeholder="Pilih perusahaan/instansi anda"
+                      labelPlacement="outside"
+                      variant="bordered"
+                      name="current_company_id"
+                      renderValue={(items) => (
+                        <div className="flex flex-wrap gap-2">
+                          {items.map((item) => (
+                            <div key={item.data?.company_id} className="flex items-center gap-2">
+                              <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                              <span className="text-xs">{item.data?.company_name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      selectedKeys={current_company_id}
+                      onSelectionChange={(keys) => {
+                        const selected = Array.from(keys)[0];
+                        if (selected === "-1") {
+                          setIsAddingNewCurrentCompany(true);
+                          setCurrentCompanyId(new Set());
+                        } else {
+                          setIsAddingNewCurrentCompany(false);
+                          setCurrentCompanyId(new Set([selected]));
+                        }
+                      }}
+                      classNames={{
+                        label: "after:text-danger-primary text-xs",
+                        trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                        value: "text-xs",
+                        errorMessage: "text-danger-primary",
+                      }}
+                    >
+                      {(company) => (
+                        <SelectItem
+                          key={company.company_id}
+                          textValue={company.company_name}
+                          startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                          classNames={{
+                            title: "text-xs hover:!text-primary-primary",
+                            selectedIcon: "text-primary-primary",
+                          }}
+                        >
+                          {company.company_name}
+                        </SelectItem>
+                      )}
+                    </Select>
+                  )}
+
+                  {isAddingNewCurrentCompany && (
+                    <div className="flex flex-col gap-4 mt-2">
+                      <Input
+                        isRequired
+                        label="Masukkan nama perusahaan/instansi"
+                        placeholder="Masukkan nama perusahaan/instansi"
+                        labelPlacement="outside"
+                        value={newCurrentCompanyName}
+                        onValueChange={setNewCurrentCompanyName}
+                        variant="bordered"
+                        classNames={{
+                          label: "after:text-danger-primary text-xs text-text-secondary",
+                          input: "focus:!border-primary-primary text-xs",
+                          inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             ) : null}
           </div>

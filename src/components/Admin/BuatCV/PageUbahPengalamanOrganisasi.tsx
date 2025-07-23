@@ -22,8 +22,8 @@ interface OrganizationExperienceInput {
 }
 
 // Services
-import { getCompanyAll } from "@/services/company";
-import { getPositionAll } from "@/services/position";
+import { getCompanyAll, createCompany } from "@/services/company";
+import { getPositionAll, createPosition } from "@/services/position";
 import { getUserByUsername } from "@/services/user";
 import { getOrganizationExperiencesByUsername, updateOrganizationExperiencesByUsername } from "@/services/userOrganizationExperience";
 
@@ -54,6 +54,12 @@ export default function Page({ user_name }: { user_name: string }) {
   const [experiences, setExperiences] = useState<OrganizationExperienceInput[]>([]);
   const [isLoadingExperiences, setIsLoadingExperiences] = useState(true);
   const [apiErrorExperiences, setApiErrorExperiences] = useState<string | null>(null);
+
+  const [isAddingNewCompany, setIsAddingNewCompany] = useState<boolean[]>([]);
+  const [newCompanyNames, setNewCompanyNames] = useState<string[]>([]);
+
+  const [isAddingNewPosition, setIsAddingNewPosition] = useState<boolean[]>([]);
+  const [newPositionNames, setNewPositionNames] = useState<string[]>([]);
 
   const [loading, setLoading] = useState(true);
 
@@ -114,17 +120,11 @@ export default function Page({ user_name }: { user_name: string }) {
   };
 
   const addExperience = () => {
-    setExperiences([
-      ...experiences,
-      {
-        company_id: 0,
-        position_id: 0,
-        user_organization_experience_start_date: "",
-        user_organization_experience_end_date: "",
-        user_organization_experience_is_current: false,
-        user_organization_experience_descriptions: [""],
-      },
-    ]);
+    setExperiences([...experiences, defaultExperience()]);
+    setIsAddingNewCompany([...isAddingNewCompany, false]);
+    setNewCompanyNames([...newCompanyNames, ""]);
+    setIsAddingNewPosition([...isAddingNewPosition, false]);
+    setNewPositionNames([...newPositionNames, ""]);
   };
 
   const removeExperience = (index: number) => {
@@ -149,6 +149,51 @@ export default function Page({ user_name }: { user_name: string }) {
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
     setLoading(true);
+
+    for (let i = 0; i < experiences.length; i++) {
+      if (isAddingNewCompany[i] && newCompanyNames[i]) {
+        const formData = new FormData();
+        formData.append("company_name", newCompanyNames[i]);
+        formData.append("company_desc", "-");
+        formData.append("company_link", "-");
+        formData.append("company_is_partner", "0");
+        formData.append("status_id", "1");
+
+        const { success, data, error } = await createCompany(formData);
+        if (success && data) {
+          const newCompanyId = data.company_id;
+          handleChange(i, "company_id", newCompanyId);
+        } else {
+          await showErrorDialog(error || `Gagal menambahkan perusahaan baru di baris ke-${i + 1}`);
+          setLoading(false);
+          return;
+        }
+      }
+    }
+    const refreshed = await getCompanyAll();
+    if (refreshed.success) setCompanies(refreshed.data || []);
+    setIsAddingNewCompany(new Array(experiences.length).fill(false));
+    setNewCompanyNames(new Array(experiences.length).fill(""));
+
+    for (let i = 0; i < experiences.length; i++) {
+      if (isAddingNewPosition[i] && newPositionNames[i]) {
+        const formData = new FormData();
+        formData.append("position_name", newPositionNames[i]);
+        const { success, data, error } = await createPosition(formData);
+        if (success && data) {
+          const newPositionId = data.position_id;
+          handleChange(i, "position_id", newPositionId);
+        } else {
+          await showErrorDialog(error || `Gagal menambahkan posisi baru di baris ke-${i + 1}`);
+          setLoading(false);
+          return;
+        }
+      }
+    }
+    const refreshedPos = await getPositionAll();
+    if (refreshedPos.success) setPositions(refreshedPos.data || []);
+    setIsAddingNewPosition(new Array(experiences.length).fill(false));
+    setNewPositionNames(new Array(experiences.length).fill(""));
 
     const formData = new FormData();
     formData.append("user_id", user_id.toString());
@@ -175,7 +220,7 @@ export default function Page({ user_name }: { user_name: string }) {
 
   return (
     <section className="w-full bg-background-primary py-8">
-      <div className="w-full mx-auto flex flex-col gap-4 xs:p-0 md:p-8 bg-background-primary overflow-hidden">
+      <div className="w-full min-h-screen mx-auto flex flex-col gap-4 xs:p-0 md:p-8 bg-background-primary overflow-hidden">
         {/* Breadcrumb */}
         <Breadcrumbs
           className="text-xs text-text-secondary"
@@ -217,125 +262,217 @@ export default function Page({ user_name }: { user_name: string }) {
                     <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex flex-col gap-4">
                         {/* Perusahaan & Posisi */}
-                        <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2">
-                          {/* company_id */}
-                          {isLoadingCompanies ? (
-                            <div className="w-full flex justify-center items-center py-8">
-                              <Spinner
-                                label="Sedang memuat data..."
-                                labelColor="primary"
-                                variant="dots"
-                                classNames={{
-                                  label: "text-primary-primary mt-4",
-                                  dots: "border-5 border-primary-primary",
-                                }}
-                              />
-                            </div>
-                          ) : apiErrorCompanies ? (
-                            <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
-                          ) : companies.length === 0 ? (
-                            <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
-                          ) : (
-                            <Select
-                              isRequired
-                              isMultiline={true}
-                              items={companies}
-                              label="Pilih perusahaan/instansi"
-                              placeholder="Pilih perusahaan/instansi"
-                              labelPlacement="outside"
-                              variant="bordered"
-                              name="company_id"
-                              renderValue={(items) => (
-                                <div className="flex flex-wrap gap-2">
-                                  {items.map((item) => (
-                                    <div key={item.data?.company_id} className="flex items-center gap-2">
-                                      <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
-                                      <span className="text-xs">{item.data?.company_name}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                              selectedKeys={exp.company_id && companies.some((c) => c.company_id === exp.company_id) ? new Set([String(exp.company_id)]) : new Set()}
-                              onSelectionChange={(keys) => {
-                                const selectedKey = Array.from(keys)[0];
-                                handleChange(i, "company_id", Number(selectedKey));
-                              }}
-                              classNames={{
-                                label: "after:text-danger-primary text-xs",
-                                trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                                value: "text-xs",
-                                errorMessage: "text-danger-primary",
-                              }}
-                            >
-                              {(company) => (
-                                <SelectItem
-                                  key={company.company_id}
-                                  textValue={company.company_name}
-                                  startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                        <div className="grid xs:grid-cols-1 sm:grid-cols-2 justify-center items-start xs:gap-2">
+                          <div className="flex flex-col">
+                            {/* company_id */}
+                            {isLoadingCompanies ? (
+                              <div className="w-full flex justify-center items-center py-8">
+                                <Spinner
+                                  label="Sedang memuat data..."
+                                  labelColor="primary"
+                                  variant="dots"
                                   classNames={{
-                                    title: "text-xs hover:!text-primary-primary",
-                                    selectedIcon: "text-primary-primary",
+                                    label: "text-primary-primary mt-4",
+                                    dots: "border-5 border-primary-primary",
                                   }}
-                                >
-                                  {company.company_name}
-                                </SelectItem>
-                              )}
-                            </Select>
-                          )}
+                                />
+                              </div>
+                            ) : apiErrorCompanies ? (
+                              <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
+                            ) : companies.length === 0 ? (
+                              <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
+                            ) : (
+                              <Select
+                                isMultiline={true}
+                                items={[
+                                  {
+                                    company_id: -1,
+                                    company_name: "+ Tambah perusahaan/instansi",
+                                    company_img: "",
+                                    company_desc: "",
+                                    company_link: "",
+                                    company_is_partner: false,
+                                    status_id: 1,
+                                    industry_ids: [],
+                                  },
+                                  ...companies,
+                                ]}
+                                label="Pilih perusahaan/instansi"
+                                placeholder="Pilih perusahaan/instansi"
+                                labelPlacement="outside"
+                                variant="bordered"
+                                name="company_id"
+                                renderValue={(items) => (
+                                  <div className="flex flex-wrap gap-2">
+                                    {items.map((item) => (
+                                      <div key={item.data?.company_id} className="flex items-center gap-2">
+                                        <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                                        <span className="text-xs">{item.data?.company_name}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                selectedKeys={exp.company_id && companies.some((c) => c.company_id === exp.company_id) ? new Set([String(exp.company_id)]) : new Set()}
+                                onSelectionChange={(keys) => {
+                                  const selectedKey = Array.from(keys)[0];
+                                  const newIsAdding = [...isAddingNewCompany];
+                                  const newNames = [...newCompanyNames];
 
-                          {isLoadingPositions ? (
-                            <div className="w-full flex justify-center items-center py-8">
-                              <Spinner
-                                label="Sedang memuat data..."
-                                labelColor="primary"
-                                variant="dots"
-                                classNames={{
-                                  label: "text-primary-primary mt-4",
-                                  dots: "border-5 border-primary-primary",
+                                  if (selectedKey === "-1") {
+                                    newIsAdding[i] = true;
+                                    newNames[i] = "";
+                                    handleChange(i, "company_id", 0);
+                                  } else {
+                                    newIsAdding[i] = false;
+                                    newNames[i] = "";
+                                    handleChange(i, "company_id", Number(selectedKey));
+                                  }
+
+                                  setIsAddingNewCompany(newIsAdding);
+                                  setNewCompanyNames(newNames);
                                 }}
-                              />
-                            </div>
-                          ) : apiErrorPositions ? (
-                            <p className="text-start text-xs text-danger-primary">{apiErrorPositions}</p>
-                          ) : (
-                            <Select
-                              isRequired
-                              label="Pilih jabatan"
-                              labelPlacement="outside"
-                              variant="bordered"
-                              name="position_id"
-                              selectedKeys={exp.position_id && positions.some((p) => p.position_id === exp.position_id) ? new Set([String(exp.position_id)]) : new Set()}
-                              onSelectionChange={(keys) => {
-                                const selectedKey = Array.from(keys)[0];
-                                handleChange(i, "position_id", Number(selectedKey));
-                              }}
-                              classNames={{
-                                label: "after:text-danger-primary text-xs text-text-secondary",
-                                trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary",
-                                value: "text-xs",
-                                errorMessage: "text-danger-primary text-xs",
-                              }}
-                            >
-                              {positions.length === 0 ? (
-                                <SelectItem key="nodata" isDisabled>
-                                  Data belum tersedia
-                                </SelectItem>
-                              ) : (
-                                positions.map((item) => (
+                                classNames={{
+                                  label: "after:text-danger-primary text-xs",
+                                  trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                                  value: "text-xs",
+                                  errorMessage: "text-danger-primary",
+                                }}
+                              >
+                                {(company) => (
                                   <SelectItem
-                                    key={item.position_id}
-                                    textValue={item.position_name}
+                                    key={company.company_id}
+                                    textValue={company.company_name}
+                                    startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
                                     classNames={{
                                       title: "text-xs hover:!text-primary-primary",
                                       selectedIcon: "text-primary-primary",
                                     }}
                                   >
-                                    {item.position_name}
+                                    {company.company_name}
                                   </SelectItem>
-                                ))
-                              )}
-                            </Select>
-                          )}
+                                )}
+                              </Select>
+                            )}
+
+                            {isAddingNewCompany[i] && (
+                              <div className="flex flex-col gap-4 mt-2">
+                                <Input
+                                  isRequired
+                                  label="Masukkan nama perusahaan/instansi"
+                                  placeholder="Masukkan nama perusahaan/instansi"
+                                  labelPlacement="outside"
+                                  value={newCompanyNames[i]}
+                                  onValueChange={(val) => {
+                                    const updatedNames = [...newCompanyNames];
+                                    updatedNames[i] = val;
+                                    setNewCompanyNames(updatedNames);
+                                  }}
+                                  variant="bordered"
+                                  classNames={{
+                                    label: "after:text-danger-primary text-xs text-text-secondary",
+                                    input: "focus:!border-primary-primary text-xs",
+                                    inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                                  }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex flex-col">
+                            {isLoadingPositions ? (
+                              <div className="w-full flex justify-center items-center py-8">
+                                <Spinner
+                                  label="Sedang memuat data..."
+                                  labelColor="primary"
+                                  variant="dots"
+                                  classNames={{
+                                    label: "text-primary-primary mt-4",
+                                    dots: "border-5 border-primary-primary",
+                                  }}
+                                />
+                              </div>
+                            ) : apiErrorPositions ? (
+                              <p className="text-start text-xs text-danger-primary">{apiErrorPositions}</p>
+                            ) : (
+                              <Select
+                                label="Pilih posisi/jabatan"
+                                placeholder="Pilih posisi/jabatan"
+                                labelPlacement="outside"
+                                variant="bordered"
+                                name="position_id"
+                                selectedKeys={exp.position_id && positions.some((p) => p.position_id === exp.position_id) ? new Set([String(exp.position_id)]) : new Set()}
+                                onSelectionChange={(keys) => {
+                                  const selectedKey = Array.from(keys)[0];
+                                  const newIsAdding = [...isAddingNewPosition];
+                                  const newNames = [...newPositionNames];
+
+                                  if (selectedKey === "-1") {
+                                    newIsAdding[i] = true;
+                                    newNames[i] = "";
+                                    handleChange(i, "position_id", 0);
+                                  } else {
+                                    newIsAdding[i] = false;
+                                    newNames[i] = "";
+                                    handleChange(i, "position_id", Number(selectedKey));
+                                  }
+
+                                  setIsAddingNewPosition(newIsAdding);
+                                  setNewPositionNames(newNames);
+                                }}
+                                classNames={{
+                                  label: "after:text-danger-primary text-xs text-text-secondary",
+                                  trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary",
+                                  value: "text-xs",
+                                  errorMessage: "text-danger-primary text-xs",
+                                }}
+                              >
+                                {positions.length === 0 ? (
+                                  <SelectItem key="nodata" isDisabled>
+                                    Data belum tersedia
+                                  </SelectItem>
+                                ) : (
+                                  [
+                                    {
+                                      position_id: -1,
+                                      position_name: "+ Tambah Posisi Baru",
+                                    },
+                                    ...positions,
+                                  ].map((item) => (
+                                    <SelectItem
+                                      key={item.position_id}
+                                      textValue={item.position_name}
+                                      classNames={{
+                                        title: "text-xs hover:!text-primary-primary",
+                                        selectedIcon: "text-primary-primary",
+                                      }}
+                                    >
+                                      {item.position_name}
+                                    </SelectItem>
+                                  ))
+                                )}
+                              </Select>
+                            )}
+                            {isAddingNewPosition[i] && (
+                              <div className="flex flex-col gap-4 mt-2">
+                                <Input
+                                  label="Masukkan nama posisi/jabatan"
+                                  placeholder="Masukkan nama posisi/jabatan"
+                                  labelPlacement="outside"
+                                  value={newPositionNames[i]}
+                                  onValueChange={(val) => {
+                                    const updatedNames = [...newPositionNames];
+                                    updatedNames[i] = val;
+                                    setNewPositionNames(updatedNames);
+                                  }}
+                                  variant="bordered"
+                                  classNames={{
+                                    label: "after:text-danger-primary text-xs text-text-secondary",
+                                    input: "focus:!border-primary-primary text-xs",
+                                    inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                                  }}
+                                />
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         {/* Deskripsi */}

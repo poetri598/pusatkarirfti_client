@@ -7,12 +7,12 @@ import { User, Sms, Discover } from "iconsax-react";
 
 // Components
 import { Breadcrumbs, BreadcrumbItem, Avatar, Button, Accordion, AccordionItem, ScrollShadow } from "@heroui/react";
-import SectionDataDiri from "@/components/User/BuatCV/SectionDataDiri";
-import SectionPengalamanKerja from "@/components/User/BuatCV/SectionPengalamanKerja";
-import SectionPengalamanOrganisasi from "@/components/User/BuatCV/SectionPengalamanOrganisasi";
-import SectionRiwayatPendidikan from "@/components/User/BuatCV/SectionRiwayatPendidikan";
-import SectionPenghargaan from "@/components/User/BuatCV/SectionPenghargaan";
-import SectionKeahlian from "@/components/User/BuatCV/SectionKeahlian";
+import SectionDataDiri from "@/components/Admin/BuatCV/SectionDataDiri";
+import SectionPengalamanKerja from "@/components/Admin/BuatCV/SectionPengalamanKerja";
+import SectionPengalamanOrganisasi from "@/components/Admin/BuatCV/SectionPengalamanOrganisasi";
+import SectionRiwayatPendidikan from "@/components/Admin/BuatCV/SectionRiwayatPendidikan";
+import SectionPenghargaan from "@/components/Admin/BuatCV/SectionPenghargaan";
+import SectionKeahlian from "@/components/Admin/BuatCV/SectionKeahlian";
 
 // Context
 import { useAuth } from "@/context/AuthContext";
@@ -67,7 +67,7 @@ export default function Page() {
               </div>
             </div>
 
-            <Accordion variant="splitted" className="gap-8" isCompact>
+            <Accordion variant="splitted" className="gap-8 min-h-screen" isCompact>
               {/* Data Diri */}
               <AccordionItem
                 key="data_diri"

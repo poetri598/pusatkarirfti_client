@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AddCircle, Trash } from "iconsax-react";
 
 // Components
-import { Form, Breadcrumbs, BreadcrumbItem, Avatar, Button, Accordion, AccordionItem, ScrollShadow, Input, Select, SelectItem, Selection, Spinner, Switch, DatePicker } from "@heroui/react";
+import { Form, Breadcrumbs, BreadcrumbItem, Avatar, Button, Accordion, AccordionItem, ScrollShadow, Input, Select, SelectItem, Selection, Spinner, Switch, DatePicker, form } from "@heroui/react";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
 
 // Types
@@ -18,7 +18,7 @@ interface UserSkillInput {
 }
 
 // Services
-import { getSkillAll } from "@/services/skill";
+import { getSkillAll, createSkill } from "@/services/skill";
 import { getSkillLevelAll } from "@/services/skillLevel";
 import { getUserByUsername } from "@/services/user";
 import { getUserSkillsByUsername, updateUserSkillsByUsername } from "@/services/userSkill";
@@ -41,6 +41,10 @@ export default function Page({ user_name }: { user_name: string }) {
   const [skills, setSkills] = useState<UserSkillInput[]>([]);
   const [isLoadingSkills, setIsLoadingSkills] = useState(true);
   const [apiErrorSkills, setApiErrorSkills] = useState<string | null>(null);
+
+  const [isAddingNewSkill, setIsAddingNewSkill] = useState<boolean[]>([]);
+  const [newSkillNames, setNewSkillNames] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,7 +64,7 @@ export default function Page({ user_name }: { user_name: string }) {
           skill_level_id: sk.skill_level_id,
         }));
 
-        setSkills(mapped.length ? mapped : [defaultExperience()]);
+        setSkills(mapped.length ? mapped : [defaultSkill()]);
       } else {
         setApiErrorSkills(error || "Gagal mengambil data");
       }
@@ -71,7 +75,7 @@ export default function Page({ user_name }: { user_name: string }) {
     fetchAll();
   }, [user_name]);
 
-  const defaultExperience = (): UserSkillInput => ({
+  const defaultSkill = (): UserSkillInput => ({
     skill_id: 0,
     skill_level_id: 0,
   });
@@ -83,13 +87,9 @@ export default function Page({ user_name }: { user_name: string }) {
   };
 
   const addAchievement = () => {
-    setSkills([
-      ...skills,
-      {
-        skill_id: 0,
-        skill_level_id: 0,
-      },
-    ]);
+    setSkills([...skills, defaultSkill()]);
+    setIsAddingNewSkill([...isAddingNewSkill, false]);
+    setNewSkillNames([...newSkillNames, ""]);
   };
 
   const removeAchievement = (index: number) => {
@@ -102,6 +102,27 @@ export default function Page({ user_name }: { user_name: string }) {
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
     setLoading(true);
+
+    for (let i = 0; i < skill.length; i++) {
+      if (isAddingNewSkill[i] && newSkillNames[i]) {
+        const formData = new FormData();
+        formData.append("skill_name", newSkillNames[i]);
+        formData.append("skill_desc", "-");
+        const { success, data, error } = await createSkill(formData);
+        if (success && data) {
+          const newSkillId = data.skill_id;
+          handleChange(i, "skill_id", newSkillId);
+        } else {
+          await showErrorDialog(error || `Gagal menambahkan skill baru di baris ke-${i + 1}`);
+          setLoading(false);
+          return;
+        }
+      }
+    }
+    const refreshed = await getSkillAll();
+    if (refreshed.success) setSkill(refreshed.data || []);
+    setIsAddingNewSkill(new Array(skill.length).fill(false));
+    setNewSkillNames(new Array(skill.length).fill(""));
 
     const formData = new FormData();
     formData.append("user_id", user_id.toString());
@@ -163,59 +184,103 @@ export default function Page({ user_name }: { user_name: string }) {
 
                     <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex flex-col gap-4">
-                        {isLoadingSkill ? (
-                          <div className="w-full flex justify-center items-center py-8">
-                            <Spinner
-                              label="Sedang memuat data..."
-                              labelColor="primary"
-                              variant="dots"
-                              classNames={{
-                                label: "text-primary-primary mt-4",
-                                dots: "border-5 border-primary-primary",
+                        <div className="flex flex-col">
+                          {isLoadingSkill ? (
+                            <div className="w-full flex justify-center items-center py-8">
+                              <Spinner
+                                label="Sedang memuat data..."
+                                labelColor="primary"
+                                variant="dots"
+                                classNames={{
+                                  label: "text-primary-primary mt-4",
+                                  dots: "border-5 border-primary-primary",
+                                }}
+                              />
+                            </div>
+                          ) : apiErrorSkill ? (
+                            <p className="text-start text-xs text-danger-primary">{apiErrorSkill}</p>
+                          ) : (
+                            <Select
+                              label="Pilih Keahlian"
+                              placeholder="Pilih Keahlian"
+                              labelPlacement="outside"
+                              variant="bordered"
+                              name="skill_id"
+                              selectedKeys={sk.skill_id && skill.some((p) => p.skill_id === sk.skill_id) ? new Set([String(sk.skill_id)]) : new Set()}
+                              onSelectionChange={(keys) => {
+                                const selectedKey = Array.from(keys)[0];
+                                const newIsAdding = [...isAddingNewSkill];
+                                const newNames = [...newSkillNames];
+
+                                if (selectedKey === "-1") {
+                                  newIsAdding[i] = true;
+                                  newNames[i] = "";
+                                  handleChange(i, "skill_id", 0);
+                                } else {
+                                  newIsAdding[i] = false;
+                                  newNames[i] = "";
+                                  handleChange(i, "skill_id", Number(selectedKey));
+                                }
+
+                                setIsAddingNewSkill(newIsAdding);
+                                setNewSkillNames(newNames);
                               }}
-                            />
-                          </div>
-                        ) : apiErrorSkill ? (
-                          <p className="text-start text-xs text-danger-primary">{apiErrorSkill}</p>
-                        ) : (
-                          <Select
-                            isRequired
-                            label="Pilih keahlian"
-                            labelPlacement="outside"
-                            variant="bordered"
-                            name="skill_id"
-                            selectedKeys={sk.skill_id && skill.some((p) => p.skill_id === sk.skill_id) ? new Set([String(sk.skill_id)]) : new Set()}
-                            onSelectionChange={(keys) => {
-                              const selectedKey = Array.from(keys)[0];
-                              handleChange(i, "skill_id", Number(selectedKey));
-                            }}
-                            classNames={{
-                              label: "after:text-danger-primary text-xs text-text-secondary",
-                              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary",
-                              value: "text-xs",
-                              errorMessage: "text-danger-primary text-xs",
-                            }}
-                          >
-                            {skill.length === 0 ? (
-                              <SelectItem key="nodata" isDisabled>
-                                Data belum tersedia
-                              </SelectItem>
-                            ) : (
-                              skill.map((item) => (
-                                <SelectItem
-                                  key={item.skill_id}
-                                  textValue={item.skill_name}
-                                  classNames={{
-                                    title: "text-xs hover:!text-primary-primary",
-                                    selectedIcon: "text-primary-primary",
-                                  }}
-                                >
-                                  {item.skill_name}
+                              classNames={{
+                                label: "after:text-danger-primary text-xs text-text-secondary",
+                                trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary",
+                                value: "text-xs",
+                                errorMessage: "text-danger-primary text-xs",
+                              }}
+                            >
+                              {skill.length === 0 ? (
+                                <SelectItem key="nodata" isDisabled>
+                                  Data belum tersedia
                                 </SelectItem>
-                              ))
-                            )}
-                          </Select>
-                        )}
+                              ) : (
+                                [
+                                  {
+                                    skill_id: -1,
+                                    skill_name: "+ Tambah keahlian",
+                                    skill_desc: "",
+                                  },
+                                  ...skill,
+                                ].map((item) => (
+                                  <SelectItem
+                                    key={item.skill_id}
+                                    textValue={item.skill_name}
+                                    classNames={{
+                                      title: "text-xs hover:!text-primary-primary",
+                                      selectedIcon: "text-primary-primary",
+                                    }}
+                                  >
+                                    {item.skill_name}
+                                  </SelectItem>
+                                ))
+                              )}
+                            </Select>
+                          )}
+                          {isAddingNewSkill[i] && (
+                            <div className="flex flex-col gap-4 mt-2">
+                              <Input
+                                label="Masukkan nama skill"
+                                placeholder="Masukkan nama skill"
+                                labelPlacement="outside"
+                                value={newSkillNames[i]}
+                                onValueChange={(val) => {
+                                  const updatedNames = [...newSkillNames];
+                                  updatedNames[i] = val;
+                                  setNewSkillNames(updatedNames);
+                                }}
+                                variant="bordered"
+                                classNames={{
+                                  label: "after:text-danger-primary text-xs text-text-secondary",
+                                  input: "focus:!border-primary-primary text-xs",
+                                  inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
 
                         {isLoadingSkillLevel ? (
                           <div className="w-full flex justify-center items-center py-8">

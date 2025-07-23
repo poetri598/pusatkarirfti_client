@@ -8,12 +8,14 @@ import { showSuccessDialog, showErrorDialog, showConfirmationDialog } from "@/co
 import { useAuth } from "@/context/AuthContext";
 
 // Types
+import { CompanyItem } from "@/types/company";
 import { EducationItem } from "@/types/education";
+import { ProgramStudyItem } from "@/types/programStudy";
 import { UserEducationItem } from "@/types/userEducation";
 interface UserEducationInput {
+  program_study_id: number;
   education_id: number;
-  user_education_name: string;
-  user_education_subject: string;
+  company_id: number;
   user_education_admission_date: string;
   user_education_graduation_date: string | null;
   user_education_is_current: boolean;
@@ -21,7 +23,9 @@ interface UserEducationInput {
 }
 
 // Services
+import { getCompanyAll } from "@/services/company";
 import { getEducationAll } from "@/services/education";
+import { getProgramStudyAll } from "@/services/programStudy";
 import { getUserEducationsByUsername, deleteUserEducationsByUsername } from "@/services/userEducation";
 
 // Utils
@@ -38,9 +42,17 @@ function parseISOStringToCalendarDate(isoString: string | null): CalendarDate | 
 export default function Page() {
   const { user } = useAuth();
 
+  const [companies, setCompanies] = useState<CompanyItem[]>([]);
+  const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
+  const [apiErrorCompanies, setApiErrorCompanies] = useState<string | null>(null);
+
   const [education, setEducation] = useState<EducationItem[]>([]);
   const [isLoadingEducation, setIsLoadingEducation] = useState(true);
   const [apiErrorEducation, setApiErrorEducation] = useState<string | null>(null);
+
+  const [programStudy, setProgramStudy] = useState<ProgramStudyItem[]>([]);
+  const [isLoadingProgramStudy, setIsLoadingProgramStudy] = useState(true);
+  const [apiErrorProgramStudy, setApiErrorProgramStudy] = useState<string | null>(null);
 
   const [educations, setEducations] = useState<UserEducationInput[]>([]);
   const [isLoadingEducations, setIsLoadingEducations] = useState(true);
@@ -48,7 +60,11 @@ export default function Page() {
 
   useEffect(() => {
     const fetchAll = async () => {
-      const fetchers = [createServiceFetcher(getEducationAll, setEducation, setApiErrorEducation, setIsLoadingEducation)];
+      const fetchers = [
+        createServiceFetcher(getCompanyAll, setCompanies, setApiErrorCompanies, setIsLoadingCompanies),
+        createServiceFetcher(getEducationAll, setEducation, setApiErrorEducation, setIsLoadingEducation),
+        createServiceFetcher(getProgramStudyAll, setProgramStudy, setApiErrorProgramStudy, setIsLoadingProgramStudy),
+      ];
       await Promise.all(fetchers.map((fetch) => fetch()));
     };
 
@@ -63,12 +79,12 @@ export default function Page() {
 
       if (success && data) {
         const mapped = data.map((edu: UserEducationItem) => ({
+          program_study_id: edu.program_study_id,
           education_id: edu.education_id,
+          company_id: edu.company_id,
           user_education_admission_date: edu.user_education_admission_date,
           user_education_graduation_date: edu.user_education_graduation_date || "",
           user_education_is_current: Boolean(edu.user_education_is_current),
-          user_education_name: edu.user_education_name,
-          user_education_subject: edu.user_education_subject,
           user_education_final_score: edu.user_education_final_score,
         }));
 
@@ -77,12 +93,12 @@ export default function Page() {
             ? mapped
             : [
                 {
+                  program_study_id: 0,
                   education_id: 0,
+                  company_id: 0,
                   user_education_admission_date: "",
                   user_education_graduation_date: "",
                   user_education_is_current: false,
-                  user_education_name: "",
-                  user_education_subject: "",
                   user_education_final_score: 0,
                 },
               ]
@@ -150,9 +166,9 @@ export default function Page() {
         <div key={i} className="relative w-full border border-default-200 rounded-medium p-4 flex flex-col gap-4">
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-4">
-              {/* Perusahaan & Posisi */}
+              {/* Jenjang Pendidikan */}
               <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2">
-                {isLoadingEducations ? (
+                {isLoadingEducation ? (
                   <div className="w-full flex justify-center items-center py-8">
                     <Spinner
                       label="Sedang memuat data..."
@@ -164,16 +180,16 @@ export default function Page() {
                       }}
                     />
                   </div>
-                ) : apiErrorEducations ? (
+                ) : apiErrorEducation ? (
                   <p className="text-start text-xs text-danger-primary">{apiErrorEducations}</p>
                 ) : (
                   <Select
                     isDisabled
-                    label="Pilih jenjang pendidikan"
+                    label="Jenjang pendidikan"
+                    placeholder="Jenjang pendidikan"
                     labelPlacement="outside"
-                    variant="bordered"
                     name="education_id"
-                    selectedKeys={edu.education_id && educations.some((p) => p.education_id === edu.education_id) ? new Set([String(edu.education_id)]) : new Set()}
+                    selectedKeys={edu.education_id && education.some((p) => p.education_id === edu.education_id) ? new Set([String(edu.education_id)]) : new Set()}
                     onSelectionChange={(keys) => {
                       const selectedKey = Array.from(keys)[0];
                       handleChange(i, "education_id", Number(selectedKey));
@@ -206,45 +222,130 @@ export default function Page() {
                   </Select>
                 )}
 
-                <Input
-                  isReadOnly
-                  label="Masukkan nama sekolah"
-                  labelPlacement="outside"
-                  name="user_education_name"
-                  value={edu.user_education_name}
-                  onValueChange={(val) => handleChange(i, "user_education_name", val)}
-                  type="text"
-                  variant="bordered"
-                  classNames={{
-                    label: "after:text-danger-primary text-xs text-text-secondary",
-                    input: "focus:!border-primary-primary text-xs",
-                    inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
-                    errorMessage: "text-danger-primary text-xs",
-                  }}
-                />
+                {/* company_id */}
+                {isLoadingCompanies ? (
+                  <div className="w-full flex justify-center items-center py-8">
+                    <Spinner
+                      label="Sedang memuat data..."
+                      labelColor="primary"
+                      variant="dots"
+                      classNames={{
+                        label: "text-primary-primary mt-4",
+                        dots: "border-5 border-primary-primary",
+                      }}
+                    />
+                  </div>
+                ) : apiErrorCompanies ? (
+                  <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
+                ) : companies.length === 0 ? (
+                  <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
+                ) : (
+                  <Select
+                    isDisabled
+                    isMultiline={true}
+                    items={companies}
+                    label="Perusahaan/instansi"
+                    placeholder="Perusahaan/instansi"
+                    labelPlacement="outside"
+                    name="company_id"
+                    renderValue={(items) => (
+                      <div className="flex flex-wrap gap-2">
+                        {items.map((item) => (
+                          <div key={item.data?.company_id} className="flex items-center gap-2">
+                            <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                            <span className="text-xs">{item.data?.company_name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    selectedKeys={edu.company_id && companies.some((c) => c.company_id === edu.company_id) ? new Set([String(edu.company_id)]) : new Set()}
+                    onSelectionChange={(keys) => {
+                      const selectedKey = Array.from(keys)[0];
+                      handleChange(i, "company_id", Number(selectedKey));
+                    }}
+                    classNames={{
+                      label: "after:text-danger-primary text-xs",
+                      trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                      value: "text-xs",
+                      errorMessage: "text-danger-primary",
+                    }}
+                  >
+                    {(company) => (
+                      <SelectItem
+                        key={company.company_id}
+                        textValue={company.company_name}
+                        startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                        classNames={{
+                          title: "text-xs hover:!text-primary-primary",
+                          selectedIcon: "text-primary-primary",
+                        }}
+                      >
+                        {company.company_name}
+                      </SelectItem>
+                    )}
+                  </Select>
+                )}
               </div>
 
               <div className="grid xs:grid-cols-1 sm:grid-cols-2 xs:gap-2">
-                <Input
-                  isReadOnly
-                  label="Masukkan nama jurusan"
-                  labelPlacement="outside"
-                  name="user_education_subject"
-                  value={edu.user_education_subject}
-                  onValueChange={(val) => handleChange(i, "user_education_subject", val)}
-                  type="text"
-                  variant="bordered"
-                  classNames={{
-                    label: "after:text-danger-primary text-xs text-text-secondary",
-                    input: "focus:!border-primary-primary text-xs",
-                    inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
-                    errorMessage: "text-danger-primary text-xs",
-                  }}
-                />
+                {isLoadingProgramStudy ? (
+                  <div className="w-full flex justify-center items-center py-8">
+                    <Spinner
+                      label="Sedang memuat data..."
+                      labelColor="primary"
+                      variant="dots"
+                      classNames={{
+                        label: "text-primary-primary mt-4",
+                        dots: "border-5 border-primary-primary",
+                      }}
+                    />
+                  </div>
+                ) : apiErrorProgramStudy ? (
+                  <p className="text-start text-xs text-danger-primary">{apiErrorProgramStudy}</p>
+                ) : (
+                  <Select
+                    isDisabled
+                    label="Program Studi/Jurusan"
+                    placeholder="Program Studi/Jurusan"
+                    labelPlacement="outside"
+                    name="program_study_id"
+                    selectedKeys={edu.program_study_id && programStudy.some((p) => p.program_study_id === edu.program_study_id) ? new Set([String(edu.program_study_id)]) : new Set()}
+                    onSelectionChange={(keys) => {
+                      const selectedKey = Array.from(keys)[0];
+                      handleChange(i, "program_study_id", Number(selectedKey));
+                    }}
+                    classNames={{
+                      label: "after:text-danger-primary text-xs text-text-secondary",
+                      trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary",
+                      value: "text-xs",
+                      errorMessage: "text-danger-primary text-xs",
+                    }}
+                  >
+                    {programStudy.length === 0 ? (
+                      <SelectItem key="nodata" isDisabled>
+                        Data belum tersedia
+                      </SelectItem>
+                    ) : (
+                      programStudy.map((item) => (
+                        <SelectItem
+                          key={item.program_study_id}
+                          textValue={item.program_study_name}
+                          classNames={{
+                            title: "text-xs hover:!text-primary-primary",
+                            selectedIcon: "text-primary-primary",
+                          }}
+                        >
+                          {item.program_study_name}
+                        </SelectItem>
+                      ))
+                    )}
+                  </Select>
+                )}
 
                 <NumberInput
                   isReadOnly
-                  label="Masukkan nilai akhir"
+                  label="Nilai akhir"
+                  placeholder="Nilai akhir"
                   labelPlacement="outside"
                   name="user_education_final_score"
                   value={Number(edu.user_education_final_score)}
@@ -252,7 +353,6 @@ export default function Page() {
                   step={0.01}
                   minValue={0}
                   max={100}
-                  variant="bordered"
                   classNames={{
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     input: "focus:!border-primary-primary text-xs",
@@ -272,7 +372,6 @@ export default function Page() {
                   label="Waktu masuk"
                   name="user_education_admission_date"
                   labelPlacement="outside"
-                  variant="bordered"
                   value={parseISOStringToCalendarDate(edu.user_education_admission_date)}
                   onChange={(val) => {
                     const dateOnly = val?.toString() ?? "";
@@ -296,7 +395,6 @@ export default function Page() {
                   label="Waktu lulus"
                   name="user_education_graduation_date"
                   labelPlacement="outside"
-                  variant="bordered"
                   isDisabled={edu.user_education_is_current}
                   value={parseISOStringToCalendarDate(edu.user_education_graduation_date)}
                   onChange={(val) => {

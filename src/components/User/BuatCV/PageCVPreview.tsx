@@ -49,7 +49,7 @@ export default function CVPreviewPage({ user_name }: { user_name: string }) {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col gap-2">
+    <div className="min-h-screen flex flex-col gap-2">
       {/* Download */}
       <div className="w-full flex xs:justify-center md:justify-end items-center  gap-2 h-12 print:hidden p-10">
         <Button startContent={<ArrowLeft size={16} variant="Bulk" color="currentColor" className="text-background-primary" />} color="default" variant="solid" className="login" as={Link} href="/buat-cv">

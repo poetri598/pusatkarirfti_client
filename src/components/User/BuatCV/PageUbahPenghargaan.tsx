@@ -18,7 +18,7 @@ interface UserAchievementInput {
 }
 
 // Services
-import { getCompanyAll } from "@/services/company";
+import { getCompanyAll, createCompany } from "@/services/company";
 import { getUserByUsername } from "@/services/user";
 import { getUserAchievementsByUsername, updateUserAchievementsByUsername } from "@/services/userAchievement";
 
@@ -46,6 +46,9 @@ export default function Page({ user_name }: { user_name: string }) {
   const [isLoadingAchievements, setIsLoadingAchievements] = useState(true);
   const [apiErrorAchievements, setApiErrorAchievements] = useState<string | null>(null);
 
+  const [isAddingNewCompany, setIsAddingNewCompany] = useState<boolean[]>([]);
+  const [newCompanyNames, setNewCompanyNames] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,13 +63,13 @@ export default function Page({ user_name }: { user_name: string }) {
 
       const { success, data, error } = await getUserAchievementsByUsername(user_name);
       if (success && data) {
-        const mapped: UserAchievementInput[] = data.map((exp: UserAchievementItem) => ({
-          user_achievement_name: exp.user_achievement_name,
-          user_achievement_date: exp.user_achievement_date,
-          company_id: exp.company_id,
+        const mapped: UserAchievementInput[] = data.map((achie: UserAchievementItem) => ({
+          user_achievement_name: achie.user_achievement_name,
+          user_achievement_date: achie.user_achievement_date,
+          company_id: achie.company_id,
         }));
 
-        setAchievements(mapped.length ? mapped : [defaultExperience()]);
+        setAchievements(mapped.length ? mapped : [defaultAchievement()]);
       } else {
         setApiErrorAchievements(error || "Gagal mengambil data");
       }
@@ -77,7 +80,7 @@ export default function Page({ user_name }: { user_name: string }) {
     fetchAll();
   }, [user_name]);
 
-  const defaultExperience = (): UserAchievementInput => ({
+  const defaultAchievement = (): UserAchievementInput => ({
     user_achievement_name: "",
     user_achievement_date: "",
     company_id: 0,
@@ -90,14 +93,9 @@ export default function Page({ user_name }: { user_name: string }) {
   };
 
   const addAchievement = () => {
-    setAchievements([
-      ...achievements,
-      {
-        user_achievement_name: "",
-        user_achievement_date: "",
-        company_id: 0,
-      },
-    ]);
+    setAchievements([...achievements, defaultAchievement()]);
+    setIsAddingNewCompany([...isAddingNewCompany, false]);
+    setNewCompanyNames([...newCompanyNames, ""]);
   };
 
   const removeAchievement = (index: number) => {
@@ -111,12 +109,37 @@ export default function Page({ user_name }: { user_name: string }) {
     if (!confirm.isConfirmed) return;
     setLoading(true);
 
+    for (let i = 0; i < achievements.length; i++) {
+      if (isAddingNewCompany[i] && newCompanyNames[i]) {
+        const formData = new FormData();
+        formData.append("company_name", newCompanyNames[i]);
+        formData.append("company_desc", "-");
+        formData.append("company_link", "-");
+        formData.append("company_is_partner", "0");
+        formData.append("status_id", "1");
+
+        const { success, data, error } = await createCompany(formData);
+        if (success && data) {
+          const newCompanyId = data.company_id;
+          handleChange(i, "company_id", newCompanyId);
+        } else {
+          await showErrorDialog(error || `Gagal menambahkan perusahaan baru di baris ke-${i + 1}`);
+          setLoading(false);
+          return;
+        }
+      }
+    }
+    const refreshed = await getCompanyAll();
+    if (refreshed.success) setCompanies(refreshed.data || []);
+    setIsAddingNewCompany(new Array(achievements.length).fill(false));
+    setNewCompanyNames(new Array(achievements.length).fill(""));
+
     const formData = new FormData();
     formData.append("user_id", user_id.toString());
-    achievements.forEach((exp, i) => {
-      formData.append(`achievements[${i}][user_achievement_name]`, exp.user_achievement_name);
-      formData.append(`achievements[${i}][user_achievement_date]`, exp.user_achievement_date);
-      formData.append(`achievements[${i}][company_id]`, exp.company_id.toString());
+    achievements.forEach((achie, i) => {
+      formData.append(`achievements[${i}][user_achievement_name]`, achie.user_achievement_name);
+      formData.append(`achievements[${i}][user_achievement_date]`, achie.user_achievement_date);
+      formData.append(`achievements[${i}][company_id]`, achie.company_id.toString());
     });
 
     const { success, data, error } = await updateUserAchievementsByUsername(user_name, formData);
@@ -189,70 +212,119 @@ export default function Page({ user_name }: { user_name: string }) {
                           }}
                         />
 
-                        {/* company_id */}
-                        {isLoadingCompanies ? (
-                          <div className="w-full flex justify-center items-center py-8">
-                            <Spinner
-                              label="Sedang memuat data..."
-                              labelColor="primary"
-                              variant="dots"
-                              classNames={{
-                                label: "text-primary-primary mt-4",
-                                dots: "border-5 border-primary-primary",
-                              }}
-                            />
-                          </div>
-                        ) : apiErrorCompanies ? (
-                          <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
-                        ) : companies.length === 0 ? (
-                          <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
-                        ) : (
-                          <Select
-                            isRequired
-                            isMultiline={true}
-                            items={companies}
-                            label="Pilih perusahaan/instansi penerbit"
-                            placeholder="Pilih perusahaan/instansi penerbit"
-                            labelPlacement="outside"
-                            variant="bordered"
-                            name="company_id"
-                            renderValue={(items) => (
-                              <div className="flex flex-wrap gap-2">
-                                {items.map((item) => (
-                                  <div key={item.data?.company_id} className="flex items-center gap-2">
-                                    <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
-                                    <span className="text-xs">{item.data?.company_name}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                            selectedKeys={achie.company_id && companies.some((c) => c.company_id === achie.company_id) ? new Set([String(achie.company_id)]) : new Set()}
-                            onSelectionChange={(keys) => {
-                              const selectedKey = Array.from(keys)[0];
-                              handleChange(i, "company_id", Number(selectedKey));
-                            }}
-                            classNames={{
-                              label: "after:text-danger-primary text-xs",
-                              trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
-                              value: "text-xs",
-                              errorMessage: "text-danger-primary",
-                            }}
-                          >
-                            {(company) => (
-                              <SelectItem
-                                key={company.company_id}
-                                textValue={company.company_name}
-                                startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                        <div className="flex flex-col">
+                          {/* company_id */}
+                          {isLoadingCompanies ? (
+                            <div className="w-full flex justify-center items-center py-8">
+                              <Spinner
+                                label="Sedang memuat data..."
+                                labelColor="primary"
+                                variant="dots"
                                 classNames={{
-                                  title: "text-xs hover:!text-primary-primary",
-                                  selectedIcon: "text-primary-primary",
+                                  label: "text-primary-primary mt-4",
+                                  dots: "border-5 border-primary-primary",
                                 }}
-                              >
-                                {company.company_name}
-                              </SelectItem>
-                            )}
-                          </Select>
-                        )}
+                              />
+                            </div>
+                          ) : apiErrorCompanies ? (
+                            <p className="text-start text-xs text-danger-primary">{apiErrorCompanies}</p>
+                          ) : companies.length === 0 ? (
+                            <p className="text-start text-xs text-text-secondary">Data belum tersedia</p>
+                          ) : (
+                            <Select
+                              isMultiline={true}
+                              items={[
+                                {
+                                  company_id: -1,
+                                  company_name: "+ Tambah perusahaan/instansi",
+                                  company_img: "",
+                                  company_desc: "",
+                                  company_link: "",
+                                  company_is_partner: false,
+                                  status_id: 1,
+                                  industry_ids: [],
+                                },
+                                ...companies,
+                              ]}
+                              label="Pilih perusahaan/instansi penerbit"
+                              placeholder="Pilih perusahaan/instansi penerbit"
+                              labelPlacement="outside"
+                              variant="bordered"
+                              name="company_id"
+                              renderValue={(items) => (
+                                <div className="flex flex-wrap gap-2">
+                                  {items.map((item) => (
+                                    <div key={item.data?.company_id} className="flex items-center gap-2">
+                                      <Avatar alt={item.data?.company_name} className="w-6 h-6" src={item.data?.company_img} classNames={{ img: "object-contain bg-background-primary" }} />
+                                      <span className="text-xs">{item.data?.company_name}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              selectedKeys={achie.company_id && companies.some((c) => c.company_id === achie.company_id) ? new Set([String(achie.company_id)]) : new Set()}
+                              onSelectionChange={(keys) => {
+                                const selectedKey = Array.from(keys)[0];
+                                const newIsAdding = [...isAddingNewCompany];
+                                const newNames = [...newCompanyNames];
+
+                                if (selectedKey === "-1") {
+                                  newIsAdding[i] = true;
+                                  newNames[i] = "";
+                                  handleChange(i, "company_id", 0);
+                                } else {
+                                  newIsAdding[i] = false;
+                                  newNames[i] = "";
+                                  handleChange(i, "company_id", Number(selectedKey));
+                                }
+
+                                setIsAddingNewCompany(newIsAdding);
+                                setNewCompanyNames(newNames);
+                              }}
+                              classNames={{
+                                label: "after:text-danger-primary text-xs",
+                                trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
+                                value: "text-xs",
+                                errorMessage: "text-danger-primary",
+                              }}
+                            >
+                              {(company) => (
+                                <SelectItem
+                                  key={company.company_id}
+                                  textValue={company.company_name}
+                                  startContent={<Avatar alt={company.company_name} className="w-6 h-6" src={company.company_img} classNames={{ img: "object-contain bg-background-primary" }} />}
+                                  classNames={{
+                                    title: "text-xs hover:!text-primary-primary",
+                                    selectedIcon: "text-primary-primary",
+                                  }}
+                                >
+                                  {company.company_name}
+                                </SelectItem>
+                              )}
+                            </Select>
+                          )}
+                          {isAddingNewCompany[i] && (
+                            <div className="flex flex-col gap-4 mt-2">
+                              <Input
+                                isRequired
+                                label="Masukkan nama perusahaan/instansi penerbit"
+                                placeholder="Masukkan nama perusahaan/instansi penerbit"
+                                labelPlacement="outside"
+                                value={newCompanyNames[i]}
+                                onValueChange={(val) => {
+                                  const updatedNames = [...newCompanyNames];
+                                  updatedNames[i] = val;
+                                  setNewCompanyNames(updatedNames);
+                                }}
+                                variant="bordered"
+                                classNames={{
+                                  label: "after:text-danger-primary text-xs text-text-secondary",
+                                  input: "focus:!border-primary-primary text-xs",
+                                  inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
 
                         <DatePicker
                           isRequired

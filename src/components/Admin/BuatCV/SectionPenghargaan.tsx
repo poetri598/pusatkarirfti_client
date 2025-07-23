@@ -140,13 +140,13 @@ export default function Page() {
             <div className="flex flex-col gap-4">
               <Input
                 isReadOnly
-                label="Masukkan nama penghargaan"
+                label="Nama penghargaan"
+                placeholder="Nama penghargaan"
                 labelPlacement="outside"
                 name="user_achievement_name"
                 value={achie.user_achievement_name}
                 onValueChange={(val) => handleChange(i, "user_achievement_name", val)}
                 type="text"
-                variant="bordered"
                 classNames={{
                   label: "after:text-danger-primary text-xs text-text-secondary",
                   input: "focus:!border-primary-primary text-xs",
@@ -177,10 +177,9 @@ export default function Page() {
                   isDisabled
                   isMultiline={true}
                   items={companies}
-                  label="Pilih perusahaan/instansi penerbit"
-                  placeholder="Pilih perusahaan/instansi penerbit"
+                  label="Perusahaan/instansi penerbit"
+                  placeholder="Perusahaan/instansi penerbit"
                   labelPlacement="outside"
-                  variant="bordered"
                   name="company_id"
                   renderValue={(items) => (
                     <div className="flex flex-wrap gap-2">
@@ -228,7 +227,6 @@ export default function Page() {
                 label="Tanggal diterbitkan"
                 name="user_achievement_date"
                 labelPlacement="outside"
-                variant="bordered"
                 value={parseISOStringToCalendarDate(achie.user_achievement_date)}
                 onChange={(val) => {
                   const dateOnly = val?.toString() ?? "";

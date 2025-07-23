@@ -186,10 +186,9 @@ export default function Page() {
                     isDisabled
                     isMultiline={true}
                     items={companies}
-                    label="Pilih perusahaan/instansi"
-                    placeholder="Pilih perusahaan/instansi"
+                    label="Perusahaan/instansi"
+                    placeholder="Perusahaan/instansi"
                     labelPlacement="outside"
-                    variant="bordered"
                     name="company_id"
                     renderValue={(items) => (
                       <div className="flex flex-wrap gap-2">
@@ -246,9 +245,9 @@ export default function Page() {
                 ) : (
                   <Select
                     isDisabled
-                    label="Pilih jabatan"
+                    label="Posisi/jabatan"
+                    placeholder="Posisi/jabatan"
                     labelPlacement="outside"
-                    variant="bordered"
                     name="position_id"
                     selectedKeys={exp.position_id && positions.some((p) => p.position_id === exp.position_id) ? new Set([String(exp.position_id)]) : new Set()}
                     onSelectionChange={(keys) => {
@@ -290,13 +289,12 @@ export default function Page() {
                   <div key={j} className="flex xs:flex-col md:flex-row gap-2 xs:items-start md:items-end">
                     <Input
                       isReadOnly
-                      label="Masukkan deskripsi pekerjaan"
+                      label="Deskripsi pekerjaan"
                       labelPlacement="outside"
                       name="experience_description"
                       value={desc}
                       onValueChange={(val) => handleDescChange(i, j, val)}
                       type="text"
-                      variant="bordered"
                       classNames={{
                         label: "after:text-danger-primary text-xs text-text-secondary",
                         input: "focus:!border-primary-primary text-xs",
@@ -318,7 +316,6 @@ export default function Page() {
                   label="Waktu mulai menjabat"
                   name="user_organization_experience_start_date"
                   labelPlacement="outside"
-                  variant="bordered"
                   value={parseISOStringToCalendarDate(exp.user_organization_experience_start_date)}
                   onChange={(val) => {
                     const dateOnly = val?.toString() ?? "";
@@ -342,7 +339,6 @@ export default function Page() {
                   label="Waktu berakhir menjabat"
                   name="user_organization_experience_end_date"
                   labelPlacement="outside"
-                  variant="bordered"
                   isDisabled={exp.user_organization_experience_is_current}
                   value={parseISOStringToCalendarDate(exp.user_organization_experience_end_date)}
                   onChange={(val) => {
