@@ -58,6 +58,22 @@ export default function SectionHeroUser({ keyword, setKeyword }: Props) {
             inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary bg-background-primary xs:w-full md:w-1/2 mx-auto",
           }}
         />
+        <Input
+          startContent={<SearchNormal1 size={16} color="currentColor" className="text-text-secondary transition-colors  rounded-lg " />}
+          label="Cari informasi Berita"
+          labelPlacement="outside"
+          placeholder="Masukkan kata kunci"
+          variant="bordered"
+          type="search"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          classNames={{
+            label: "after:text-danger-primary text-xs text-text-secondary",
+            input: "focus:!border-primary-primary text-xs ",
+            inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
+          }}
+          className="w-64"
+        />
         <p className="text-sm text-background-primary">Apa yang saat ini ingin kamu pelajari coba cari!</p>
       </div>
     </section>
