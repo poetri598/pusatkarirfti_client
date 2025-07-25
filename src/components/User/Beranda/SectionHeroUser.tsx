@@ -50,29 +50,13 @@ export default function SectionHeroUser({ keyword, setKeyword }: Props) {
         <Input
           value={keyword}
           onValueChange={setKeyword}
-          endContent={<SearchNormal1 size={32} color="currentColor" className="text-primary-primary transition-colors hover:text-background-primary hover:bg-primary-primary rounded-lg p-2" />}
+          endContent={<SearchNormal1 size={32} color="currentColor" className="z-[999] text-primary-primary transition-colors hover:text-background-primary hover:bg-primary-primary rounded-lg p-2" />}
           placeholder="Masukkan kata kunci..."
           type="text"
           classNames={{
             input: "placeholder:text-text-secondary placeholder:text-sm focus:!text-text-secondary focus:!border-primary-primary",
             inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary bg-background-primary xs:w-full md:w-1/2 mx-auto",
           }}
-        />
-        <Input
-          startContent={<SearchNormal1 size={16} color="currentColor" className="text-text-secondary transition-colors  rounded-lg " />}
-          label="Cari informasi Berita"
-          labelPlacement="outside"
-          placeholder="Masukkan kata kunci"
-          variant="bordered"
-          type="search"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          classNames={{
-            label: "after:text-danger-primary text-xs text-text-secondary",
-            input: "focus:!border-primary-primary text-xs ",
-            inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
-          }}
-          className="w-64"
         />
         <p className="text-sm text-background-primary">Apa yang saat ini ingin kamu pelajari coba cari!</p>
       </div>
