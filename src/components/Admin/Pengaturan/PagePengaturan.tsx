@@ -48,7 +48,7 @@ export default function Settings() {
                   inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
                 }}
               />
-              <Link href="/pengaturan/email-reset" className="basis-1/6 login active:opacity-100">
+              <Link href="/pengaturan/ubah-email" className="basis-1/6 login active:opacity-100">
                 Ubah Email
               </Link>
             </Form>
@@ -69,7 +69,7 @@ export default function Settings() {
                 }}
               />
 
-              <Link href="/pengaturan/password-reset" className="basis-1/6 login active:opacity-100">
+              <Link href="/pengaturan/ubah-password" className="basis-1/6 login active:opacity-100">
                 Ubah password
               </Link>
             </Form>

@@ -71,7 +71,7 @@ export default function PasswordReset() {
           >
             <BreadcrumbItem href="/beranda">Beranda</BreadcrumbItem>
             <BreadcrumbItem href="/pengaturan">Pengaturan</BreadcrumbItem>
-            <BreadcrumbItem href="/pengaturan/password-reset" className="text-primary-primary">
+            <BreadcrumbItem href="/pengaturan/ubah-password" className="text-primary-primary">
               Ubah Password
             </BreadcrumbItem>
           </Breadcrumbs>

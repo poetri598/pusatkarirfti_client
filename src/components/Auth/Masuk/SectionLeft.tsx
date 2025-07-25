@@ -48,7 +48,7 @@ export default function SectionLeft({ className }: { className: string }) {
         {loading && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
             <Spinner
-              label="Logging in..."
+              label="Memproses masuk..."
               variant="wave"
               classNames={{
                 label: "text-primary-primary mt-4",

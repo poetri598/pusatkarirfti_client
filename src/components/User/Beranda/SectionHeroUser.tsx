@@ -42,7 +42,7 @@ export default function SectionHeroUser({ keyword, setKeyword }: Props) {
       />
 
       {/* Hero Content */}
-      <div className="z-10 xs:w-11/12 lg:w-6/12 mx-auto flex flex-col gap-4 text-center">
+      <div className="xs:w-11/12 lg:w-6/12 mx-auto flex flex-col gap-4 text-center justify-center items-center z-10 relative">
         <p className="xs:text-lg md:text-4xl font-bold text-background-primary">Temukan Potensi Dirimu bersama kami di Pusat Karir FTI UNSAP!</p>
         <p className="text-sm text-background-primary">Ingin lebih produktif? atau nambah skill dan cari pengalaman baru? Ayoo, Ambil Kesempatan untuk pelatihan, magang & lowongan kerja bersama kami.</p>
 
@@ -50,12 +50,15 @@ export default function SectionHeroUser({ keyword, setKeyword }: Props) {
         <Input
           value={keyword}
           onValueChange={setKeyword}
-          endContent={<SearchNormal1 size={32} color="currentColor" className="z-[999] text-primary-primary transition-colors hover:text-background-primary hover:bg-primary-primary rounded-lg p-2" />}
+          endContent={<SearchNormal1 size={32} color="currentColor" className="text-primary-primary transition-colors hover:text-background-primary hover:bg-primary-primary rounded-medium p-2" />}
           placeholder="Masukkan kata kunci..."
           type="text"
+          variant="bordered"
           classNames={{
-            input: "placeholder:text-text-secondary placeholder:text-sm focus:!text-text-secondary focus:!border-primary-primary",
-            inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary bg-background-primary xs:w-full md:w-1/2 mx-auto",
+            base: "xs:max-w-xs md:max-w-md bg-background-primary border-primary-primary hover:border-primary-primary focus:border-primary-primary rounded-medium",
+            label: "after:text-danger-primary text-xs text-text-secondary",
+            input: "focus:!border-primary-primary text-xs ",
+            inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary ",
           }}
         />
         <p className="text-sm text-background-primary">Apa yang saat ini ingin kamu pelajari coba cari!</p>

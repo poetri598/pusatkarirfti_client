@@ -217,7 +217,7 @@ export default function PageMagang() {
             <TitleKarir label="Magang" />
 
             {/* Section Search, Filter & Sort */}
-            <section className="flex xs:flex-col xs:justify-start xs:items-start md:flex-row md:justify-between md:items-center gap-2 border-b border-border-primary pb-4">
+            <section className="w-full flex xs:flex-col md:flex-row xs:justify-start md:justify-between xs:items-start md:items-center border-b border-border-primary pb-4 gap-2">
               {/* Search */}
               <Input
                 startContent={<SearchNormal1 size={16} color="currentColor" className="text-text-secondary transition-colors  rounded-lg " />}
@@ -229,14 +229,14 @@ export default function PageMagang() {
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 classNames={{
+                  base: "max-w-xs",
                   label: "after:text-danger-primary text-xs text-text-secondary",
                   input: "focus:!border-primary-primary text-xs ",
                   inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
                 }}
-                className="w-64"
               />
 
-              <div className="flex xs:flex-col xs:justify-start xs:items-start md:flex-row md:justify-center md:items-center gap-2">
+              <div className="w-full flex xs:flex-col md:flex-row xs:justify-start md:justify-end xs:items-start md:items-center gap-2">
                 {" "}
                 {/* Filter */}
                 <Select
@@ -252,7 +252,7 @@ export default function PageMagang() {
                     setSelectedFilters(value);
                   }}
                   classNames={{
-                    base: "w-64",
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary ",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -286,7 +286,7 @@ export default function PageMagang() {
                   }}
                   selectorIcon={<Sort size={16} color="currentColor" className="text-text-secondary" />}
                   classNames={{
-                    base: "w-64",
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary ",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -308,7 +308,7 @@ export default function PageMagang() {
               </div>
             </section>
 
-            <section className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4  w-full">
+            <section className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2  w-full">
               {/* internship_type_id */}
               {selectedFilters.has("internship_type_id") && (
                 <Select
@@ -322,6 +322,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, internship_type_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -361,6 +362,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, ipk_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -412,6 +414,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, company_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -447,6 +450,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, city_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -486,6 +490,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, country_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -525,6 +530,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, education_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -564,6 +570,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, gender_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -603,6 +610,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, mode_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -642,6 +650,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, position_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -681,6 +690,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, program_study_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -720,6 +730,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, province_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -759,6 +770,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, religion_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",
@@ -798,6 +810,7 @@ export default function PageMagang() {
                     setFilters((prev) => ({ ...prev, semester_id: value }));
                   }}
                   classNames={{
+                    base: "max-w-xs",
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     trigger: "text-text-secondary hover:!border-primary-primary data-[focus=true]:border-primary-primary data-[open=true]:border-primary-primary ",
                     value: "text-xs",

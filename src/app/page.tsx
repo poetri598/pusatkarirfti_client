@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <>
       <div className="w-full min-h-screen flex justify-center items-center">
-        <Spinner label="Redirecting" labelColor="primary" variant="wave" classNames={{ label: "text-primary-primary mt-4", dots: "border-5 border-primary-primary" }} />
+        <Spinner label="Redirecting..." labelColor="primary" variant="wave" classNames={{ label: "text-primary-primary mt-4", dots: "border-5 border-primary-primary" }} />
       </div>
     </>
   );

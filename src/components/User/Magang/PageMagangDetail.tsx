@@ -337,7 +337,7 @@ export default function PageMagangDetail({ internship_slug }: { internship_slug:
         <TitleSection label="Lainnya" href="/magang" />
         {/* Card */}
         <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xs:gap-2 lg:gap-8">
-          {relatedInternships.length === 0 ? <p className="text-center py-8">Data belum tersedia</p> : relatedInternships.map((item) => <CardMagang key={item.internship_id} {...item} />)}
+          {relatedInternships.length === 0 ? <p className="text-start text-xs text-text-secondary">Data belum tersedia</p> : relatedInternships.map((item) => <CardMagang key={item.internship_id} {...item} />)}
         </div>
       </section>
     </main>

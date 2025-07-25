@@ -72,7 +72,7 @@ export default function EmailReset() {
           >
             <BreadcrumbItem href="/beranda">Beranda</BreadcrumbItem>
             <BreadcrumbItem href="/pengaturan">Pengaturan</BreadcrumbItem>
-            <BreadcrumbItem href="/pengaturan/email-reset" className="text-primary-primary">
+            <BreadcrumbItem href="/pengaturan/ubah-email" className="text-primary-primary">
               Ubah Email
             </BreadcrumbItem>
           </Breadcrumbs>
