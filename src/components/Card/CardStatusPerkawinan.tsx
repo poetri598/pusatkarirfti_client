@@ -89,7 +89,7 @@ export default function page(props: MaritalStatusItem) {
         <span className="text-xl font-bold">{marital_status_name}</span>
         <div className="flex items-center gap-1">
           {" "}
-          <Clock size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
+          <Clock size={20} color="currentColor" variant="Bold" className="text-primary-primary" />
           <Tooltip
             content={fullDate}
             placement="top"
