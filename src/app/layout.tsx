@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`font-jakarta }   
+        className={`font-jakarta bg-background-primary   
         `}
       >
         <Providers>{children}</Providers>
