@@ -230,7 +230,7 @@ export default function page() {
     if (user_birthdate) formData.append("user_birthdate", user_birthdate.toAbsoluteString());
     if (user_admission_date) formData.append("user_admission_date", user_admission_date.toAbsoluteString());
     if (user_graduation_date) formData.append("user_graduation_date", user_graduation_date.toAbsoluteString());
-    setUserDesc(user_desc);
+    formData.append("user_desc", user_desc);
     appendSingle(formData, "age_id", age_id);
     appendSingle(formData, "weight_id", weight_id);
     appendSingle(formData, "height_id", height_id);

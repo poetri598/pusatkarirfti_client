@@ -330,7 +330,6 @@ export default function PagePenggunaDetail({ user_name }: { user_name: string })
               labelPlacement="outside"
               value={user?.user_desc}
               type="text"
-              variant="bordered"
               classNames={{
                 label: "after:text-danger-primary text-xs text-text-secondary",
                 input: "focus:!border-primary-primary text-xs ",
