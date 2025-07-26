@@ -7,11 +7,11 @@ import { SearchNormal1 } from "iconsax-react";
 // Components
 import { Input, Image } from "@heroui/react";
 interface Props {
-  keyword: string;
-  setKeyword: (value: string) => void;
+  searchKeyword: string;
+  setSearchKeyword: (value: string) => void;
 }
 
-export default function SectionHeroUser({ keyword, setKeyword }: Props) {
+export default function SectionHeroUser({ searchKeyword, setSearchKeyword }: Props) {
   return (
     <section className="relative h-screen bg-hero-gradient content-center overflow-hidden">
       {/* Vectors & Images */}
@@ -48,11 +48,11 @@ export default function SectionHeroUser({ keyword, setKeyword }: Props) {
 
         {/* Search */}
         <Input
-          value={keyword}
-          onValueChange={setKeyword}
+          value={searchKeyword}
+          onValueChange={setSearchKeyword}
           endContent={<SearchNormal1 size={32} color="currentColor" className="text-primary-primary transition-colors hover:text-background-primary hover:bg-primary-primary rounded-medium p-2" />}
           placeholder="Masukkan kata kunci..."
-          type="text"
+          type="search"
           variant="bordered"
           classNames={{
             base: "xs:max-w-xs md:max-w-md bg-background-primary border-primary-primary hover:border-primary-primary focus:border-primary-primary rounded-medium",

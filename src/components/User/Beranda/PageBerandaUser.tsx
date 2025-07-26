@@ -21,8 +21,8 @@ export default function PageBerandaUser() {
     <>
       <main>
         {/* Section Hero */}
-        <SectionHero keyword={searchKeyword} setKeyword={setSearchKeyword} />
-        <SectionHasilPencarianUser keyword={searchKeyword} />
+        <SectionHero searchKeyword={searchKeyword} setSearchKeyword={setSearchKeyword} />
+        <SectionHasilPencarianUser searchKeyword={searchKeyword} />
 
         {/* Section Job */}
         <SectionLowonganPekerjaan />

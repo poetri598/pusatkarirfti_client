@@ -10,24 +10,27 @@ import { TrainingItem } from "@/types/training";
 import { searchTrainingsActive } from "@/services/training";
 
 interface Props {
-  keyword: string;
+  searchKeyword: string;
 }
 
-export default function SectionHasilPencarianUser({ keyword }: Props) {
+export default function SectionHasilPencarianUser({ searchKeyword }: Props) {
   const [trainings, setTrainings] = useState<TrainingItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!keyword.trim()) {
+      if (!searchKeyword) {
         setTrainings([]);
         setHasSearched(false);
         return;
       }
       setLoading(true);
       try {
-        const { success, data, error } = await searchTrainingsActive({ keyword });
+        const queryParams: Record<string, any> = {
+          ...(searchKeyword && { search: searchKeyword }),
+        };
+        const { success, data, error } = await searchTrainingsActive(queryParams);
         if (success) {
           setTrainings(data ?? []);
         } else {
@@ -43,15 +46,15 @@ export default function SectionHasilPencarianUser({ keyword }: Props) {
     };
 
     fetchData();
-  }, [keyword]);
+  }, [searchKeyword]);
 
-  if (!keyword.trim()) return null;
+  if (!searchKeyword) return null;
 
   return (
     <section className="px-4 py-8 flex flex-col gap-4">
       <div className="text-center flex flex-col gap-1">
         <span className="text-xs text-text-secondary">
-          Kata kunci: <span className="text-primary-primary font-medium">{keyword}</span>
+          Kata kunci: <span className="text-primary-primary font-medium">{searchKeyword}</span>
         </span>
         <span className="text-xs text-text-secondary">
           Kami menemukan <span className="font-bold text-primary-primary">{trainings.length}</span> pelatihan

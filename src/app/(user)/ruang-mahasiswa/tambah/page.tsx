@@ -178,7 +178,7 @@ export default function page() {
             {/* student_room_desc  */}
             <Textarea
               isRequired
-              label="Beritahu kami secara singkat tentang konseling Anda"
+              label="Beritahu kami apa yang ingin Anda bagikan"
               labelPlacement="outside"
               name="student_room_desc"
               value={student_room_desc}
