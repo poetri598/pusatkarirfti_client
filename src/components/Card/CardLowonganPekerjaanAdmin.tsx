@@ -17,7 +17,7 @@ import { JobItem } from "@/types/job";
 export default function page(props: JobItem) {
   const { job_id, job_slug, user_img, user_fullname, job_img, job_name, job_created_at, job_views } = props;
 
-  const relativeDate = job_created_at;
+  const relativeDate = getRelativeTimeRaw(job_created_at);
   const fullDate = getFullTimeRaw(job_created_at);
 
   return (
