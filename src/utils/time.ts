@@ -13,7 +13,8 @@ dayjs.locale("id");
 // getRelativeTimeRaw
 export function getRelativeTimeRaw(dateString: string): string {
   const now = dayjs();
-  const date = dayjs.tz(dateString, "YYYY-MM-DDTHH:mm:ss", "Asia/Jakarta");
+  // const date = dayjs.tz(dateString, "YYYY-MM-DDTHH:mm:ss", "Asia/Jakarta")
+  const date = dayjs.utc(dateString);
   return calculateRelative(date, now);
 }
 

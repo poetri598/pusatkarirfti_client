@@ -48,12 +48,10 @@ export default function CounselingTable() {
   }, [user]);
 
   const tableItems = data.map((item, index) => {
-    console.log("item.counseling_date:", item.counseling_date);
     const localDate = parseAbsoluteToLocal(item.counseling_date);
     const date = `${localDate.year}-${String(localDate.month).padStart(2, "0")}-${String(localDate.day).padStart(2, "0")}T${String(localDate.hour).padStart(2, "0")}:${String(localDate.minute).padStart(2, "0")}:${String(
       localDate.second
     ).padStart(2, "0")}.${String(localDate.millisecond).padStart(3, "0")}Z`;
-    console.log("Hasil local date :", date);
     return {
       key: item.counseling_id,
       no: index + 1,
