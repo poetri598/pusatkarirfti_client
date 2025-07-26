@@ -62,7 +62,7 @@ function calculateRelative(date: dayjs.Dayjs, now: dayjs.Dayjs): string {
 
 // getFullTimeRaw
 export function getFullTimeRaw(dateString: string): string {
-  return dayjs.utc(dateString).format("DD MMMM YYYY, HH:mm" + " WIB");
+  return dayjs.utc(dateString).tz("Asia/Jakarta").format("DD MMMM YYYY, HH:mm") + " WIB";
 }
 
 // getDateOnlyRaw
