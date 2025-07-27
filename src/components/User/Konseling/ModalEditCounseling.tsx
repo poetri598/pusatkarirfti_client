@@ -88,6 +88,18 @@ export default function ModalEditCounseling({ isOpen, onOpenChange, selectedItem
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" size="md" classNames={{ body: "w-full", footer: "w-full" }}>
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+          <Spinner
+            label="Loading..."
+            variant="wave"
+            classNames={{
+              label: "text-primary-primary mt-4",
+              dots: "border-5 border-primary-primary",
+            }}
+          />
+        </div>
+      )}
       <ModalContent>
         {(onClose) => (
           <Form onSubmit={handleSubmit}>
