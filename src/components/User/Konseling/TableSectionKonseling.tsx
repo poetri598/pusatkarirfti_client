@@ -26,6 +26,7 @@ export default function CounselingTable() {
   const { user } = useAuth();
   const [data, setData] = useState<CounselingItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -84,6 +85,7 @@ export default function CounselingTable() {
   const handleDelete = async (id: number) => {
     const confirm = await showConfirmationDialog();
     if (!confirm.isConfirmed) return;
+    setDeleteLoading(true);
     const result = await deleteCounselingById(id);
     if (result.success) {
       await showSuccessDialog();
@@ -91,6 +93,7 @@ export default function CounselingTable() {
     } else {
       await showErrorDialog(result.error || "Gagal menghapus data konseling.");
     }
+    setDeleteLoading(false);
   };
 
   if (!user?.user_id) {
@@ -102,6 +105,22 @@ export default function CounselingTable() {
   }
 
   if (loading) {
+    return (
+      <div className="w-full flex justify-center items-center py-8">
+        <Spinner
+          label="Sedang memuat data..."
+          labelColor="primary"
+          variant="dots"
+          classNames={{
+            label: "text-primary-primary mt-4",
+            dots: "border-5 border-primary-primary",
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (deleteLoading) {
     return (
       <div className="w-full flex justify-center items-center py-8">
         <Spinner
