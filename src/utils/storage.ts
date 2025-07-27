@@ -1,7 +1,10 @@
-export function getStorage() {
+export function getStorage(): Storage | null {
   if (typeof window === "undefined") return null;
 
-  return localStorage.getItem("user") ? localStorage : sessionStorage.getItem("user") ? sessionStorage : null;
+  if (sessionStorage.getItem("user")) return sessionStorage;
+  if (localStorage.getItem("user")) return localStorage;
+
+  return null;
 }
 
 export function saveUserData(access_token: string, user: any, remember: boolean) {

@@ -25,16 +25,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const storage = getStorage();
     const token = storage?.getItem("access_token");
     const userData = storage?.getItem("user");
+
     if (token && userData) {
       setAccessToken(token);
       setUser(JSON.parse(userData));
     }
-    setIsLoading(false);
-  }, []);
 
-  // ✅ Auto logout jika pakai sessionStorage dan tab ditutup
-  useEffect(() => {
-    const isSessionLogin = !!sessionStorage.getItem("user");
+    setIsLoading(false);
+
+    // ⏹️ Auto logout kalau login via sessionStorage dan tab ditutup
+    const isSessionLogin = sessionStorage.getItem("user") !== null;
     const handlePageHide = () => {
       if (isSessionLogin) {
         navigator.sendBeacon(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`);
