@@ -30,19 +30,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(JSON.parse(userData));
     }
     setIsLoading(false);
+  }, []);
 
-    // 🔁 Logout otomatis saat tab ditutup jika pakai sessionStorage
-    const handleUnload = () => {
-      const isSessionLogin = !!sessionStorage.getItem("user");
+  // ✅ Auto logout jika pakai sessionStorage dan tab ditutup
+  useEffect(() => {
+    const isSessionLogin = !!sessionStorage.getItem("user");
+    const handlePageHide = () => {
       if (isSessionLogin) {
         navigator.sendBeacon(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`);
         sessionStorage.removeItem("access_token");
         sessionStorage.removeItem("user");
       }
     };
-
-    window.addEventListener("unload", handleUnload);
-    return () => window.removeEventListener("unload", handleUnload);
+    window.addEventListener("pagehide", handlePageHide);
+    return () => {
+      window.removeEventListener("pagehide", handlePageHide);
+    };
   }, []);
 
   const login = async (username: string, password: string, remember: boolean): Promise<{ success: true } | { success: false; error: string }> => {
