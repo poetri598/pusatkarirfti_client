@@ -63,7 +63,7 @@ export default function ModalEditCounseling({ isOpen, onOpenChange, selectedItem
     }
   }, [selectedItem]);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmitModal = async (e: FormEvent) => {
     e.preventDefault();
     if (!selectedItem) return;
     const confirm = await showConfirmationDialog();
@@ -102,7 +102,7 @@ export default function ModalEditCounseling({ isOpen, onOpenChange, selectedItem
       )}
       <ModalContent>
         {(onClose) => (
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmitModal}>
             <ModalHeader className="text-lg text-primary-primary font-bold">Edit Data Konseling</ModalHeader>
             <ModalBody>
               {isLoadingCounselingTypes ? (
