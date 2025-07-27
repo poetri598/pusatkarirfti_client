@@ -30,7 +30,17 @@ export default function CounselingTable() {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isViewOpen, setIsViewOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false); // pisah dari isOpen
   const [selectedItem, setSelectedItem] = useState<CounselingItem | null>(null);
+
+  const openEditModal = (item: CounselingItem) => {
+    setSelectedItem(item);
+    setIsEditOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditOpen(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -181,7 +191,12 @@ export default function CounselingTable() {
       </Table>
 
       <ModalViewCounseling isOpen={isViewOpen} onOpenChange={() => setIsViewOpen(false)} selectedItem={selectedItem} />
-      <ModalEditCounseling isOpen={isOpen} onOpenChange={onOpenChange} selectedItem={selectedItem} />
+      <ModalEditCounseling
+        isOpen={isEditOpen}
+        onOpenChange={() => setIsEditOpen((prev) => !prev)} // tetap untuk kontrol internal HeroUI
+        onCloseModal={closeEditModal} // untuk digunakan saat submit sukses
+        selectedItem={selectedItem}
+      />
     </>
   );
 }
