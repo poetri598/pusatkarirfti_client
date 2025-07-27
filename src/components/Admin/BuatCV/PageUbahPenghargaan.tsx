@@ -7,13 +7,14 @@ import { AddCircle, Trash } from "iconsax-react";
 // Components
 import { Form, Breadcrumbs, BreadcrumbItem, Avatar, Button, Accordion, AccordionItem, ScrollShadow, Input, Select, SelectItem, Selection, Spinner, Switch, DatePicker } from "@heroui/react";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
+import { ZonedDateTime, now, getLocalTimeZone, parseAbsoluteToLocal } from "@internationalized/date";
 
 // Types
 import { CompanyItem } from "@/types/company";
 import { UserAchievementItem } from "@/types/userAchievement";
 interface UserAchievementInput {
   user_achievement_name: string;
-  user_achievement_date: string;
+  user_achievement_date: ZonedDateTime | null;
   company_id: number;
 }
 
@@ -24,14 +25,7 @@ import { getUserAchievementsByUsername, updateUserAchievementsByUsername } from 
 
 // Utils
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
-import { CalendarDate } from "@internationalized/date";
-
-function parseISOStringToCalendarDate(isoString: string | null): CalendarDate | null {
-  if (!isoString) return null;
-  const date = new Date(isoString);
-  if (isNaN(date.getTime())) return null;
-  return new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
-}
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function Page({ user_name }: { user_name: string }) {
   const router = useRouter();
@@ -65,7 +59,7 @@ export default function Page({ user_name }: { user_name: string }) {
       if (success && data) {
         const mapped: UserAchievementInput[] = data.map((achie: UserAchievementItem) => ({
           user_achievement_name: achie.user_achievement_name,
-          user_achievement_date: achie.user_achievement_date,
+          user_achievement_date: achie.user_achievement_date ? parseAbsoluteToLocal(achie.user_achievement_date) : null,
           company_id: achie.company_id,
         }));
 
@@ -82,7 +76,7 @@ export default function Page({ user_name }: { user_name: string }) {
 
   const defaultAchievement = (): UserAchievementInput => ({
     user_achievement_name: "",
-    user_achievement_date: "",
+    user_achievement_date: now(getLocalTimeZone()),
     company_id: 0,
   });
 
@@ -138,7 +132,7 @@ export default function Page({ user_name }: { user_name: string }) {
     formData.append("user_id", user_id.toString());
     achievements.forEach((achie, i) => {
       formData.append(`achievements[${i}][user_achievement_name]`, achie.user_achievement_name);
-      formData.append(`achievements[${i}][user_achievement_date]`, achie.user_achievement_date);
+      if (achie.user_achievement_date) formData.append(`achievements[${i}][user_achievement_date]`, formatZonedDateTime(achie.user_achievement_date));
       formData.append(`achievements[${i}][company_id]`, achie.company_id.toString());
     });
 
@@ -155,6 +149,19 @@ export default function Page({ user_name }: { user_name: string }) {
   return (
     <section className="w-full bg-background-primary py-8">
       <div className="w-full min-h-screen mx-auto flex flex-col gap-4 xs:p-0 md:p-8 bg-background-primary overflow-hidden">
+        {" "}
+        {loading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+            <Spinner
+              label="Loading..."
+              variant="wave"
+              classNames={{
+                label: "text-primary-primary mt-4",
+                dots: "border-5 border-primary-primary",
+              }}
+            />
+          </div>
+        )}
         {/* Breadcrumb */}
         <Breadcrumbs
           className="text-xs text-text-secondary"
@@ -170,7 +177,6 @@ export default function Page({ user_name }: { user_name: string }) {
             Ubah Penghargaan
           </BreadcrumbItem>
         </Breadcrumbs>
-
         <Accordion variant="splitted" className="gap-8" isCompact>
           <AccordionItem
             key="penghargaan"
@@ -335,10 +341,9 @@ export default function Page({ user_name }: { user_name: string }) {
                           name="user_achievement_date"
                           labelPlacement="outside"
                           variant="bordered"
-                          value={parseISOStringToCalendarDate(achie.user_achievement_date)}
+                          value={achie.user_achievement_date}
                           onChange={(val) => {
-                            const dateOnly = val?.toString() ?? "";
-                            handleChange(i, "user_achievement_date", dateOnly);
+                            handleChange(i, "user_achievement_date", val);
                           }}
                           classNames={{
                             label: "after:text-danger-primary text-xs",

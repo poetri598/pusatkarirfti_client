@@ -7,6 +7,7 @@ import { AddCircle, Trash } from "iconsax-react";
 // Components
 import { Form, Breadcrumbs, BreadcrumbItem, Avatar, Button, Accordion, AccordionItem, ScrollShadow, Input, Select, SelectItem, Selection, Spinner, Switch, DatePicker, NumberInput } from "@heroui/react";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
+import { ZonedDateTime, now, getLocalTimeZone, parseAbsoluteToLocal } from "@internationalized/date";
 
 // Types
 import { CompanyItem } from "@/types/company";
@@ -17,8 +18,8 @@ interface UserEducationInput {
   program_study_id: number;
   education_id: number;
   company_id: number;
-  user_education_admission_date: string;
-  user_education_graduation_date: string | null;
+  user_education_admission_date: ZonedDateTime | null;
+  user_education_graduation_date: ZonedDateTime | null;
   user_education_is_current: boolean;
   user_education_final_score: number;
 }
@@ -32,14 +33,7 @@ import { getUserEducationsByUsername, updateUserEducationsByUsername } from "@/s
 
 // Utils
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
-import { CalendarDate } from "@internationalized/date";
-
-function parseISOStringToCalendarDate(isoString: string | null): CalendarDate | null {
-  if (!isoString) return null;
-  const date = new Date(isoString);
-  if (isNaN(date.getTime())) return null;
-  return new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
-}
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function Page({ user_name }: { user_name: string }) {
   const router = useRouter();
@@ -91,8 +85,8 @@ export default function Page({ user_name }: { user_name: string }) {
           program_study_id: edu.program_study_id,
           education_id: edu.education_id,
           company_id: edu.company_id,
-          user_education_admission_date: edu.user_education_admission_date,
-          user_education_graduation_date: edu.user_education_graduation_date || "",
+          user_education_admission_date: edu.user_education_admission_date ? parseAbsoluteToLocal(edu.user_education_admission_date) : null,
+          user_education_graduation_date: edu.user_education_graduation_date ? parseAbsoluteToLocal(edu.user_education_graduation_date) : null,
           user_education_is_current: Boolean(edu.user_education_is_current),
           user_education_final_score: edu.user_education_final_score,
         }));
@@ -112,8 +106,8 @@ export default function Page({ user_name }: { user_name: string }) {
     program_study_id: 0,
     education_id: 0,
     company_id: 0,
-    user_education_admission_date: "",
-    user_education_graduation_date: "",
+    user_education_admission_date: now(getLocalTimeZone()),
+    user_education_graduation_date: null,
     user_education_is_current: false,
     user_education_final_score: 0,
   });
@@ -195,8 +189,8 @@ export default function Page({ user_name }: { user_name: string }) {
       formData.append(`educations[${i}][education_id]`, edu.education_id.toString());
       formData.append(`educations[${i}][company_id]`, edu.company_id.toString());
       formData.append(`educations[${i}][user_education_final_score]`, edu.user_education_final_score.toString());
-      formData.append(`educations[${i}][user_education_admission_date]`, edu.user_education_admission_date);
-      formData.append(`educations[${i}][user_education_graduation_date]`, edu.user_education_graduation_date || "");
+      if (edu.user_education_admission_date) formData.append(`educations[${i}][user_education_admission_date]`, formatZonedDateTime(edu.user_education_admission_date));
+      if (edu.user_education_graduation_date) formData.append(`educations[${i}][user_education_graduation_date]`, formatZonedDateTime(edu.user_education_graduation_date));
       formData.append(`educations[${i}][user_education_is_current]`, edu.user_education_is_current ? "1" : "0");
     });
 
@@ -213,6 +207,19 @@ export default function Page({ user_name }: { user_name: string }) {
   return (
     <section className="w-full bg-background-primary py-8">
       <div className="w-full min-h-screen mx-auto flex flex-col gap-4 xs:p-0 md:p-8 bg-background-primary overflow-hidden">
+        {" "}
+        {loading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+            <Spinner
+              label="Loading..."
+              variant="wave"
+              classNames={{
+                label: "text-primary-primary mt-4",
+                dots: "border-5 border-primary-primary",
+              }}
+            />
+          </div>
+        )}
         {/* Breadcrumb */}
         <Breadcrumbs
           className="text-xs text-text-secondary"
@@ -228,7 +235,6 @@ export default function Page({ user_name }: { user_name: string }) {
             Ubah Riwayat Pendidikan
           </BreadcrumbItem>
         </Breadcrumbs>
-
         <Accordion variant="splitted" className="gap-8" isCompact>
           <AccordionItem
             key="riwayat-pendidikan"
@@ -553,10 +559,9 @@ export default function Page({ user_name }: { user_name: string }) {
                             name="user_education_admission_date"
                             labelPlacement="outside"
                             variant="bordered"
-                            value={parseISOStringToCalendarDate(edu.user_education_admission_date)}
+                            value={edu.user_education_admission_date}
                             onChange={(val) => {
-                              const dateOnly = val?.toString() ?? "";
-                              handleChange(i, "user_education_admission_date", dateOnly);
+                              handleChange(i, "user_education_admission_date", val);
                             }}
                             classNames={{
                               label: "after:text-danger-primary text-xs",
@@ -578,10 +583,9 @@ export default function Page({ user_name }: { user_name: string }) {
                             labelPlacement="outside"
                             variant="bordered"
                             isDisabled={edu.user_education_is_current}
-                            value={parseISOStringToCalendarDate(edu.user_education_graduation_date)}
+                            value={edu.user_education_graduation_date}
                             onChange={(val) => {
-                              const dateOnly = val?.toString() ?? "";
-                              handleChange(i, "user_education_graduation_date", dateOnly);
+                              handleChange(i, "user_education_graduation_date", val);
                             }}
                             classNames={{
                               label: "after:text-danger-primary text-xs",

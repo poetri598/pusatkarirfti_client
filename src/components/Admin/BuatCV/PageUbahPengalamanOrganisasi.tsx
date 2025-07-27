@@ -7,6 +7,7 @@ import { AddCircle, Trash } from "iconsax-react";
 // Components
 import { Form, Breadcrumbs, BreadcrumbItem, Avatar, Button, Accordion, AccordionItem, ScrollShadow, Input, Select, SelectItem, Selection, Spinner, Switch, DatePicker } from "@heroui/react";
 import { showConfirmationDialog, showSuccessDialog, showErrorDialog } from "@/components/Custom/AlertButton";
+import { ZonedDateTime, now, getLocalTimeZone, parseAbsoluteToLocal } from "@internationalized/date";
 
 // Types
 import { CompanyItem } from "@/types/company";
@@ -15,8 +16,8 @@ import { UserOrganizationExperienceItem } from "@/types/userOrganizationExperien
 interface OrganizationExperienceInput {
   company_id: number;
   position_id: number;
-  user_organization_experience_start_date: string;
-  user_organization_experience_end_date: string;
+  user_organization_experience_start_date: ZonedDateTime | null;
+  user_organization_experience_end_date: ZonedDateTime | null;
   user_organization_experience_is_current: boolean;
   user_organization_experience_descriptions: string[];
 }
@@ -29,14 +30,7 @@ import { getOrganizationExperiencesByUsername, updateOrganizationExperiencesByUs
 
 // Utils
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
-import { CalendarDate } from "@internationalized/date";
-
-function parseISOStringToCalendarDate(isoString: string | null): CalendarDate | null {
-  if (!isoString) return null;
-  const date = new Date(isoString);
-  if (isNaN(date.getTime())) return null;
-  return new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
-}
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function Page({ user_name }: { user_name: string }) {
   const router = useRouter();
@@ -78,8 +72,8 @@ export default function Page({ user_name }: { user_name: string }) {
         const mapped: OrganizationExperienceInput[] = data.map((exp: UserOrganizationExperienceItem) => ({
           company_id: exp.company_id,
           position_id: exp.position_id,
-          user_organization_experience_start_date: exp.user_organization_experience_start_date,
-          user_organization_experience_end_date: exp.user_organization_experience_end_date || "",
+          user_organization_experience_start_date: exp.user_organization_experience_start_date ? parseAbsoluteToLocal(exp.user_organization_experience_start_date) : null,
+          user_organization_experience_end_date: exp.user_organization_experience_end_date ? parseAbsoluteToLocal(exp.user_organization_experience_end_date) : null,
           user_organization_experience_is_current: Boolean(exp.user_organization_experience_is_current),
           user_organization_experience_descriptions:
             typeof exp.user_organization_experience_descriptions === "string"
@@ -101,8 +95,8 @@ export default function Page({ user_name }: { user_name: string }) {
   const defaultExperience = (): OrganizationExperienceInput => ({
     company_id: 0,
     position_id: 0,
-    user_organization_experience_start_date: "",
-    user_organization_experience_end_date: "",
+    user_organization_experience_start_date: now(getLocalTimeZone()),
+    user_organization_experience_end_date: null,
     user_organization_experience_is_current: false,
     user_organization_experience_descriptions: [""],
   });
@@ -200,8 +194,8 @@ export default function Page({ user_name }: { user_name: string }) {
     experiences.forEach((exp, i) => {
       formData.append(`experiences[${i}][company_id]`, exp.company_id.toString());
       formData.append(`experiences[${i}][position_id]`, exp.position_id.toString());
-      formData.append(`experiences[${i}][user_organization_experience_start_date]`, exp.user_organization_experience_start_date);
-      formData.append(`experiences[${i}][user_organization_experience_end_date]`, exp.user_organization_experience_end_date);
+      if (exp.user_organization_experience_start_date) formData.append(`experiences[${i}][user_organization_experience_start_date]`, formatZonedDateTime(exp.user_organization_experience_start_date));
+      if (exp.user_organization_experience_end_date) formData.append(`experiences[${i}][user_organization_experience_end_date]`, formatZonedDateTime(exp.user_organization_experience_end_date));
       formData.append(`experiences[${i}][user_organization_experience_is_current]`, exp.user_organization_experience_is_current ? "1" : "0");
       exp.user_organization_experience_descriptions.forEach((desc, j) => {
         formData.append(`experiences[${i}][user_organization_experience_descriptions][${j}]`, desc);
@@ -221,6 +215,19 @@ export default function Page({ user_name }: { user_name: string }) {
   return (
     <section className="w-full bg-background-primary py-8">
       <div className="w-full min-h-screen mx-auto flex flex-col gap-4 xs:p-0 md:p-8 bg-background-primary overflow-hidden">
+        {" "}
+        {loading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+            <Spinner
+              label="Loading..."
+              variant="wave"
+              classNames={{
+                label: "text-primary-primary mt-4",
+                dots: "border-5 border-primary-primary",
+              }}
+            />
+          </div>
+        )}
         {/* Breadcrumb */}
         <Breadcrumbs
           className="text-xs text-text-secondary"
@@ -236,7 +243,6 @@ export default function Page({ user_name }: { user_name: string }) {
             Ubah Pengalaman Organisasi
           </BreadcrumbItem>
         </Breadcrumbs>
-
         <Accordion variant="splitted" className="gap-8" isCompact>
           <AccordionItem
             key="pengalaman_organisasi"
@@ -520,10 +526,9 @@ export default function Page({ user_name }: { user_name: string }) {
                             name="user_organization_experience_start_date"
                             labelPlacement="outside"
                             variant="bordered"
-                            value={parseISOStringToCalendarDate(exp.user_organization_experience_start_date)}
+                            value={exp.user_organization_experience_start_date}
                             onChange={(val) => {
-                              const dateOnly = val?.toString() ?? "";
-                              handleChange(i, "user_organization_experience_start_date", dateOnly);
+                              handleChange(i, "user_organization_experience_start_date", val);
                             }}
                             classNames={{
                               label: "after:text-danger-primary text-xs",
@@ -545,10 +550,9 @@ export default function Page({ user_name }: { user_name: string }) {
                             labelPlacement="outside"
                             variant="bordered"
                             isDisabled={exp.user_organization_experience_is_current}
-                            value={parseISOStringToCalendarDate(exp.user_organization_experience_end_date)}
+                            value={exp.user_organization_experience_end_date}
                             onChange={(val) => {
-                              const dateOnly = val?.toString() ?? "";
-                              handleChange(i, "user_organization_experience_end_date", dateOnly);
+                              handleChange(i, "user_organization_experience_end_date", val);
                             }}
                             classNames={{
                               label: "after:text-danger-primary text-xs",

@@ -144,6 +144,19 @@ export default function Page({ user_name }: { user_name: string }) {
   return (
     <section className="w-full bg-background-primary py-8">
       <div className="w-full min-h-screen mx-auto flex flex-col gap-4 xs:p-0 md:p-8 bg-background-primary overflow-hidden">
+        {" "}
+        {loading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+            <Spinner
+              label="Loading..."
+              variant="wave"
+              classNames={{
+                label: "text-primary-primary mt-4",
+                dots: "border-5 border-primary-primary",
+              }}
+            />
+          </div>
+        )}
         {/* Breadcrumb */}
         <Breadcrumbs
           className="text-xs text-text-secondary"
@@ -159,7 +172,6 @@ export default function Page({ user_name }: { user_name: string }) {
             Ubah Keahlian
           </BreadcrumbItem>
         </Breadcrumbs>
-
         <Accordion variant="splitted" className="gap-8" isCompact>
           <AccordionItem
             key="keahlian"

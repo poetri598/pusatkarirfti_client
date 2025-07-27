@@ -9,7 +9,7 @@ export interface UserWorkExperienceDescription {
 export interface UserWorkExperienceItem {
   user_work_experience_id: number;
   user_work_experience_start_date: string;
-  user_work_experience_end_date: string | null;
+  user_work_experience_end_date: string;
   user_work_experience_is_current: boolean;
   user_work_experience_created_at: string;
   user_work_experience_updated_at: string;
