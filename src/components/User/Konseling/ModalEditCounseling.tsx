@@ -24,11 +24,10 @@ import { formatZonedDateTime } from "@/utils/time";
 interface ModalEditCounselingProps {
   isOpen: boolean;
   onOpenChange: () => void;
-  onCloseModal: () => void;
   selectedItem: CounselingItem | null;
 }
 
-export default function ModalEditCounseling({ isOpen, onOpenChange, onCloseModal, selectedItem }: ModalEditCounselingProps) {
+export default function ModalEditCounseling({ isOpen, onOpenChange, selectedItem }: ModalEditCounselingProps) {
   // Counseling types
   const [counselingTypes, setCounselingTypes] = useState<CounselingTypeItem[]>([]);
   const [counseling_type_id, setCounselingTypeId] = useState<Selection>(new Set([]));
@@ -79,7 +78,7 @@ export default function ModalEditCounseling({ isOpen, onOpenChange, onCloseModal
     const result = await updateCounselingById(selectedItem.counseling_id, formData);
     if (result.success) {
       await showSuccessDialog();
-      onCloseModal(); // ✅ ganti ini
+      onOpenChange();
       window.location.reload();
     } else {
       await showErrorDialog(result.error || "Gagal memperbarui data.");
