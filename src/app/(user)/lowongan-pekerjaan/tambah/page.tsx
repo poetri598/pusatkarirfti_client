@@ -58,7 +58,7 @@ import { createJob } from "@/services/job";
 import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
-import { formatZonedDateTimeToMySQL } from "@/utils/time";
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function page() {
   const router = useRouter();
@@ -237,10 +237,8 @@ export default function page() {
     formData.append("job_salary_max", String(job_salary_max));
     formData.append("job_location", job_location);
     formData.append("job_link", job_link);
-    // if (job_open_date) formData.append("job_open_date", job_open_date.toAbsoluteString());
-    // if (job_close_date) formData.append("job_close_date", job_close_date.toAbsoluteString());
-    if (job_open_date) formData.append("job_open_date", formatZonedDateTimeToMySQL(job_open_date));
-    if (job_close_date) formData.append("job_close_date", formatZonedDateTimeToMySQL(job_close_date));
+    if (job_open_date) formData.append("job_open_date", formatZonedDateTime(job_open_date));
+    if (job_close_date) formData.append("job_close_date", formatZonedDateTime(job_close_date));
     appendSingle(formData, "age_min_id", age_min_id);
     appendSingle(formData, "age_max_id", age_max_id);
     appendSingle(formData, "weight_min_id", weight_min_id);

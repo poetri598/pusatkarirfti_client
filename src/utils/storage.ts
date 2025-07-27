@@ -1,4 +1,3 @@
-// utils/storage.ts
 export function getStorage() {
   if (typeof window === "undefined") return null;
 

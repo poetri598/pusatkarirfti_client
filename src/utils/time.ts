@@ -3,7 +3,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/id";
-import { ZonedDateTime } from "@internationalized/date";
+import { ZonedDateTime, fromDate } from "@internationalized/date";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -13,7 +13,6 @@ dayjs.locale("id");
 // getRelativeTimeRaw
 export function getRelativeTimeRaw(dateString: string): string {
   const now = dayjs();
-  // const date = dayjs.tz(dateString, "YYYY-MM-DDTHH:mm:ss", "Asia/Jakarta")
   const date = dayjs.utc(dateString);
   return calculateRelative(date, now);
 }
@@ -104,12 +103,9 @@ export function getDateOnly(dateString: string, useUKFormat: boolean = false): s
   return dayjs.utc(dateString).locale("en").format(format);
 }
 
-export function formatZonedDateTimeToMySQL(zdt: ZonedDateTime): string {
-  const year = zdt.year;
-  const month = String(zdt.month).padStart(2, "0");
-  const day = String(zdt.day).padStart(2, "0");
-  const hour = String(zdt.hour).padStart(2, "0");
-  const minute = String(zdt.minute).padStart(2, "0");
-  const second = String(zdt.second).padStart(2, "0");
-  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+export function formatZonedDateTime(zdt: ZonedDateTime): string {
+  const jsDate = zdt.toDate();
+  const utcZDT = fromDate(jsDate, "UTC");
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${utcZDT.year}-${pad(utcZDT.month)}-${pad(utcZDT.day)} ${pad(utcZDT.hour)}:${pad(utcZDT.minute)}:${pad(utcZDT.second)}`;
 }

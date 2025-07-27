@@ -48,14 +48,10 @@ export default function CounselingTable() {
   }, [user]);
 
   const tableItems = data.map((item, index) => {
-    const localDate = parseAbsoluteToLocal(item.counseling_date);
-    const date = `${localDate.year}-${String(localDate.month).padStart(2, "0")}-${String(localDate.day).padStart(2, "0")}T${String(localDate.hour).padStart(2, "0")}:${String(localDate.minute).padStart(2, "0")}:${String(
-      localDate.second
-    ).padStart(2, "0")}.${String(localDate.millisecond).padStart(3, "0")}Z`;
     return {
       key: item.counseling_id,
       no: index + 1,
-      date: getFullTimeRaw(date),
+      date: getFullTimeRaw(item.counseling_date),
       type: item.counseling_type_name,
       is_read: item.counseling_is_read ? (
         <Chip className="text-xs font-medium px-3 py-0.5 rounded-full bg-primary-primary text-white" variant="flat" size="sm">

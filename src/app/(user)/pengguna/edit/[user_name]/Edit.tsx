@@ -53,6 +53,7 @@ import { updateUserById, getUserByUsername } from "@/services/user";
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 import { appendSingle } from "@/utils/formDataHelpers";
 import { parseAbsoluteToLocal, ZonedDateTime } from "@internationalized/date";
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function Edit({ user_name }: { user_name: string }) {
   const router = useRouter();
@@ -278,9 +279,9 @@ export default function Edit({ user_name }: { user_name: string }) {
     formData.append("user_phone", user_phone);
     formData.append("user_email", user_email);
     formData.append("user_password", user_password);
-    if (user_birthdate) formData.append("user_birthdate", user_birthdate.toAbsoluteString());
-    if (user_admission_date) formData.append("user_admission_date", user_admission_date.toAbsoluteString());
-    if (user_graduation_date) formData.append("user_graduation_date", user_graduation_date.toAbsoluteString());
+    if (user_birthdate) formData.append("user_birthdate", formatZonedDateTime(user_birthdate));
+    if (user_admission_date) formData.append("user_admission_date", formatZonedDateTime(user_admission_date));
+    if (user_graduation_date) formData.append("user_graduation_date", formatZonedDateTime(user_graduation_date));
     formData.append("user_desc", user_desc);
     appendSingle(formData, "age_id", age_id);
     appendSingle(formData, "weight_id", weight_id);

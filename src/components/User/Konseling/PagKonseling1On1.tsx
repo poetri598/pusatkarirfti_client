@@ -27,6 +27,7 @@ import { createCounseling } from "@/services/counseling";
 // Utils
 import { appendSingle } from "@/utils/formDataHelpers";
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function Counseling1On1() {
   const { user } = useAuth();
@@ -80,7 +81,7 @@ export default function Counseling1On1() {
     setLoading(true);
     const formData = new FormData();
     formData.append("user_id", String(user?.user_id));
-    if (counseling_date) formData.append("counseling_date", counseling_date.toAbsoluteString());
+    if (counseling_date) formData.append("counseling_date", formatZonedDateTime(counseling_date));
     formData.append("counseling_desc", counseling_desc);
     formData.append("counseling_is_read", String(Number(counseling_is_read)));
     appendSingle(formData, "counseling_type_id", counseling_type_id);

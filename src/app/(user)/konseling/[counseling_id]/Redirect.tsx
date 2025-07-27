@@ -6,6 +6,5 @@ import PageNotFound from "@/components/Custom/PageNotFound";
 export default function Redirect({ counseling_id }: { counseling_id: number }) {
   const { user } = useAuth();
 
-  // ✅ Tambahkan return JSX di sini
   return user?.role_name === "Admin" ? <PageKonselingDetailAdmin counseling_id={counseling_id} /> : <PageNotFound />;
 }

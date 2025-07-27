@@ -57,6 +57,7 @@ import { updateJobById, getJobBySlug } from "@/services/job";
 // Utils
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function Edit({ job_slug }: { job_slug: string }) {
   const router = useRouter();
@@ -273,8 +274,8 @@ export default function Edit({ job_slug }: { job_slug: string }) {
     formData.append("job_salary_max", String(job_salary_max));
     formData.append("job_location", job_location);
     formData.append("job_link", job_link);
-    if (job_open_date) formData.append("job_open_date", job_open_date.toAbsoluteString());
-    if (job_close_date) formData.append("job_close_date", job_close_date.toAbsoluteString());
+    if (job_open_date) formData.append("job_open_date", formatZonedDateTime(job_open_date));
+    if (job_close_date) formData.append("job_close_date", formatZonedDateTime(job_close_date));
     appendSingle(formData, "age_min_id", age_min_id);
     appendSingle(formData, "age_max_id", age_max_id);
     appendSingle(formData, "weight_min_id", weight_min_id);

@@ -23,11 +23,6 @@ export default function page(props: CounselingItem) {
   const relativeDate = getRelativeTimeRaw(counseling_created_at);
   const fullDate = getFullTimeRaw(counseling_created_at);
 
-  const localDate = parseAbsoluteToLocal(counseling_date);
-  const parsed_counseling_date = `${localDate.year}-${String(localDate.month).padStart(2, "0")}-${String(localDate.day).padStart(2, "0")}T${String(localDate.hour).padStart(2, "0")}:${String(localDate.minute).padStart(2, "0")}:${String(
-    localDate.second
-  ).padStart(2, "0")}.${String(localDate.millisecond).padStart(3, "0")}Z`;
-
   return (
     <>
       <div className="relative w-full flex flex-col gap-4 p-4 mb-8 border border-default-200 rounded-medium hover:bg-default-200">
@@ -112,13 +107,13 @@ export default function page(props: CounselingItem) {
             {" "}
             <Calendar size={20} color="currentColor" variant="Bulk" className="text-primary-primary" />
             <Tooltip
-              content={getRelativeTimeRaw(parsed_counseling_date)}
+              content={getRelativeTimeRaw(counseling_date)}
               placement="top"
               classNames={{
                 content: "text-xs text-background-primary bg-primary-primary",
               }}
             >
-              <span className="text-xs text-text-secondary cursor-help">{getFullTimeRaw(parsed_counseling_date)}</span>
+              <span className="text-xs text-text-secondary cursor-help">{getFullTimeRaw(counseling_date)}</span>
             </Tooltip>
           </div>
           <div className="flex items-center gap-1">

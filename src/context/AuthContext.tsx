@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const storage = getStorage();
     const token = storage?.getItem("access_token");
     const userData = storage?.getItem("user");
-
     if (token && userData) {
       setAccessToken(token);
       setUser(JSON.parse(userData));

@@ -167,16 +167,11 @@ export default function PagePelatihan() {
   ];
 
   const tableItems = currentItems.map((counseling, index) => {
-    const localDate = parseAbsoluteToLocal(counseling.counseling_date);
-    const counseling_date = `${localDate.year}-${String(localDate.month).padStart(2, "0")}-${String(localDate.day).padStart(2, "0")}T${String(localDate.hour).padStart(2, "0")}:${String(localDate.minute).padStart(2, "0")}:${String(
-      localDate.second
-    ).padStart(2, "0")}.${String(localDate.millisecond).padStart(3, "0")}Z`;
-
     return {
       key: counseling.counseling_id,
       no: index + 1,
       user_fullname: counseling.user_fullname.length > 30 ? counseling.user_fullname.slice(0, 30) + "..." : counseling.user_fullname,
-      counseling_date: getFullTimeRaw(counseling_date),
+      counseling_date: getFullTimeRaw(counseling.counseling_date),
       status_id:
         counseling.status_id !== 1 ? (
           <Chip className="text-xs font-medium px-3 py-0.5 rounded-full bg-primary-primary text-white" variant="flat" size="sm">

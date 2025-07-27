@@ -6,9 +6,5 @@ import PageMagangDetailUser from "@/components/User/Magang/PageMagangDetail";
 export default function Redirect({ internship_slug }: { internship_slug: string }) {
   const { user } = useAuth();
 
-  if (user?.role_name === "Admin") {
-    return <PageMagangDetailAdmin internship_slug={internship_slug} />;
-  }
-
-  return <PageMagangDetailUser internship_slug={internship_slug} />;
+  return user?.role_name === "Admin" ? <PageMagangDetailAdmin internship_slug={internship_slug} /> : <PageMagangDetailUser internship_slug={internship_slug} />;
 }

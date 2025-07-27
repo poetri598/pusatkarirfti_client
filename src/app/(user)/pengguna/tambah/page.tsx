@@ -53,6 +53,7 @@ import { createUser } from "@/services/user";
 import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 import { appendSingle } from "@/utils/formDataHelpers";
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function page() {
   const router = useRouter();
@@ -227,9 +228,9 @@ export default function page() {
     formData.append("user_email", user_email);
     formData.append("user_password", user_password);
     formData.append("user_password_confirm", user_password_confirm);
-    if (user_birthdate) formData.append("user_birthdate", user_birthdate.toAbsoluteString());
-    if (user_admission_date) formData.append("user_admission_date", user_admission_date.toAbsoluteString());
-    if (user_graduation_date) formData.append("user_graduation_date", user_graduation_date.toAbsoluteString());
+    if (user_birthdate) formData.append("user_birthdate", formatZonedDateTime(user_birthdate));
+    if (user_admission_date) formData.append("user_admission_date", formatZonedDateTime(user_admission_date));
+    if (user_graduation_date) formData.append("user_graduation_date", formatZonedDateTime(user_graduation_date));
     formData.append("user_desc", user_desc);
     appendSingle(formData, "age_id", age_id);
     appendSingle(formData, "weight_id", weight_id);

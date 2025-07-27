@@ -194,8 +194,8 @@ export default function PageMagangDetail({ internship_slug }: { internship_slug:
 
               {/* IPK */}
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
-                <span className="text-xs font-bold text-primary-primary">IPK Minimal</span>
-                <span className="text-xs text-text-secondary">{internship?.ipk_no}</span>
+                <span className="text-xs font-bold text-primary-primary">Minimal IPK</span>
+                <span className="text-xs text-text-secondary">{internship?.ipk_no === "0.00" ? "Tidak ada informasi" : internship?.ipk_no}</span>
               </div>
 
               {/* Type */}

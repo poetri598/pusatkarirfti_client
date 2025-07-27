@@ -23,17 +23,13 @@ api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-
     // Jangan refresh token jika di /auth/login atau /auth/refresh
     const isAuthEndpoint = originalRequest.url?.includes("/auth/login") || originalRequest.url?.includes("/auth/refresh");
-
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint && typeof window !== "undefined") {
       originalRequest._retry = true;
-
       try {
         const res = await api.post("/auth/refresh");
         const newToken = res.data?.data?.access_token;
-
         if (newToken) {
           const storage = getStorage();
           storage?.setItem("access_token", newToken);
@@ -46,7 +42,6 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );

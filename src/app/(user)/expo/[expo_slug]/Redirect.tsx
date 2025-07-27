@@ -6,9 +6,5 @@ import PageExpoDetailUser from "@/components/User/Expo/PageExpoDetail";
 export default function Redirect({ expo_slug }: { expo_slug: string }) {
   const { user } = useAuth();
 
-  if (user?.role_name === "Admin") {
-    return <PageExpoDetailAdmin expo_slug={expo_slug} />;
-  }
-
-  return <PageExpoDetailUser expo_slug={expo_slug} />;
+  return user?.role_name === "Admin" ? <PageExpoDetailAdmin expo_slug={expo_slug} /> : <PageExpoDetailUser expo_slug={expo_slug} />;
 }

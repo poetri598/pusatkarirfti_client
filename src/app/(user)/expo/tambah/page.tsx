@@ -40,9 +40,10 @@ import { getProgramStudyAll } from "@/services/programStudy";
 import { getProvinceAll } from "@/services/province";
 
 // Utils
-import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
+import { ZonedDateTime, now, getLocalTimeZone, parseAbsolute, parseAbsoluteToLocal } from "@internationalized/date";
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function page() {
   const router = useRouter();
@@ -167,9 +168,9 @@ export default function page() {
     formData.append("expo_price", String(expo_price));
     formData.append("expo_location", expo_location);
     formData.append("expo_link", expo_link);
-    if (expo_date) formData.append("expo_date", expo_date.toAbsoluteString());
-    if (expo_open_date) formData.append("expo_open_date", expo_open_date.toAbsoluteString());
-    if (expo_close_date) formData.append("expo_close_date", expo_close_date.toAbsoluteString());
+    if (expo_date) formData.append("expo_date", formatZonedDateTime(expo_date));
+    if (expo_open_date) formData.append("expo_open_date", formatZonedDateTime(expo_open_date));
+    if (expo_close_date) formData.append("expo_close_date", formatZonedDateTime(expo_close_date));
     formData.append("user_id", String(user?.user_id));
     appendSingle(formData, "status_id", status_id);
     appendMultiple(formData, "city_ids", city_ids);
@@ -687,7 +688,8 @@ export default function page() {
             ) : (
               <Select
                 isRequired
-                label="Pilih posisi expo"
+                label="Pilih posisi/jabatan yang dibuka"
+                placeholder="Pilih posisi/jabatan yang dibuka"
                 labelPlacement="outside"
                 variant="bordered"
                 name="position_ids"
@@ -744,6 +746,7 @@ export default function page() {
                 isMultiline={true}
                 items={companies}
                 label="Pilih perusahaan penyelenggara"
+                placeholder="Pilih perusahaan penyelenggara"
                 labelPlacement="outside"
                 variant="bordered"
                 name="company_ids"

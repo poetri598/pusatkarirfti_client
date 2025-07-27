@@ -21,12 +21,13 @@ import { createCounseling } from "@/services/counseling";
 // Utils
 import { appendSingle } from "@/utils/formDataHelpers";
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function page() {
   const router = useRouter();
   // counseling Type
   const [counselingTypes, setCounselingTypes] = useState<CounselingTypeItem[]>([]);
-  const [counseling_type_id, setCounselingTypeId] = useState<Selection>(new Set(["1"]));
+  const [counseling_type_id, setCounselingTypeId] = useState<Selection>(new Set([]));
   const [isLoadingCounselingTypes, setIsLoadingCounselingTypes] = useState(true);
   const [apiErrorCounselingTypes, setApiErrorCounselingTypes] = useState<string | null>(null);
   // users
@@ -65,7 +66,7 @@ export default function page() {
     if (!confirm.isConfirmed) return;
     setLoading(true);
     const formData = new FormData();
-    if (counseling_date) formData.append("counseling_date", counseling_date.toAbsoluteString());
+    if (counseling_date) formData.append("counseling_date", formatZonedDateTime(counseling_date));
     formData.append("counseling_desc", counseling_desc);
     formData.append("counseling_is_read", String(Number(counseling_is_read)));
     appendSingle(formData, "user_id", user_id);
@@ -124,6 +125,7 @@ export default function page() {
                 isRequired
                 isMultiline={true}
                 items={users}
+                placeholder="Pilih nama peserta"
                 label="Pilih nama peserta"
                 labelPlacement="outside"
                 variant="bordered"

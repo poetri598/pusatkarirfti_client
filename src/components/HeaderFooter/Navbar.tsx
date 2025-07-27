@@ -45,7 +45,7 @@ export default function NavbarApp() {
   const isCareerActive = career.some((item) => pathname.startsWith(item.href));
   const isAboutUsActive = about_us.some((item) => pathname.startsWith(item.href));
 
-  const { user, logout } = useAuth(); // gunakan useAuth
+  const { user, logout } = useAuth();
 
   const router = useRouter();
 

@@ -137,49 +137,43 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
               {/* Age */}
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
                 <span className="text-xs font-bold text-primary-primary">Usia</span>
-                {job?.age_min_no === 0 && job?.age_max_no === 0 ? (
-                  <span className="text-xs text-text-secondary">Tidak ada persyaratan</span>
-                ) : (
-                  <span className="text-xs text-text-secondary">
-                    {job?.age_min_no} tahun - {job?.age_max_no} tahun
-                  </span>
-                )}
+                <span className="text-xs text-text-secondary">
+                  {job?.age_min_no === 0 && job?.age_max_no === 0
+                    ? "Tidak ada informasi"
+                    : `Minimal ${job?.age_min_no === 0 ? "tidak ada informasi" : `${job?.age_min_no} tahun`}, Maksimal ${job?.age_max_no === 0 ? "tidak ada informasi" : `${job?.age_max_no} tahun`}`}
+                </span>
               </div>
 
               {/* Height */}
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
                 <span className="text-xs font-bold text-primary-primary">Tinggi Badan</span>
-                {job?.height_min_no === 0 && job?.height_max_no === 0 ? (
-                  <span className="text-xs text-text-secondary">Tidak ada persyaratan</span>
-                ) : (
-                  <span className="text-xs text-text-secondary">
-                    {job?.height_min_no} tahun - {job?.height_max_no} tahun
-                  </span>
-                )}
+                <span className="text-xs text-text-secondary">
+                  {job?.height_min_no === 0 && job?.height_max_no === 0
+                    ? "Tidak ada informasi"
+                    : `Minimal ${job?.height_min_no === 0 ? "tidak ada informasi" : `${job?.height_min_no} cm`}, Maksimal ${job?.height_max_no === 0 ? "tidak ada informasi" : `${job?.height_max_no} cm`}`}
+                </span>
               </div>
 
               {/* Weight */}
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
                 <span className="text-xs font-bold text-primary-primary">Berat Badan</span>
-                {job?.weight_min_no === 0 && job?.weight_max_no === 0 ? (
-                  <span className="text-xs text-text-secondary">Tidak ada persyaratan</span>
-                ) : (
-                  <span className="text-xs text-text-secondary">
-                    {job?.weight_min_no} tahun - {job?.weight_max_no} tahun
-                  </span>
-                )}
+                <span className="text-xs text-text-secondary">
+                  {job?.weight_min_no === 0 && job?.weight_max_no === 0
+                    ? "Tidak ada informasi"
+                    : `Minimal ${job?.weight_min_no === 0 ? "tidak ada informasi" : `${job?.weight_min_no} Kg`}, Maksimal ${job?.weight_max_no === 0 ? "tidak ada informasi" : `${job?.weight_max_no} Kg`}`}
+                </span>
               </div>
 
               {/* Salary */}
               <div className="flex flex-col  justify-center items-start  gap-1">
                 <span className="text-xs font-bold text-primary-primary">Rentang Gaji</span>
-                {job?.job_salary_min === "0.00" && job?.job_salary_max === "0.00" ? (
-                  <span className="text-xs text-text-secondary">Tidak ada informasi gaji</span>
-                ) : (
-                  <span className="text-xs text-text-secondary">
-                    {`Rp. ${Number(job?.job_salary_min).toLocaleString("id-ID")}`} - {`Rp. ${Number(job?.job_salary_max).toLocaleString("id-ID")}`}
-                  </span>
-                )}
+                <span className="text-xs text-text-secondary">
+                  {job?.job_salary_min === "0.00" && job?.job_salary_max === "0.00"
+                    ? "Tidak ada informasi"
+                    : `Minimal ${job?.job_salary_min === "0.00" ? "tidak ada informasi" : `Rp. ${Number(job?.job_salary_min).toLocaleString("id-ID")}`}, Maksimal ${
+                        job?.job_salary_max === "0.00" ? "tidak ada informasi" : `Rp. ${Number(job?.job_salary_max).toLocaleString("id-ID")}`
+                      }`}
+                </span>
               </div>
 
               {/* Gender */}
@@ -262,14 +256,8 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
 
               {/* IPK */}
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
-                <span className="text-xs font-bold text-primary-primary">IPK Minimal</span>
-                {job?.ipk_no === "0.00" ? (
-                  <span className="text-xs text-text-secondary">Tidak ada informasi gaji</span>
-                ) : (
-                  <span className="text-xs text-text-secondary">
-                    <span className="text-xs text-text-secondary">{job?.ipk_no}</span>
-                  </span>
-                )}
+                <span className="text-xs font-bold text-primary-primary">Minimal IPK</span>
+                <span className="text-xs text-text-secondary">{job?.ipk_no === "0.00" ? "Tidak ada informasi" : job?.ipk_no}</span>
               </div>
 
               {/* Type */}

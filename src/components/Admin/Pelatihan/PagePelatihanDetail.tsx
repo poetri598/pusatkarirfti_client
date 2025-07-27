@@ -205,12 +205,8 @@ export default function PagePelatihanDetail({ training_slug }: { training_slug: 
 
               {/* Biaya*/}
               <div className="flex flex-col  justify-center items-start  gap-1">
-                <span className="text-xs font-bold text-primary-primary">Biaya pelatihan</span>
-                {Number(training?.training_price) === 0 ? (
-                  <span className="text-xs font-bold text-primary-primary">Gratis</span>
-                ) : (
-                  <span className="text-xs text-text-secondary">{`Rp. ${Number(training?.training_price).toLocaleString("id-ID")}`}</span>
-                )}
+                <span className="text-xs font-bold text-primary-primary">Biaya Pelatihan</span>
+                <span className="text-xs text-text-secondary">{Number(training?.training_price) === 0 ? "Gratis" : `Rp. ${Number(training?.training_price).toLocaleString("id-ID")}`}</span>
               </div>
             </div>
           </div>

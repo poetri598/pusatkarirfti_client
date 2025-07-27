@@ -19,6 +19,7 @@ import { updateCounselingById } from "@/services/counseling";
 import { ZonedDateTime, parseAbsoluteToLocal } from "@internationalized/date";
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 import { appendSingle } from "@/utils/formDataHelpers";
+import { formatZonedDateTime } from "@/utils/time";
 
 interface ModalEditCounselingProps {
   isOpen: boolean;
@@ -69,7 +70,7 @@ export default function ModalEditCounseling({ isOpen, onOpenChange, selectedItem
     if (!confirm.isConfirmed) return;
     setLoading(true);
     const formData = new FormData();
-    if (counseling_date) formData.append("counseling_date", counseling_date.toAbsoluteString());
+    if (counseling_date) formData.append("counseling_date", formatZonedDateTime(counseling_date));
     formData.append("counseling_desc", counseling_desc);
     formData.append("counseling_is_read", String(Number(counseling_is_read)));
     appendSingle(formData, "counseling_type_id", counseling_type_id);

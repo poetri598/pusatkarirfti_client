@@ -133,8 +133,10 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
               {/* Age */}
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
                 <span className="text-xs font-bold text-primary-primary">Usia</span>
-                <span className="text-xs ttext-text-secondary">
-                  {job?.age_min_id} tahun - {job?.age_max_id} tahun
+                <span className="text-xs text-text-secondary">
+                  {job?.age_min_no === 0 && job?.age_max_no === 0
+                    ? "Tidak ada informasi"
+                    : `Minimal ${job?.age_min_no === 0 ? "tidak ada informasi" : `${job?.age_min_no} tahun`}, Maksimal ${job?.age_max_no === 0 ? "tidak ada informasi" : `${job?.age_max_no} tahun`}`}
                 </span>
               </div>
 
@@ -142,7 +144,9 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
                 <span className="text-xs font-bold text-primary-primary">Tinggi Badan</span>
                 <span className="text-xs text-text-secondary">
-                  {job?.height_min_id} cm - {job?.height_max_id} cm
+                  {job?.height_min_no === 0 && job?.height_max_no === 0
+                    ? "Tidak ada informasi"
+                    : `Minimal ${job?.height_min_no === 0 ? "tidak ada informasi" : `${job?.height_min_no} cm`}, Maksimal ${job?.height_max_no === 0 ? "tidak ada informasi" : `${job?.height_max_no} cm`}`}
                 </span>
               </div>
 
@@ -150,7 +154,9 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
                 <span className="text-xs font-bold text-primary-primary">Berat Badan</span>
                 <span className="text-xs text-text-secondary">
-                  {job?.weight_min_id} kg - {job?.weight_max_id} kg
+                  {job?.weight_min_no === 0 && job?.weight_max_no === 0
+                    ? "Tidak ada informasi"
+                    : `Minimal ${job?.weight_min_no === 0 ? "tidak ada informasi" : `${job?.weight_min_no} Kg`}, Maksimal ${job?.weight_max_no === 0 ? "tidak ada informasi" : `${job?.weight_max_no} Kg`}`}
                 </span>
               </div>
 
@@ -158,7 +164,11 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
               <div className="flex flex-col  justify-center items-start  gap-1">
                 <span className="text-xs font-bold text-primary-primary">Rentang Gaji</span>
                 <span className="text-xs text-text-secondary">
-                  {`Rp. ${Number(job?.job_salary_min).toLocaleString("id-ID")}`} - {`Rp. ${Number(job?.job_salary_max).toLocaleString("id-ID")}`}
+                  {job?.job_salary_min === "0.00" && job?.job_salary_max === "0.00"
+                    ? "Tidak ada informasi"
+                    : `Minimal ${job?.job_salary_min === "0.00" ? "tidak ada informasi" : `Rp. ${Number(job?.job_salary_min).toLocaleString("id-ID")}`}, Maksimal ${
+                        job?.job_salary_max === "0.00" ? "tidak ada informasi" : `Rp. ${Number(job?.job_salary_max).toLocaleString("id-ID")}`
+                      }`}
                 </span>
               </div>
 
@@ -242,8 +252,8 @@ export default function PageLowonganPekerjaanDetail({ job_slug }: { job_slug: st
 
               {/* IPK */}
               <div className="flex flex-col  justify-center items-start  gap-1 group text-sm text-text-secondary">
-                <span className="text-xs font-bold text-primary-primary">IPK Minimal</span>
-                <span className="text-xs text-text-secondary">{job?.ipk_no}</span>
+                <span className="text-xs font-bold text-primary-primary">Minimal IPK</span>
+                <span className="text-xs text-text-secondary">{job?.ipk_no === "0.00" ? "Tidak ada informasi" : job?.ipk_no}</span>
               </div>
 
               {/* Type */}

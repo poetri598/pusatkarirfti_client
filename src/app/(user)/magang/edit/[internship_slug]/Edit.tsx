@@ -51,6 +51,7 @@ import { getInternshipBySlug, updateInternshipById } from "@/services/internship
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 import { ZonedDateTime, parseAbsoluteToLocal, now, getLocalTimeZone } from "@internationalized/date";
 import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function Edit({ internship_slug }: { internship_slug: string }) {
   const router = useRouter();
@@ -231,10 +232,10 @@ export default function Edit({ internship_slug }: { internship_slug: string }) {
     formData.append("internship_desc", internship_desc);
     formData.append("internship_location", internship_location);
     formData.append("internship_link", internship_link);
-    if (internship_start_date) formData.append("internship_start_date", internship_start_date.toAbsoluteString());
-    if (internship_end_date) formData.append("internship_end_date", internship_end_date.toAbsoluteString());
-    if (internship_open_date) formData.append("internship_open_date", internship_open_date.toAbsoluteString());
-    if (internship_close_date) formData.append("internship_close_date", internship_close_date.toAbsoluteString());
+    if (internship_start_date) formData.append("internship_start_date", formatZonedDateTime(internship_start_date));
+    if (internship_end_date) formData.append("internship_end_date", formatZonedDateTime(internship_end_date));
+    if (internship_open_date) formData.append("internship_open_date", formatZonedDateTime(internship_open_date));
+    if (internship_close_date) formData.append("internship_close_date", formatZonedDateTime(internship_close_date));
     appendSingle(formData, "internship_type_id", internship_type_id);
     appendSingle(formData, "company_id", company_id);
     appendSingle(formData, "ipk_id", ipk_id);

@@ -6,9 +6,5 @@ import PagePelatihanDetailUser from "@/components/User/Pelatihan/PagePelatihanDe
 export default function Redirect({ training_slug }: { training_slug: string }) {
   const { user } = useAuth();
 
-  if (user?.role_name === "Admin") {
-    return <PagePelatihanDetailAdmin training_slug={training_slug} />;
-  }
-
-  return <PagePelatihanDetailUser training_slug={training_slug} />;
+  return user?.role_name === "Admin" ? <PagePelatihanDetailAdmin training_slug={training_slug} /> : <PagePelatihanDetailUser training_slug={training_slug} />;
 }

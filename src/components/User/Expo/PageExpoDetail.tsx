@@ -195,7 +195,7 @@ export default function PagePelatihanDetail({ expo_slug }: { expo_slug: string }
               {/* Biaya*/}
               <div className="flex flex-col  justify-center items-start  gap-1">
                 <span className="text-xs font-bold text-primary-primary">Biaya Kegiatan</span>
-                {Number(expo?.expo_price) === 0 ? <span className="text-xs font-bold text-primary-primary">Gratis</span> : <span className="text-xs text-text-secondary">{`Rp. ${Number(expo?.expo_price).toLocaleString("id-ID")}`}</span>}
+                <span className="text-xs text-text-secondary">{Number(expo?.expo_price) === 0 ? "Gratis" : `Rp. ${Number(expo?.expo_price).toLocaleString("id-ID")}`}</span>
               </div>
             </div>
           </div>

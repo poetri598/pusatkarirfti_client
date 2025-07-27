@@ -120,13 +120,11 @@ export default function PageKonselingDetail({ counseling_id }: { counseling_id: 
                 {/* Nama Lengkap  */}
                 <Input
                   isReadOnly
-                  isRequired
                   label="Nama Lengkap"
                   labelPlacement="outside"
                   name="user_fullname"
                   value={counseling.user_fullname}
                   type="text"
-                  variant="bordered"
                   classNames={{
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     input: "focus:!border-primary-primary text-xs ",
@@ -137,13 +135,11 @@ export default function PageKonselingDetail({ counseling_id }: { counseling_id: 
                 {/* Nomor HP  */}
                 <Input
                   isReadOnly
-                  isRequired
                   label="Nomor HP"
                   labelPlacement="outside"
                   type="text"
                   name="user_phone"
                   value={counseling.user_phone}
-                  variant="bordered"
                   classNames={{
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     input: "focus:!border-primary-primary text-xs ",
@@ -153,13 +149,11 @@ export default function PageKonselingDetail({ counseling_id }: { counseling_id: 
                 {/* Nim  */}
                 <Input
                   isReadOnly
-                  isRequired
                   label="NIM"
                   labelPlacement="outside"
                   name="user_nim"
                   value={counseling.user_nim}
                   type="text"
-                  variant="bordered"
                   classNames={{
                     label: "after:text-danger-primary text-xs text-text-secondary",
                     input: "focus:!border-primary-primary text-xs uppercase",
@@ -170,16 +164,14 @@ export default function PageKonselingDetail({ counseling_id }: { counseling_id: 
                 {/* Counseling Type  */}
                 <Input
                   isReadOnly
-                  isRequired
-                  label="NIM"
+                  label="Tipe Konseling"
                   labelPlacement="outside"
                   name="counseling_type_name"
                   value={counseling.counseling_type_name}
                   type="text"
-                  variant="bordered"
                   classNames={{
                     label: "after:text-danger-primary text-xs text-text-secondary",
-                    input: "focus:!border-primary-primary text-xs uppercase",
+                    input: "focus:!border-primary-primary text-xs",
                     inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
                   }}
                 />
@@ -187,16 +179,14 @@ export default function PageKonselingDetail({ counseling_id }: { counseling_id: 
                 {/* Program Study name  */}
                 <Input
                   isReadOnly
-                  isRequired
                   label="Program Studi"
                   labelPlacement="outside"
                   name="program_study_name"
                   value={counseling.program_study_name}
                   type="text"
-                  variant="bordered"
                   classNames={{
                     label: "after:text-danger-primary text-xs text-text-secondary",
-                    input: "focus:!border-primary-primary text-xs uppercase",
+                    input: "focus:!border-primary-primary text-xs",
                     inputWrapper: "group-data-[focus=true]:border-primary-primary hover:!border-primary-primary",
                   }}
                 />
@@ -211,7 +201,6 @@ export default function PageKonselingDetail({ counseling_id }: { counseling_id: 
                   onChange={setCounselingDate}
                   label="Jadwal Konseling"
                   labelPlacement="outside"
-                  variant="bordered"
                   classNames={{
                     label: "after:text-danger-primary text-xs",
                     selectorIcon: "text-primary-primary",
@@ -224,13 +213,11 @@ export default function PageKonselingDetail({ counseling_id }: { counseling_id: 
               </div>
               {/* Counseling Desc */}
               <Textarea
-                isRequired
-                label="Beri tahu kami secara singkat mengenai konseling anda"
+                label="Informasi singkat tentang konseling"
                 labelPlacement="outside"
                 name="counseling_desc"
                 value={counseling.counseling_desc}
                 type="text"
-                variant="bordered"
                 classNames={{
                   label: "after:text-danger-primary text-xs text-text-secondary",
                   input: "focus:!border-primary-primary text-xs ",

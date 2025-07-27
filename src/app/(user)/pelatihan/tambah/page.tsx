@@ -45,6 +45,7 @@ import { createTraining } from "@/services/training";
 import { createServiceFetcher } from "@/utils/createServiceFetcher";
 import { appendSingle, appendMultiple } from "@/utils/formDataHelpers";
 import { ZonedDateTime, now, getLocalTimeZone } from "@internationalized/date";
+import { formatZonedDateTime } from "@/utils/time";
 
 export default function page() {
   const router = useRouter();
@@ -173,9 +174,9 @@ export default function page() {
     formData.append("training_desc", training_desc);
     formData.append("training_location", training_location);
     formData.append("training_link", training_link);
-    if (training_date) formData.append("training_date", training_date.toAbsoluteString());
-    if (training_open_date) formData.append("training_open_date", training_open_date.toAbsoluteString());
-    if (training_close_date) formData.append("training_close_date", training_close_date.toAbsoluteString());
+    if (training_date) formData.append("training_date", formatZonedDateTime(training_date));
+    if (training_open_date) formData.append("training_open_date", formatZonedDateTime(training_open_date));
+    if (training_close_date) formData.append("training_close_date", formatZonedDateTime(training_close_date));
     formData.append("training_price", String(training_price));
     appendSingle(formData, "company_id", company_id);
     formData.append("user_id", String(user?.user_id));
