@@ -72,7 +72,6 @@ export default function ModalViewCounseling({ isOpen, onOpenChange, selectedItem
               {/* Jenis Konseling */}
               <Select
                 label="Jenis Konseling"
-                variant="bordered"
                 name="counseling_type_id"
                 selectedKeys={counseling_type_id}
                 onSelectionChange={setCounselingTypeId}
@@ -97,7 +96,6 @@ export default function ModalViewCounseling({ isOpen, onOpenChange, selectedItem
             name="counseling_date"
             value={counseling_date}
             showMonthAndYearPickers
-            variant="bordered"
             classNames={{
               label: "after:text-danger-primary text-xs",
               selectorIcon: "text-primary-primary",
@@ -117,7 +115,6 @@ export default function ModalViewCounseling({ isOpen, onOpenChange, selectedItem
             value={counseling_desc}
             onValueChange={setCounselingDesc}
             type="text"
-            variant="bordered"
             classNames={{
               label: "after:text-danger-primary text-xs text-text-secondary",
               input: "focus:!border-primary-primary text-xs ",
