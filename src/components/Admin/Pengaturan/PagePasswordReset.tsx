@@ -73,7 +73,7 @@ export default function PasswordReset() {
             </BreadcrumbItem>
           </Breadcrumbs>
           {/* Section Title */}
-          <TitleSectionAdmin label="Ubah password" />;
+          <TitleSectionAdmin label="Ubah password" />
           <Form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="w-full flex flex-col gap-4">
               {/* Password Baru & Konfirmasi Password */}
