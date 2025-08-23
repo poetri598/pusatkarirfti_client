@@ -43,7 +43,7 @@ export default function SectionHeroUser({ searchKeyword, setSearchKeyword }: Pro
 
       {/* Hero Content */}
       <div className="xs:w-11/12 lg:w-6/12 mx-auto flex flex-col gap-4 text-center justify-center items-center z-10 relative">
-        <p className="xs:text-lg md:text-4xl font-bold text-background-primary">Temukan Potensi Dirimu bersama kami di Pusat Karir FTI UNSAP!</p>
+        <p className="xs:text-lg md:text-4xl font-bold text-background-primary">Temukan Potensi Dirimu bersama kami di Pusat Karir FTI UNSAPs!</p>
         <p className="text-sm text-background-primary">Ingin lebih produktif? atau nambah skill dan cari pengalaman baru? Ayoo, Ambil Kesempatan untuk pelatihan, magang & lowongan kerja bersama kami.</p>
 
         {/* Search */}
