@@ -55,7 +55,7 @@ export default function Page({ user_name }: { user_name: string }) {
   const [isAddingNewPosition, setIsAddingNewPosition] = useState<boolean[]>([]);
   const [newPositionNames, setNewPositionNames] = useState<string[]>([]);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {

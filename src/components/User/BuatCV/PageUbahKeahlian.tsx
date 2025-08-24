@@ -45,7 +45,7 @@ export default function Page({ user_name }: { user_name: string }) {
   const [isAddingNewSkill, setIsAddingNewSkill] = useState<boolean[]>([]);
   const [newSkillNames, setNewSkillNames] = useState<string[]>([]);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {

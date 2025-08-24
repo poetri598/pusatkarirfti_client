@@ -63,7 +63,7 @@ export default function Page({ user_name }: { user_name: string }) {
   const [isAddingNewCompany, setIsAddingNewCompany] = useState<boolean[]>([]);
   const [newCompanyNames, setNewCompanyNames] = useState<string[]>([]);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {

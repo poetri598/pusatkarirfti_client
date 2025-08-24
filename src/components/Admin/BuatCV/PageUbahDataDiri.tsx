@@ -57,7 +57,7 @@ export default function Page({ user_name }: { user_name: string }) {
   const [user_desc, setUserDesc] = useState("");
   const [user_platform_name, setUserPlatformName] = useState<Record<string, string>>({});
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
