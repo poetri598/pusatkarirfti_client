@@ -493,7 +493,7 @@ export default function Pelatihan() {
               {/* program_study_id */}
               {selectedFilters.has("program_study_id") && (
                 <Select
-                  label="Pilih program study"
+                  label="Pilih program studi"
                   labelPlacement="outside"
                   variant="bordered"
                   name="program_study_id"
@@ -603,7 +603,7 @@ export default function Pelatihan() {
                           selectedIcon: "text-primary-primary",
                         }}
                       >
-                        {`Semester ${item.semester_no}`}
+                        {`${item.semester_no}`}
                       </SelectItem>
                     ))
                   )}
